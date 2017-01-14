@@ -133,24 +133,24 @@ void SimulatedAnnealing::swapPermutation(const int * permutation, int* nextState
 
 int SimulatedAnnealing::cost(int* permutation){
 
-	return macierz->costPermutation(permutation);
+	return matrix->costPermutation(permutation);
 
 }
 
 SimulatedAnnealing::SimulatedAnnealing()
 {
-	macierz = NULL;
+	matrix = NULL;
 	size = 0;
 }
 
 SimulatedAnnealing::SimulatedAnnealing(string filename){
 
-	macierz = new Matrix(filename);
-	this->size = macierz->getSize();
+	matrix = new Matrix(filename);
+	this->size = matrix->getSize();
 }
 
 SimulatedAnnealing::~SimulatedAnnealing()
 {
-	delete macierz;
+	delete matrix;
 	size = 0;
 }

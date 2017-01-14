@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "TabuList.h"
 
-
 TabuList::TabuList(int l){
 
 	this->length = l;
