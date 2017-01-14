@@ -20,7 +20,7 @@ GeneticAlgorithm::GeneticAlgorithm(std::string filename)
 void GeneticAlgorithm::showPopulation(vector<int*>* population)
 {
 	vector<int*>::iterator it; int i = 0;
-	cout << endl;
+	cout << "\n";
 
 	for (it = population->begin(); it != population->end(); ++it)
 	{// if (i<10){
