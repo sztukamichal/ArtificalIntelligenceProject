@@ -143,9 +143,9 @@ SimulatedAnnealing::SimulatedAnnealing()
 	size = 0;
 }
 
-SimulatedAnnealing::SimulatedAnnealing(string filename, bool choose){
+SimulatedAnnealing::SimulatedAnnealing(string filename){
 
-	macierz = new Macierz(filename, choose);
+	macierz = new Macierz(filename);
 	this->size = macierz->getSize();
 }
 

@@ -2,9 +2,9 @@
 #include "GeneticAlgorithm.h"
 
 
-GeneticAlgorithm::GeneticAlgorithm(std::string filename, bool choose)
+GeneticAlgorithm::GeneticAlgorithm(std::string filename)
 {
-	matrix = new Macierz(filename, choose);
+	matrix = new Macierz(filename);
 	size = matrix->getSize();
 	bestTour = new int[size];
 	for (int i = 0; i<size; i++)

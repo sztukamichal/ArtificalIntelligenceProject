@@ -1,37 +1,12 @@
 #include "stdafx.h"
-
 #include <iostream>
 #include <fstream>
-
 #include <time.h>
 #include <cstdlib>
 #include "Macierz.h"
+
 using namespace std;
 
-// wczytywanie plików .txt
-bool Macierz::loadFromFile(string nazwa)
-{
-	bool ok = false;
-	fstream plik;
-
-	plik.open(nazwa, ios::in);
-	if (plik.good())
-	{
-		plik >> this->size;
-		// wczytujemy ilosc miast.
-		matrix = new int*[size];
-		for (int i = 0; i < size; i++)
-			matrix[i] = new int[size];
-		for (int i = 0; i < size; i++)
-		for (int j = 0; j < size; j++)
-			plik >> matrix[i][j];
-		ok = true;
-		plik.close();
-	}
-	else
-		cout << "Otwieranie pliku nie powiodlo sie." << endl;
-	return ok;
-}
 // wczytywanie rozmiaru z pliku atsp
 int Macierz::loadDimension(string filename){
 
@@ -116,20 +91,16 @@ int Macierz::costPermutation(int * permutation){
 	return cost;
 }
 // konstruktor z wczytywaniem z pliku
-Macierz::Macierz(string filename, bool choose)
+Macierz::Macierz(string filename)
 {
-	if (choose)
+	this->size = loadDimension(filename);
+	matrix = new int*[size];
+	for (int i = 0; i < size; i++)
 	{
-		this->size = loadDimension(filename);
-		matrix = new int*[size];
-		for (int i = 0; i < size; i++)
-		{
-			matrix[i] = new int[size];
-		}
-
-		loadMatrix(filename);
+		matrix[i] = new int[size];
 	}
-	else loadFromFile(filename);
+
+	loadMatrix(filename);
 }
 
 Macierz::Macierz(int size){

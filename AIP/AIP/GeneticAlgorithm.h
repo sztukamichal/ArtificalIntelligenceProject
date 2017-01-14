@@ -62,6 +62,6 @@ public:
 
 	Macierz* getMatrix(){ return matrix; };
 
-	GeneticAlgorithm(std::string, bool);
+	GeneticAlgorithm(std::string);
 	~GeneticAlgorithm();
 };

@@ -95,9 +95,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	char wybor;
 	string plik;
 	string loaded = "br17.atsp";
-	simulated_Annealing = new SimulatedAnnealing(loaded, true);
-	tabu_search = new Tabu_search(loaded, true);
-	genetic_Algorithm = new GeneticAlgorithm(loaded, true);
+	simulated_Annealing = new SimulatedAnnealing(loaded);
+	tabu_search = new Tabu_search(loaded);
+	genetic_Algorithm = new GeneticAlgorithm(loaded);
 	while (1)
 	{
 		if (licznik == 0 && (genetic_Algorithm->getSize() > 0))
@@ -149,9 +149,9 @@ int _tmain(int argc, _TCHAR* argv[])
 				delete simulated_Annealing;
 				delete tabu_search;
 				delete genetic_Algorithm;
-				simulated_Annealing = new SimulatedAnnealing(loaded, true);
-				tabu_search = new Tabu_search(loaded, true);
-				genetic_Algorithm = new GeneticAlgorithm(loaded, true);
+				simulated_Annealing = new SimulatedAnnealing(loaded);
+				tabu_search = new Tabu_search(loaded);
+				genetic_Algorithm = new GeneticAlgorithm(loaded);
 			}
 			else cout << "\nconsole> Nie udalo sie wczytac pliku. Podaj nazwe pliku z koncowka .atsp";
 			break;
@@ -1000,7 +1000,7 @@ void testGenetic()
 					cout << "Test dla pliku : " << files[i] << "\nWczytywanie...\n";
 					file << files[i] << endl;
 					delete genetic_Algorithm;
-					genetic_Algorithm = new GeneticAlgorithm(files[i], true);
+					genetic_Algorithm = new GeneticAlgorithm(files[i]);
 					size = genetic_Algorithm->getSize();
 					if (which_test == 0)
 					{
@@ -1347,7 +1347,7 @@ void testTabuAtsp()
 					cout << "Test dla pliku : " << files[i] << "\nWczytywanie...\n";
 					file << files[i] << endl;
 					delete tabu_search;
-					tabu_search = new Tabu_search(files[i], true);
+					tabu_search = new Tabu_search(files[i]);
 					size = tabu_search->getSize();
 					cout << "Kryterium stopu : ";
 					file << "Kryterium stopu : ";

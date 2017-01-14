@@ -65,7 +65,7 @@ public:
 	int *getSolution(){ return bestTour; };
 
 	Tabu_search(void);
-	Tabu_search(std::string filename, bool choose);
+	Tabu_search(std::string filename);
 	~Tabu_search(void);
 };
 

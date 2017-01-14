@@ -19,7 +19,7 @@ public:
 	void showPermutation(const int*);
 	Macierz* getMacierz(){ return macierz; }
 	int getSize(){ return size; };
-	SimulatedAnnealing(std::string filename, bool choose);
+	SimulatedAnnealing(std::string filename);
 	SimulatedAnnealing();
 	~SimulatedAnnealing();
 };
