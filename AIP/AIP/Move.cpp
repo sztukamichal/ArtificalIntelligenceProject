@@ -2,20 +2,17 @@
 #include "Move.h"
 
 
-Move::~Move()
-{
+Move::~Move() {
 	begin = -1;
 	end = -1;
 }
 
-Move::Move()
-{
+Move::Move() {
 	begin = -1;
 	end = -1;
 }
 
-Move::Move(int begin, int end)
-{
+Move::Move(int begin, int end) {
 	this->begin = begin;
 	this->end = end;
 }

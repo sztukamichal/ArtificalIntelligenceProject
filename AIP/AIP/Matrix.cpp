@@ -7,20 +7,15 @@
 
 using namespace std;
 
-// wczytywanie rozmiaru z pliku atsp
-int Matrix::loadDimension(string filename){
-
+int Matrix::loadDimension(string filename) {
 	ifstream plik;
-
 	plik.open(filename);
 	string temp;
 	int dimension;
-	while (true)
-	{
-		if (plik.good()){
+	while (true) {
+		if (plik.good()) {
 			plik >> temp;
-			if (temp == "DIMENSION:")
-			{
+			if (temp == "DIMENSION:") {
 				plik >> dimension;
 				return dimension;
 			}
@@ -29,50 +24,29 @@ int Matrix::loadDimension(string filename){
 	}
 	return 0;
 }
-// wczytywanie z pliku tsp
-void Matrix::loadMatrix(string filename){
 
-
+void Matrix::loadMatrix(string filename) {
 	ifstream plik;
 	plik.open(filename);
 	string temp;
-	while (true)
-	{
-		if (plik.good()){
+	while (true) {
+		if (plik.good()) {
 			plik >> temp;
 			if (temp == "EDGE_WEIGHT_SECTION")
 				break;
 		}
 		else break;
 	}
-
-	for (int i = 0; i < size; i++)
-	for (int j = 0; j < size; j++)
-	{
-		plik >> matrix[i][j];
-	}
-}
-// generowanie macierzy
-void Matrix::generate(int begin, int end){
-	int los = 0;
-	for (int i = 0; i < size; i++)
-	{
-		for (int j = 0; j < size; j++)
-		{
-			if (i == j) matrix[i][j] = INT_MAX;
-			else{
-				matrix[i][j] = begin + (rand() % (end - begin + 1));
-			}
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			plik >> matrix[i][j];
 		}
 	}
-
 }
-// wyswietlanie macierzy
-void Matrix::show_matrix(){
-	for (int i = 0; i < size; i++)
-	{
-		for (int j = 0; j < size; j++)
-		{
+
+void Matrix::show_matrix() {
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
 			cout.width(3);
 			if (i == j)cout << "N";
 			else
@@ -81,42 +55,37 @@ void Matrix::show_matrix(){
 		cout << endl;
 	}
 }
-// koszt podrozy
-int Matrix::costPermutation(int * permutation){
+
+int Matrix::costPermutation(int * permutation) {
 	int cost = 0;
-	for (int i = 0; i < size - 1; i++){
+	for (int i = 0; i < size - 1; i++) {
 		cost += matrix[permutation[i]][permutation[i + 1]];
 	}
 	cost += matrix[permutation[size - 1]][permutation[0]];
 	return cost;
 }
-// konstruktor z wczytywaniem z pliku
-Matrix::Matrix(string filename)
-{
+
+Matrix::Matrix(string filename) {
 	this->size = loadDimension(filename);
 	matrix = new int*[size];
-	for (int i = 0; i < size; i++)
-	{
+	for (int i = 0; i < size; i++) {
 		matrix[i] = new int[size];
 	}
-
 	loadMatrix(filename);
 }
 
-Matrix::Matrix(int size){
+Matrix::Matrix(int size) {
 	this->size = size;
 	matrix = new int*[size];
-	for (int i = 0; i < size; i++)
-	{
+	for (int i = 0; i < size; i++) {
 		matrix[i] = new int[size];
 	}
 }
 
-Matrix::~Matrix()
-{
-	for (int i = 0; i<size; i++)
+Matrix::~Matrix() {
+	for (int i = 0; i < size; i++) {
 		delete[] matrix[i];
-
+	}
 	delete[] matrix;
 	size = 0;
 }

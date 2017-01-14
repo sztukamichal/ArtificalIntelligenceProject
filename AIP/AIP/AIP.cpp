@@ -12,16 +12,15 @@
 using namespace std;
 
 //FUNKCJE DO POMIARU CZASU
-LARGE_INTEGER startTimer()
-{
+LARGE_INTEGER startTimer() {
 	LARGE_INTEGER start;
 	DWORD_PTR oldmask = SetThreadAffinityMask(GetCurrentThread(), 0);
 	QueryPerformanceCounter(&start);
 	SetThreadAffinityMask(GetCurrentThread(), oldmask);
 	return start;
 }
-LARGE_INTEGER endTimer()
-{
+
+LARGE_INTEGER endTimer() {
 	LARGE_INTEGER stop;
 	DWORD_PTR oldmask = SetThreadAffinityMask(GetCurrentThread(), 0);
 	QueryPerformanceCounter(&stop);
@@ -47,7 +46,8 @@ void geneticMenu(string);
 void simulatedMenu(string);
 void tabuMenu(string);
 
-string menu = "|.........................................................................|\n"
+string menu = 
+"|.........................................................................|\n"
 "|.......... ________________________________ .............................|\n"
 "|..._______|________PROBLEM KOMIWOJAZERA____|____________________.........|\n"
 "|..|                                                             |........|\n"
@@ -171,7 +171,8 @@ void geneticMenu(string filename)
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
 	LARGE_INTEGER freq;
 
-	string menu = "|.........................................................................|\n"
+	string menu = 
+		"|.........................................................................|\n"
 		"|.......... ________________________________ .............................|\n"
 		"|..........|      _  _   _                  |.............................|\n"
 		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
