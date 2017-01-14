@@ -1,0 +1,7 @@
+BUGI Projekt Sztuczna Inteligencja
+
+Co jest do poprawy : 
+	- nie wyświetla się macierz w menu głównym ( a w innych miejscach to działa np. w symulowanym wyżażaniu)
+
+Symulowane wyżarzanie :
+	- pojedyńcze rozwiązanie - OK
