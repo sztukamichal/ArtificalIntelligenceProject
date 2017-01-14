@@ -1,5 +1,5 @@
 #pragma once
-#include "Macierz.h"
+#include "Matrix.h"
 #include "TabuList.h"
 #include <time.h>
 #include <string>
@@ -9,7 +9,7 @@ class Tabu_search
 
 private:
 	// DANE ORAZ SZUKANE PROBLEMU
-	Macierz * matrix;				// macierz 
+	Matrix * matrix;				// macierz 
 	TabuList *tabu;					// lista tabu
 	int size;						// ilosc miast
 	int *bestTour;					// najlepsza permutacja
@@ -50,7 +50,7 @@ public:
 	void setParameters(int iterations, int not_change, int div_not_change, double time, int num_of_candidates, int t_length, bool div, int stop);
 
 	// GETTERY
-	Macierz* getMatrix(){ return matrix; };
+	Matrix* getMatrix(){ return matrix; };
 	int getIterations(){ return iterations; };
 	int getNot_change(){ return not_change; };
 	double getTime(){ return alg_time; };

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Tabu_search.h"
+#include "TabuSearch.h"
 #include <string>
 #include <algorithm>
 
@@ -7,7 +7,7 @@ using namespace std;
 
 Tabu_search::Tabu_search(string filename)
 {
-	matrix = new Macierz(filename);
+	matrix = new Matrix(filename);
 	size = matrix->getSize();
 	bestTour = new int[size];
 	for (int i = 0; i<size; i++)

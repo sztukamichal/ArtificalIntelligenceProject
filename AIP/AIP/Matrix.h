@@ -2,7 +2,7 @@
 #include <string>
 // klasa przechowujaca macierz s¹siedztwa 
 
-class Macierz
+class Matrix
 {
 
 private:
@@ -17,9 +17,9 @@ public:
 	void show_matrix();							//funkcja wyswietlajaca macierz
 	int costPermutation(int* permutation);		// zwraca koszt podrozy wg permutacji
 	int getSize(){ return size; };
-	Macierz(int size);							//konstruktor z podanna iloœcia miast
-	Macierz(std::string filename);	// choose - okresla z jakiego pliku wczytac macierz, true- plik atsp, false - plik txt
-	Macierz();
-	~Macierz();
+	Matrix(int size);							//konstruktor z podanna iloœcia miast
+	Matrix(std::string filename);	// choose - okresla z jakiego pliku wczytac macierz, true- plik atsp, false - plik txt
+	Matrix();
+	~Matrix();
 };
 

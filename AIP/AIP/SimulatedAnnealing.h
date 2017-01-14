@@ -1,11 +1,11 @@
 #pragma once
-#include "Macierz.h"
+#include "Matrix.h"
 #include <string>
 class SimulatedAnnealing
 {
 private:
 
-	Macierz * macierz;
+	Matrix * macierz;
 	int size;
 public:
 
@@ -17,7 +17,7 @@ public:
 	int* setMinimalTour(const int* permutation);
 	int cost(int* permutation);
 	void showPermutation(const int*);
-	Macierz* getMacierz(){ return macierz; }
+	Matrix* getMacierz(){ return macierz; }
 	int getSize(){ return size; };
 	SimulatedAnnealing(std::string filename);
 	SimulatedAnnealing();

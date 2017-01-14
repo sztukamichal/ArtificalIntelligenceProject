@@ -145,7 +145,7 @@ SimulatedAnnealing::SimulatedAnnealing()
 
 SimulatedAnnealing::SimulatedAnnealing(string filename){
 
-	macierz = new Macierz(filename);
+	macierz = new Matrix(filename);
 	this->size = macierz->getSize();
 }
 

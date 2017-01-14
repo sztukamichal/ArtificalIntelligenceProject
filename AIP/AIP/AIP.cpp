@@ -1,7 +1,5 @@
-
-
 #include "stdafx.h"
-#include "Tabu_search.h"
+#include "TabuSearch.h"
 #include "SimulatedAnnealing.h"
 #include "GeneticAlgorithm.h"
 #include <iostream>
@@ -11,9 +9,7 @@
 #include <fstream>
 #include <Windows.h>
 
-
 using namespace std;
-
 
 //FUNKCJE DO POMIARU CZASU
 LARGE_INTEGER startTimer()

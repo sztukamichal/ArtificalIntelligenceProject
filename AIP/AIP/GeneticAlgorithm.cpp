@@ -4,7 +4,7 @@
 
 GeneticAlgorithm::GeneticAlgorithm(std::string filename)
 {
-	matrix = new Macierz(filename);
+	matrix = new Matrix(filename);
 	size = matrix->getSize();
 	bestTour = new int[size];
 	for (int i = 0; i<size; i++)

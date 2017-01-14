@@ -1,5 +1,5 @@
 #pragma once
-#include "Macierz.h"
+#include "Matrix.h"
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -10,7 +10,7 @@ class GeneticAlgorithm
 
 private:
 
-	Macierz* matrix;
+	Matrix* matrix;
 	vector<int*>* population;
 	int populationSize;
 	float populationCost;            // suma wartosci funkcji celu dla ca³ej populacji
@@ -60,7 +60,7 @@ public:
 
 	//GETTERY
 
-	Macierz* getMatrix(){ return matrix; };
+	Matrix* getMatrix(){ return matrix; };
 
 	GeneticAlgorithm(std::string);
 	~GeneticAlgorithm();

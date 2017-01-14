@@ -3,12 +3,12 @@
 #include <fstream>
 #include <time.h>
 #include <cstdlib>
-#include "Macierz.h"
+#include "Matrix.h"
 
 using namespace std;
 
 // wczytywanie rozmiaru z pliku atsp
-int Macierz::loadDimension(string filename){
+int Matrix::loadDimension(string filename){
 
 	ifstream plik;
 
@@ -30,7 +30,7 @@ int Macierz::loadDimension(string filename){
 	return 0;
 }
 // wczytywanie z pliku tsp
-void Macierz::loadMatrix(string filename){
+void Matrix::loadMatrix(string filename){
 
 
 	ifstream plik;
@@ -53,7 +53,7 @@ void Macierz::loadMatrix(string filename){
 	}
 }
 // generowanie macierzy
-void Macierz::generate(int begin, int end){
+void Matrix::generate(int begin, int end){
 	int los = 0;
 	for (int i = 0; i < size; i++)
 	{
@@ -68,7 +68,7 @@ void Macierz::generate(int begin, int end){
 
 }
 // wyswietlanie macierzy
-void Macierz::show_matrix(){
+void Matrix::show_matrix(){
 	for (int i = 0; i < size; i++)
 	{
 		for (int j = 0; j < size; j++)
@@ -82,7 +82,7 @@ void Macierz::show_matrix(){
 	}
 }
 // koszt podrozy
-int Macierz::costPermutation(int * permutation){
+int Matrix::costPermutation(int * permutation){
 	int cost = 0;
 	for (int i = 0; i < size - 1; i++){
 		cost += matrix[permutation[i]][permutation[i + 1]];
@@ -91,7 +91,7 @@ int Macierz::costPermutation(int * permutation){
 	return cost;
 }
 // konstruktor z wczytywaniem z pliku
-Macierz::Macierz(string filename)
+Matrix::Matrix(string filename)
 {
 	this->size = loadDimension(filename);
 	matrix = new int*[size];
@@ -103,7 +103,7 @@ Macierz::Macierz(string filename)
 	loadMatrix(filename);
 }
 
-Macierz::Macierz(int size){
+Matrix::Matrix(int size){
 	this->size = size;
 	matrix = new int*[size];
 	for (int i = 0; i < size; i++)
@@ -112,7 +112,7 @@ Macierz::Macierz(int size){
 	}
 }
 
-Macierz::~Macierz()
+Matrix::~Matrix()
 {
 	for (int i = 0; i<size; i++)
 		delete[] matrix[i];
