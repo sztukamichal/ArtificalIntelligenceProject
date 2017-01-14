@@ -1,5 +1,4 @@
-// Projekt_II.cpp : Defines the entry point for the console application.
-//
+
 
 #include "stdafx.h"
 #include "Tabu_search.h"
@@ -63,15 +62,15 @@ string menu = "|................................................................
 "|..|   3.ALGORYTM GENETYCZNY                         3           |........|\n"
 "|..|                                                             |........|\n"
 "|..|   ----- OPCJE ------                                        |........|\n"
-"|..|   3.WCZYTAJ Z PLIKU                             4           |........|\n"
-"|..|   4.GENERUJ PLIK                                5           |........|\n"
-"|..|   5.WYSWIETL WCZYTANA MACIERZ                   6           |........|\n"
+"|..|   4.WCZYTAJ Z PLIKU                             4           |........|\n"
+"|..|   5.WYSWIETL WCZYTANA MACIERZ                   5           |........|\n"
 "|..|                                                             |........|\n"
 "|..|                                                             |........|\n"
 "|..|   7.KONIEC                                      k           |........|\n"
 "|..|________________________AUTORZY______________________________|........|\n"
+"|..|                                                             |........|\n"
 "|..|   MICHAL SZTUKA                           200798            |........|\n"
-"|..|   BARTOSZ AAAAAAA                         200748            |........|\n"
+"|..|   JOANNA TUROWSKA                         236088            |........|\n"
 "|..|_____________________________________________________________|........|\n"
 "|.........................................................................|\n"
 "|.........................................................................|\n";
@@ -101,10 +100,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	genetic_Algorithm = new GeneticAlgorithm(loaded, true);
 	while (1)
 	{
-		if (licznik == 0)
+		if (licznik == 0 && (genetic_Algorithm->getSize() > 0))
 		{
 			system("cls");
 			cout << menu << "\nWczytano dane z pliku: " << loaded;
+		}
+		else if (licznik == 0) {
+			system("cls");
+			cout << menu << "\nNie udalo sie wczytac domyslnego pliku";
 		}
 		licznik++;
 		cout << "\nconsole > ";
@@ -150,16 +153,17 @@ int _tmain(int argc, _TCHAR* argv[])
 				tabu_search = new Tabu_search(loaded, true);
 				genetic_Algorithm = new GeneticAlgorithm(loaded, true);
 			}
-			else if (loaded.find(".txt") != string::npos)
-			{
-				delete simulated_Annealing;
-				delete tabu_search;
-				delete genetic_Algorithm;
-				simulated_Annealing = new SimulatedAnnealing(loaded, false);
-				tabu_search = new Tabu_search(loaded, false);
-				genetic_Algorithm = new GeneticAlgorithm(loaded, false);
-			}
-			else cout << "\nconsole> Nie udalo sie wczytac pliku.";
+			else cout << "\nconsole> Nie udalo sie wczytac pliku. Podaj nazwe pliku z koncowka .atsp";
+			break;
+		case '5':
+			cout << endl;
+			tabu_search->showMatrix();
+			cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
+			cin.ignore();
+			cin.get();
+			break;
+		case 'k':
+			exit(0);
 		}
 	}
 
