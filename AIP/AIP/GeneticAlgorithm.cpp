@@ -20,7 +20,7 @@ GeneticAlgorithm::GeneticAlgorithm(std::string filename)
 void GeneticAlgorithm::showPopulation(vector<int*>* population)
 {
 	vector<int*>::iterator it; int i = 0;
-	cout << endl;
+	cout << "/n dupadupa";
 
 	for (it = population->begin(); it != population->end(); ++it)
 	{// if (i<10){
@@ -240,7 +240,6 @@ bool GeneticAlgorithm::hasDuplicate(int* permutation, vector<int *>* population)
 	return false;
 }
 
-
 void GeneticAlgorithm::crossover(int numberOfChild, vector<int*>* parents)
 {
 	int rand1, rand2;
@@ -365,12 +364,10 @@ void GeneticAlgorithm::initialPopulation(int sizeOfPopulation)
 
 }
 
-
 void GeneticAlgorithm::sortPopulation()
 {
 	sort(population->begin(), population->end(), *this);
 }
-
 
 int * GeneticAlgorithm::generatePermutation(int size){
 	int * permutation = new int[size];
@@ -381,7 +378,6 @@ int * GeneticAlgorithm::generatePermutation(int size){
 	std::random_shuffle(&permutation[0], &permutation[size]);
 	return permutation;
 }
-
 
 void GeneticAlgorithm::deleteRunt(int size)
 {
