@@ -240,7 +240,6 @@ bool GeneticAlgorithm::hasDuplicate(int* permutation, vector<int *>* population)
 	return false;
 }
 
-
 void GeneticAlgorithm::crossover(int numberOfChild, vector<int*>* parents)
 {
 	int rand1, rand2;
@@ -365,12 +364,10 @@ void GeneticAlgorithm::initialPopulation(int sizeOfPopulation)
 
 }
 
-
 void GeneticAlgorithm::sortPopulation()
 {
 	sort(population->begin(), population->end(), *this);
 }
-
 
 int * GeneticAlgorithm::generatePermutation(int size){
 	int * permutation = new int[size];
@@ -381,7 +378,6 @@ int * GeneticAlgorithm::generatePermutation(int size){
 	std::random_shuffle(&permutation[0], &permutation[size]);
 	return permutation;
 }
-
 
 void GeneticAlgorithm::deleteRunt(int size)
 {
