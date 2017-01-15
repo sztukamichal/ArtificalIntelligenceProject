@@ -1,7 +1,8 @@
 BUGI Projekt Sztuczna Inteligencja
 
 Co jest do poprawy : 
-	- nie wyświetla się macierz w menu głównym ( a w innych miejscach to działa np. w symulowanym wyżażaniu)
+	- błąd przy Tabu search - przeprowadzenie testu (pojedyncze rozwiazanie działa)
+	- zmiana parametrów dla wyżarzania powinna być podobna do tej dla tabu search (+ możliwość cofnięcia)
 
 Symulowane wyżarzanie :
 	- pojedyńcze rozwiązanie - OK
