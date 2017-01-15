@@ -74,7 +74,7 @@ string menu =
 //funkcja zamieniaj¹ca liczbê na string
 string ltos(int);
 
-Tabu_search* tabu_search;
+TabuSearch* tabu_search;
 SimulatedAnnealing* simulated_Annealing;
 GeneticAlgorithm* genetic_Algorithm;
 
@@ -92,7 +92,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	string plik;
 	string loaded = "br17.atsp";
 	simulated_Annealing = new SimulatedAnnealing(loaded);
-	tabu_search = new Tabu_search(loaded);
+	tabu_search = new TabuSearch(loaded);
 	genetic_Algorithm = new GeneticAlgorithm(loaded);
 	while (1)
 	{
@@ -146,7 +146,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				delete tabu_search;
 				delete genetic_Algorithm;
 				simulated_Annealing = new SimulatedAnnealing(loaded);
-				tabu_search = new Tabu_search(loaded);
+				tabu_search = new TabuSearch(loaded);
 				genetic_Algorithm = new GeneticAlgorithm(loaded);
 			}
 			else cout << "\nconsole> Nie udalo sie wczytac pliku. Podaj nazwe pliku z koncowka .atsp";
@@ -410,7 +410,7 @@ void tabuMenu(string filename)
 						if (diversificationOn) cout << "Parametr not_change dla dywersyfikacji(4): " << div_not_change << endl;
 						cout << "Dlugosc listy tabu(5) : " << tabu_length << "\n";
 						cout << "Liczba kandydatow(6) : " << num_of_candidates << endl;
-						cout << "\nZatwierdz zmiany(7)\nCofnij(8)\nOpcja nr: ";
+						cout << "\nPowrot(7)\n\nOpcja nr: ";
 						int ktory;
 						cin >> ktory;
 						cout << "\n";
@@ -467,10 +467,10 @@ void tabuMenu(string filename)
 							cin >> ktory;
 							if (ktory>1) num_of_candidates = ktory;
 							break;
-						case 7:
+						/*case 7:
 							tabu_search->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
-							break;
-						case 8:
+							break;*/
+						case 7:
 							loop = false;
 							break;
 						}
@@ -572,14 +572,11 @@ void simulatedMenu(string filename)
 					cin.get();
 					break;
 				case 2:
-					system("cls");
-					cout << "Podaj alpha:\n";
-					cin >> alpha;
-					system("cls");
-					cout << "Podaj s:\n";
+					cout << "\nPodaj s:\n";
 					cin >> per;
-					system("cls");
-					cout << "Podaj temperature koncowa\n";
+					cout << "\nPodaj alpha:\n";
+					cin >> alpha;
+					cout << "\nPodaj temperature koncowa\n";
 					cin >> tk;
 					system("cls");
 					break;
@@ -1344,7 +1341,7 @@ void testTabuAtsp()
 					cout << "Test dla pliku : " << files[i] << "\nWczytywanie...\n";
 					file << files[i] << endl;
 					delete tabu_search;
-					tabu_search = new Tabu_search(files[i]);
+					tabu_search = new TabuSearch(files[i]);
 					size = tabu_search->getSize();
 					cout << "Kryterium stopu : ";
 					file << "Kryterium stopu : ";

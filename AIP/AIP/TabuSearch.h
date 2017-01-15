@@ -4,7 +4,7 @@
 #include <time.h>
 #include <string>
 
-class Tabu_search {
+class TabuSearch {
 
 	private:
 		// DANE ORAZ SZUKANE PROBLEMU
@@ -61,9 +61,9 @@ class Tabu_search {
 		int getSize(){ return size; };
 		int *getSolution(){ return bestTour; };
 
-		Tabu_search(void);
-		Tabu_search(std::string filename);
+		TabuSearch(void);
+		TabuSearch(std::string filename);
 
-		~Tabu_search(void);
+		~TabuSearch(void);
 };
 

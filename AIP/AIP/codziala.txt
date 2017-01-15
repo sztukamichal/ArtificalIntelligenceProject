@@ -2,7 +2,8 @@ BUGI Projekt Sztuczna Inteligencja
 
 Co jest do poprawy : 
 	- błąd przy Tabu search - przeprowadzenie testu (pojedyncze rozwiazanie działa)
-	- zmiana parametrów dla wyżarzania powinna być podobna do tej dla tabu search (+ możliwość cofnięcia)
+	- dla wyżarzania nie działa opcja 3. Edytuj temperature poczatkowa - bo temperatura początkowa jest ustawiania automatycznie, więc chyba można to usunąć?
+
 
 Symulowane wyżarzanie :
 	- pojedyńcze rozwiązanie - OK

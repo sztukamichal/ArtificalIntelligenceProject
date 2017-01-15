@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Tabu_search::Tabu_search(string filename) {
+TabuSearch::TabuSearch(string filename) {
 	matrix = new Matrix(filename);
 	size = matrix->getSize();
 	bestTour = new int[size];
@@ -16,10 +16,10 @@ Tabu_search::Tabu_search(string filename) {
 	solved = false;
 }
 
-Tabu_search::Tabu_search(void) {
+TabuSearch::TabuSearch(void) {
 }
 
-Tabu_search::~Tabu_search(void) {
+TabuSearch::~TabuSearch(void) {
 	delete matrix;
 	size = 0;
 	delete[] bestTour;
@@ -34,7 +34,7 @@ Tabu_search::~Tabu_search(void) {
 	diverisfication_is_On = false;
 }
 
-void Tabu_search::setParameters(int i, int n, int divn, double t, int k, int t_length, bool div, int stop)
+void TabuSearch::setParameters(int i, int n, int divn, double t, int k, int t_length, bool div, int stop)
 {
 	iterations = i;
 	not_change = n;
@@ -46,7 +46,7 @@ void Tabu_search::setParameters(int i, int n, int divn, double t, int k, int t_l
 	stop_condition = stop;
 }
 
-int Tabu_search::algorithm()
+int TabuSearch::algorithm()
 {
 	int i = 0;
 	int wasBetter = 0;
@@ -96,7 +96,7 @@ int Tabu_search::algorithm()
 	return minCost;
 }
 
-int* Tabu_search::chooseNeighbour(int k, const int* currentPermutation, int* begin, int* end, int* cost) {
+int* TabuSearch::chooseNeighbour(int k, const int* currentPermutation, int* begin, int* end, int* cost) {
 	int minimalCost = INT_MAX;				// zmienna na minimalny koszt wsrod s¹siadów
 	int tempCost = INT_MAX;
 	int* position = new int[size]();
@@ -144,7 +144,7 @@ int* Tabu_search::chooseNeighbour(int k, const int* currentPermutation, int* beg
 	return bestNeighbour;
 }
 
-int *Tabu_search::randomPermutation() {
+int *TabuSearch::randomPermutation() {
 	int * permutation = new int[size];
 	for (int i = 0; i < size; i++) {
 		permutation[i] = i;
@@ -153,7 +153,7 @@ int *Tabu_search::randomPermutation() {
 	return permutation;
 }
 
-int* Tabu_search::diversification() {
+int* TabuSearch::diversification() {
 	int minimalCost = INT_MAX;				// zmienna na minimalny koszt wsrod rozwiazan
 	int* bestOne = new int[size]();			// najlepsza losowa permutacja znaleziona dotychczas
 	int* current = new int[size]();			// bierzace rozwiazanie
@@ -174,7 +174,7 @@ int* Tabu_search::diversification() {
 	return bestOne;
 }
 
-void Tabu_search::setMinimalTour(int * permutation){
+void TabuSearch::setMinimalTour(int * permutation){
 	delete[] bestTour;
 	//bestTour = permutation;
 	bestTour = new int[size];
@@ -183,7 +183,7 @@ void Tabu_search::setMinimalTour(int * permutation){
 	}
 }
 
-void Tabu_search::showPermutation(const int * permutation){
+void TabuSearch::showPermutation(const int * permutation){
 	cout << endl << endl;
 	for (int i = 0; i < size; i++) {
 		cout << permutation[i] << "  ";
