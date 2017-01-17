@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <Windows.h>
+#include <sstream> 
 
 using namespace std;
 
@@ -27,6 +28,22 @@ LARGE_INTEGER endTimer() {
 	return stop;
 }
 
+struct myfillandw
+{
+	myfillandw(char f, int w)
+	: fill(f), width(w) {}
+
+	char fill;
+	int width;
+};
+
+std::ostream& operator<<(std::ostream& o, const myfillandw& a)
+{
+	o.fill(a.fill);
+	o.width(a.width);
+	return o;
+}
+
 //Funkcja obliczajaca czas w [s]
 double duration(double &time, int repeat){
 	LARGE_INTEGER freq;
@@ -43,7 +60,7 @@ void geneticMenu(string);
 void simulatedMenu(string);
 void tabuMenu(string);
 
-void showConsole(){
+void printConsole(){
 	cout << endl << "console> ";
 }
 
@@ -121,7 +138,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		showMenu = false;
 
-		showConsole();
+		printConsole();
 		cin >> choice;
 
 		if (!isProperlyLoaded && choice != 'L' && choice != 'l' && choice != 'q' && choice != 'Q') {
@@ -185,6 +202,8 @@ int _tmain(int argc, _TCHAR* argv[])
 			case 'Q':
 			case 'q':
 				exit(0);
+			default:
+				break;
 		}
 	}
 
@@ -194,33 +213,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 void geneticMenu(string filename)
 {
-	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	LARGE_INTEGER freq;
-
-	string menu = 
-		"|.........................................................................|\n"
-		"|.......... ________________________________ .............................|\n"
-		"|..........|      _  _   _                  |.............................|\n"
-		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
-		"|..........|    /     | |_ | \\| |_|         |.............................|\n"
-		"|..._______|________________________________|____________________.........|\n"
-		"|..|                   Genetic Algorithm                         |........|\n"
-		"|..|     OPCJA                                    KLAWISZ        |........|\n"
-		"|..|                                                             |........|\n"
-		"|..|   1. POJEDYNCZE ROZWIAZANIE                     1           |........|\n"
-		"|..|   2. PRZEPROWADZ TESTY                          2           |........|\n"
-		"|..|   3. COFNIJ                                     3           |........|\n"
-		"|..|_____________________________________________________________|........|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n";
-
-	int option;
-	bool loop = true;
-	bool loop2 = true;
-	bool loop3 = true;
-
 	int size = geneticAlgorithm->getSize();
 	int sizeOfPopulation = 100;					// Rozmiar populacji
 	int numberOfPopulation = 100;				// Liczba populacji
@@ -228,115 +220,113 @@ void geneticMenu(string filename)
 	int probability = 100;						// prawdopodobienstwo mutacji
 	int numberOfChild = 80;						// Ilosc potomkow
 
+	ostringstream geneticMenuStream;
+
+	string geneticMenu;
+	char choice;
+	bool goBack = false;
+	bool showMenu = true;
+	double time = 0;
+	LARGE_INTEGER performanceCountStart, performanceCountEnd;
+	LARGE_INTEGER freq;
 	int solution = 0;
-	while (loop3){
-		system("cls");
-		cout << menu;
-		cout << "Wczytany plik: " << filename << endl;
-		cin >> option;
-		double time = 0;
-		switch (option){
-		case 1://menu1
-			loop2 = true;
-			while (loop2){
-				system("cls");
-				cout << "\n --- Aktualne parametry algorytmu ---\n\n";
-				cout << "SIZE : " << size << endl;
-				cout << "Ilosc osobnikow w populacji: " << sizeOfPopulation << endl;
-				cout << "Liczba populacji: " << numberOfPopulation << endl;
-				cout << "Prawdopodobienstwo wystapienia mutacji: " << probability << endl;
-				cout << "Ilosc genow ulegajacych mutacji: " << numberOfGenes << endl;
-				cout << "Ilosc potomkow: " << numberOfChild << "\n";
-				cout << "1. Wyswietl macierz sasiedztwa\n2. Edytuj parametry\n3. Rozpocznij alogrytm\n4. Powrot\n";
-				cin >> option;
-				switch (option)
-				{
-				case 1:
-					cout << endl;
-					geneticAlgorithm->showMatrix();
-					cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
-					cin.ignore();
-					cin.get();
-					break;
-				case 2:
-					loop = true;
-					while (loop)
-					{
-						system("cls");
-						cout << "\n --- Aktualne parametry algorytmu ---\n\n";
-						cout << "SIZE : " << size << endl;
-						cout << "Ilosc osobnikow w populacji(1): " << sizeOfPopulation << endl;
-						cout << "Liczba populacji(2): " << numberOfPopulation << endl;
-						cout << "Prawdopodobienstwo wystapienia mutacji(3): " << probability << endl;
-						cout << "Ilosc genow ulegajacych mutacji(4): " << numberOfGenes << endl;
-						cout << "Ilosc potomkow(5): " << numberOfChild << "\n";
-						cout << "\nCofnij(6)\nOpcja nr: ";
-						int ktory;
-						cin >> ktory;
-						cout << "\n";
-						switch (ktory)
-						{
-						case 1:
-							cout << "Podaj ilosc osobnikow w populacji: ";
-							cin >> ktory;
-							if (ktory>0) sizeOfPopulation = ktory;
-							break;
-						case 2:
-							cout << "Podaj liczbe populacji: ";
-							cin >> ktory;
-							if (ktory>0) numberOfPopulation = ktory;
-							break;
-						case 3:
-							cout << "Podaj prawdopodobienstwo wystapienia mutacji(liczba calkowita): ";
-							cin >> ktory;
-							if (ktory>0) probability = ktory;
-							break;
-						case 4:
-							cout << "Podaj ilosc genow ulegajacych mutacji: ";
-							cin >> ktory;
-							if (ktory>0) numberOfGenes = ktory;
-							break;
-						case 5:
-							cout << "Podaj ilosc potomkow: ";
-							cin >> ktory;
-							if (ktory>0) numberOfChild = ktory;
-							break;
-						case 6:
-							loop = false;
-							break;
-						}
-					}
-					system("cls");
-					break;
-				case 3:
-					performanceCountStart = startTimer();
-					solution = geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, numberOfGenes, probability, numberOfChild);
-					performanceCountEnd = endTimer();
-					time = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
-					duration(time, 1);
-					cout << "MIN: " << solution;
-					cout << "\nCzas trwania algorytmu: " << time << " [ms]" << endl;
-					cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
-					cin.ignore();
-					cin.get();
-					break;
-				case 4:
-					loop2 = false;
-					break;
-				default:
-					break;
-				}
-			}
-			break;
-		case 2:
-			testGenetic();
-			break;
-		case 3:
-			loop3 = false;
-			break;
-		default:
-			break;
+	int newValue;
+
+
+	while (!goBack){
+		geneticMenuStream.str("");
+		geneticMenuStream.clear();
+		geneticMenuStream <<
+			"|.........................................................................|\n"
+			"|.......... ________________________________ .............................|\n"
+			"|..........|      _  _   _                  |.............................|\n"
+			"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
+			"|..........|    /     | |_ | \\| |_|         |.............................|\n"
+			"|..._______|________________________________|____________________.........|\n"
+			"|..|                   GENETIC ALGORITHM                         |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|      START SINGLE SOLUTION                      S           |........|\n"
+			"|..|      MAKE TESTS                                 T           |........|\n"
+			"|..|      CHANGE VALUE OF PARAMETER NR. X            X           |........|\n"
+			"|..|      BACK                                       B           |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|________________   INSTANCE   _______________________________|........|\n"
+			"|..|                                                             |........|\n"
+			"|..|      FILENAME :                        " << myfillandw(' ', 10) << filename << "           |........|\n"
+			"|..|      NUMBER OF CITIES :                       " << myfillandw(' ', 3) << size << "           |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|_____________   PARAMETERS OF ALGORITHM   ___________________|........|\n"
+			"|..|                                                             |........|\n"
+			"|..|   1. SIZE OF POPULATION                       " << myfillandw(' ', 3) << sizeOfPopulation << "           |........|\n"
+			"|..|   2. POPULATION QUANTITY                      " << myfillandw(' ', 3) << numberOfPopulation << "           |........|\n"
+			"|..|   3. NUMBER OF GENES                          " << myfillandw(' ', 3) << numberOfGenes << "           |........|\n"
+			"|..|   4. PROBABILITY OF MUTATION                  " << myfillandw(' ', 3) << probability << "           |........|\n"
+			"|..|   5. CHILDREN QUANTITY                        " << myfillandw(' ', 3) << numberOfChild << "           |........|\n"
+			"|..|_____________________________________________________________|........|\n"
+			"|.........................................................................|\n"
+			"|.........................................................................|\n"
+			"|.........................................................................|\n"
+			"|.........................................................................|\n";
+		geneticMenu = geneticMenuStream.str();
+		time = 0;
+		if (showMenu) {
+			system("cls");
+			cout << geneticMenu;
 		}
+		printConsole();
+		cin >> choice;
+		switch (choice){
+			case '1':
+				cout << "Input new value for size of population (>0): ";
+				cin >> newValue;
+				if (newValue>0) sizeOfPopulation = newValue;
+				break;
+			case '2':
+				cout << "Input new value for quantity of populations (>0): ";
+				cin >> newValue;
+				if (newValue>0) numberOfPopulation = newValue;
+				break;
+			case '3':
+				cout << "Input new value for probability of mutation (0 < x <100): ";
+				cin >> newValue;
+				if (newValue>0) probability = newValue;
+				break;
+			case '4':
+				cout << "Input new value for number of genes (>0): ";
+				cin >> newValue;
+				if (newValue>0) numberOfGenes = newValue;
+				break;
+			case '5':
+				cout << "Input new value for number of children (>0): ";
+				cin >> newValue;
+				if (newValue>0) numberOfChild = newValue;
+				break;
+			case 's':
+			case 'S':
+				cout << "Please wait... Computing...";
+				performanceCountStart = startTimer();
+				solution = geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, numberOfGenes, probability, numberOfChild);
+				performanceCountEnd = endTimer();
+				time = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+				duration(time, 1);
+				cout << "MIN: " << solution;
+				cout << "\nDuration of computation: " << time << " [ms]" << endl;
+				cout << endl << "Press any key to continue...";
+				cin.ignore();
+				cin.get();
+				break;
+			case 't':
+			case 'T':
+				testGenetic();
+				break;
+			case 'b':
+			case 'B':
+				goBack = true;
+				break;
+			default:
+				break;
+		}
+		showMenu = choice != 't' && choice != 'T' && choice != 'S' && choice != 's';
 	}
 
 };
@@ -807,7 +797,6 @@ void testGenetic()
 		"|..|                   Tabu Search                               |........|\n"
 		"|..|     OPCJA                                    KLAWISZ        |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   1. ZOBACZ I USTAW PARAMETRY ALGORYTMU         1           |........|\n"
 		"|..|   2. ZOBACZ I USTAW PARAMETRY TESTU             2           |........|\n"
 		"|..|   3. PRZEPROWADZ TEST                           3           |........|\n"
 		"|..|                                                             |........|\n"
@@ -837,56 +826,6 @@ void testGenetic()
 		cin >> option;
 		switch (option)
 		{
-		case 1:
-			loop = true;
-			while (loop)
-			{
-				system("cls");
-				cout << "\n --- Aktualne parametry algorytmu ---\n\n";
-				cout << "SIZE : " << size << endl;
-				cout << "Ilosc osobnikow w populacji(1): " << sizeOfPopulation << endl;
-				cout << "Liczba populacji(2): " << numberOfPopulation << endl;
-				cout << "Prawdopodobienstwo wystapienia mutacji(3): " << probability << endl;
-				cout << "Ilosc genow ulegajacych mutacji(4): " << numberOfGenes << endl;
-				cout << "Ilosc potomkow(5): " << numberOfChild << "\n";
-				cout << "\nCofnij(6)\nOpcja nr: ";
-				int ktory;
-				cin >> ktory;
-				cout << "\n";
-				switch (ktory)
-				{
-				case 1:
-					cout << "Podaj ilosc osobnikow w populacji: ";
-					cin >> ktory;
-					if (ktory>0) sizeOfPopulation = ktory;
-					break;
-				case 2:
-					cout << "Podaj liczbe populacji: ";
-					cin >> ktory;
-					if (ktory>0) numberOfPopulation = ktory;
-					break;
-				case 3:
-					cout << "Podaj prawdopodobienstwo wystapienia mutacji(liczba calkowita): ";
-					cin >> ktory;
-					if (ktory>0) probability = ktory;
-					break;
-				case 4:
-					cout << "Podaj ilosc genow ulegajacych mutacji: ";
-					cin >> ktory;
-					if (ktory>0) numberOfGenes = ktory;
-					break;
-				case 5:
-					cout << "Podaj ilosc potomkow: ";
-					cin >> ktory;
-					if (ktory>0) numberOfChild = ktory;;
-					break;
-				case 6:
-					loop = false;
-					break;
-				}
-			}
-			system("cls");
-			break;
 		case 2:
 			loop = true;
 			while (loop)
