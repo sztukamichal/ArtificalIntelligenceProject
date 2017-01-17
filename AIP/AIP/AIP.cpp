@@ -11,7 +11,6 @@
 
 using namespace std;
 
-//FUNKCJE DO POMIARU CZASU
 LARGE_INTEGER startTimer() {
 	LARGE_INTEGER start;
 	DWORD_PTR oldmask = SetThreadAffinityMask(GetCurrentThread(), 0);
@@ -37,8 +36,6 @@ double duration(double &time, int repeat){
 	return time;
 }
 
-//Funkcja generuj¹ca plik z przyk³adow¹ instancj¹
-//void generuj_plik(string,int,int,int);
 void testGenetic();
 void testAnnealing(string filename, int period, double  alphas[], double ile, double endTemperature);
 void testTabuAtsp();
@@ -46,23 +43,31 @@ void geneticMenu(string);
 void simulatedMenu(string);
 void tabuMenu(string);
 
-string menu = 
+void showConsole(){
+	cout << endl << "console> ";
+}
+
+inline bool fileExists(const std::string& name) {
+	ifstream f(name.c_str());
+	return f.good();
+}
+
+string mainMenu = 
 "|.........................................................................|\n"
 "|.......... ________________________________ .............................|\n"
-"|..._______|________PROBLEM KOMIWOJAZERA____|____________________.........|\n"
+"|..._______|________TSP PROBLEM SOLVER______|____________________.........|\n"
 "|..|                                                             |........|\n"
-"|..|   .....ALGORYTMY......                                      |........|\n"
+"|..|   .....ALGORITHMS......                                     |........|\n"
 "|..|                                                             |........|\n"
-"|..|   1.SYMULOWANE WYZARZANIE                       1           |........|\n"
-"|..|   2.METODA TABU SEARCH                          2           |........|\n"
-"|..|   3.ALGORYTM GENETYCZNY                         3           |........|\n"
+"|..|   1.SIMULATED ANNEALING                         S           |........|\n"
+"|..|   2.TABU SEARCH                                 T           |........|\n"
+"|..|   3.GENETIC ALGORITHM                           G           |........|\n"
 "|..|                                                             |........|\n"
-"|..|   ----- OPCJE ------                                        |........|\n"
-"|..|   4.WCZYTAJ Z PLIKU                             4           |........|\n"
-"|..|   5.WYSWIETL WCZYTANA MACIERZ                   5           |........|\n"
+"|..|   ----- OPTION ------                                       |........|\n"
+"|..|   4.LOAD FROM FILE (.atsp)                      L           |........|\n"
+"|..|   5.PREVIEW LOADED DATA                         P           |........|\n"
 "|..|                                                             |........|\n"
-"|..|                                                             |........|\n"
-"|..|   7.KONIEC                                      k           |........|\n"
+"|..|   7.QUIT                                        Q           |........|\n"
 "|..|________________________AUTORZY______________________________|........|\n"
 "|..|                                                             |........|\n"
 "|..|   MICHAL SZTUKA                           200798            |........|\n"
@@ -74,98 +79,119 @@ string menu =
 //funkcja zamieniaj¹ca liczbê na string
 string ltos(int);
 
-TabuSearch* tabu_search;
-SimulatedAnnealing* simulated_Annealing;
-GeneticAlgorithm* genetic_Algorithm;
+TabuSearch* tabuSearch;
+SimulatedAnnealing* simulatedAnnealing;
+GeneticAlgorithm* geneticAlgorithm;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	void startProgram();
 	srand(time(NULL));
-	LARGE_INTEGER performanceCountStart, performanceCountEnd;
+
+	/*LARGE_INTEGER performanceCountStart, performanceCountEnd;
 	LARGE_INTEGER freq;
 	QueryPerformanceFrequency(&freq);
+	*/
+	
+	bool showMenu = true;
+	bool isProperlyLoaded = false;
+	char choice;
+	string fileName;
+	string defaultFileName = "br17.atsp";
 
-	int licznik = 0;
-	double time = 0;
+	if (fileExists(defaultFileName)) {
+		simulatedAnnealing = new SimulatedAnnealing(defaultFileName);
+		tabuSearch = new TabuSearch(defaultFileName);
+		geneticAlgorithm = new GeneticAlgorithm(defaultFileName);
+		isProperlyLoaded = geneticAlgorithm->getSize() > 0;
+	}
 
-	char wybor;
-	string plik;
-	string loaded = "br17.atsp";
-	simulated_Annealing = new SimulatedAnnealing(loaded);
-	tabu_search = new TabuSearch(loaded);
-	genetic_Algorithm = new GeneticAlgorithm(loaded);
-	while (1)
-	{
-		if (licznik == 0 && (genetic_Algorithm->getSize() > 0))
-		{
+	while (1) {
+		if (showMenu) {
 			system("cls");
-			cout << menu << "\nWczytano dane z pliku: " << loaded;
+			cout << mainMenu << endl;
 		}
-		else if (licznik == 0) {
-			system("cls");
-			cout << menu << "\nNie udalo sie wczytac domyslnego pliku";
+
+		if (isProperlyLoaded) {
+			cout << endl << "Loaded from default file: " << defaultFileName;
+		} 
+		else {
+			cout << endl << "There was a problem with loading data. " << defaultFileName << " may not exist.";
 		}
-		licznik++;
-		cout << "\nconsole > ";
-		cin >> wybor;
-		switch (wybor)
-		{
-		case '1':
-			if (loaded == "brak pliku")
-			{
-				cout << "\nconsole> Nie wczytano pliku.";
+
+		showMenu = false;
+
+		showConsole();
+		cin >> choice;
+
+		if (!isProperlyLoaded && choice != 'L' && choice != 'l' && choice != 'q' && choice != 'Q') {
+			cout << endl << "Try to load data from another file.";
+			//just to ommit switch clause
+			choice = 'o';
+		}
+		else if (choice != 'l' && choice != 'L') {
+			showMenu = true;
+		}
+		
+		switch (choice) {
+			case 's':
+			case 'S':
+				simulatedMenu(defaultFileName);
 				break;
-			}
-			simulatedMenu(loaded);
-			licznik = 0;
-			break;
-		case '2':
-			if (loaded == "brak pliku")
-			{
-				cout << "\nconsole> Nie wczytano pliku.";
+			case 't':
+			case 'T':
+				tabuMenu(defaultFileName);
 				break;
-			}
-			tabuMenu(loaded);
-			licznik = 0;
-			break;
-		case '3':
-			if (loaded == "brak pliku")
-			{
-				cout << "\nconsole> Nie wczytano pliku.";
+			case 'g':
+			case 'G':
+				geneticMenu(defaultFileName);
 				break;
-			}
-			geneticMenu(loaded);
-			licznik = 0;
-			break;
-		case '4':
-			loaded = "";
-			cin >> loaded;
-			if (loaded.find(".atsp") != string::npos)
-			{
-				delete simulated_Annealing;
-				delete tabu_search;
-				delete genetic_Algorithm;
-				simulated_Annealing = new SimulatedAnnealing(loaded);
-				tabu_search = new TabuSearch(loaded);
-				genetic_Algorithm = new GeneticAlgorithm(loaded);
-			}
-			else cout << "\nconsole> Nie udalo sie wczytac pliku. Podaj nazwe pliku z koncowka .atsp";
-			break;
-		case '5':
-			cout << endl;
-			tabu_search->showMatrix();
-			cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
-			cin.ignore();
-			cin.get();
-			break;
-		case 'k':
-			exit(0);
+			case 'l':
+			case 'L':
+				cout << endl << "Input filename : ";
+				cin >> defaultFileName;
+				if (defaultFileName.find(".atsp") != string::npos) {
+				}
+				else {
+					defaultFileName += ".atsp";
+				}
+				
+				if (fileExists(defaultFileName)) {
+					delete simulatedAnnealing;
+					delete tabuSearch;
+					delete geneticAlgorithm;
+					
+					simulatedAnnealing = new SimulatedAnnealing(defaultFileName);
+					tabuSearch = new TabuSearch(defaultFileName);
+					geneticAlgorithm = new GeneticAlgorithm(defaultFileName);
+
+					isProperlyLoaded = geneticAlgorithm->getSize() > 0;
+				}
+				else {
+					cout << endl << "Some errors with file occured, check if this file exist.";
+					isProperlyLoaded = false;
+				}
+				break;
+			case 'p':
+			case 'P':
+				system("cls");
+				cout << endl;
+				tabuSearch->showMatrix();
+				cout << endl << "Press any button to back...";
+				cin.ignore();
+				cin.get();
+				system("cls");
+				break;
+			case 'Q':
+			case 'q':
+				exit(0);
 		}
 	}
 
 	system("PAUSE");
 	return 0;
 }
+
 void geneticMenu(string filename)
 {
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
@@ -195,7 +221,7 @@ void geneticMenu(string filename)
 	bool loop2 = true;
 	bool loop3 = true;
 
-	int size = genetic_Algorithm->getSize();
+	int size = geneticAlgorithm->getSize();
 	int sizeOfPopulation = 100;					// Rozmiar populacji
 	int numberOfPopulation = 100;				// Liczba populacji
 	int numberOfGenes = 1;						// liczba genów ulegajaca mutacji
@@ -227,7 +253,7 @@ void geneticMenu(string filename)
 				{
 				case 1:
 					cout << endl;
-					genetic_Algorithm->showMatrix();
+					geneticAlgorithm->showMatrix();
 					cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
 					cin.ignore();
 					cin.get();
@@ -284,7 +310,7 @@ void geneticMenu(string filename)
 					break;
 				case 3:
 					performanceCountStart = startTimer();
-					solution = genetic_Algorithm->algorithm(sizeOfPopulation, numberOfPopulation, numberOfGenes, probability, numberOfChild);
+					solution = geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, numberOfGenes, probability, numberOfChild);
 					performanceCountEnd = endTimer();
 					time = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 					duration(time, 1);
@@ -314,6 +340,7 @@ void geneticMenu(string filename)
 	}
 
 };
+
 void tabuMenu(string filename)
 {
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
@@ -342,7 +369,7 @@ void tabuMenu(string filename)
 	bool loop2 = true;
 	bool loop3 = true;
 
-	int size = tabu_search->getSize();
+	int size = tabuSearch->getSize();
 	int iterations = 50000;					// liczba iteracji petli glownej algorytmu
 	int not_change = size * 4;					// maksymalna liczba iteracji bez poprawy rozwiazania
 	int div_not_change = size * 2;
@@ -385,7 +412,7 @@ void tabuMenu(string filename)
 				{
 				case 1:
 					cout << endl;
-					tabu_search->showMatrix();
+					tabuSearch->showMatrix();
 					cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
 					cin.ignore();
 					cin.get();
@@ -478,9 +505,9 @@ void tabuMenu(string filename)
 					system("cls");
 					break;
 				case 3:
-					tabu_search->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
+					tabuSearch->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
 					performanceCountStart = startTimer();
-					solution = tabu_search->algorithm();
+					solution = tabuSearch->algorithm();
 					performanceCountEnd = endTimer();
 					time = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 					duration(time, 1);
@@ -566,7 +593,7 @@ void simulatedMenu(string filename)
 				{
 				case 1:
 					cout << endl;
-					simulated_Annealing->getMacierz()->show_matrix();
+					simulatedAnnealing->getMacierz()->show_matrix();
 					cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
 					cin.ignore();
 					cin.get();
@@ -583,7 +610,7 @@ void simulatedMenu(string filename)
 				case 3:
 					cout << "MIN: ";
 					performanceCountStart = startTimer();
-					solution = simulated_Annealing->algorithm(per, alpha, startTemp, tk);
+					solution = simulatedAnnealing->algorithm(per, alpha, startTemp, tk);
 					performanceCountEnd = endTimer();
 					czas = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 					duration(czas, 1);
@@ -686,8 +713,8 @@ void testAnnealing(string filename, int period, double  alphas[], double ile, do
 			switch (j)
 			{
 			case 0: s = period; break;
-			case 1: s = simulated_Annealing->getSize(); break;
-			case 2: s = (simulated_Annealing->getSize()*simulated_Annealing->getSize()) / 2; break;
+			case 1: s = simulatedAnnealing->getSize(); break;
+			case 2: s = (simulatedAnnealing->getSize()*simulatedAnnealing->getSize()) / 2; break;
 			default:
 				break;
 			}
@@ -698,7 +725,7 @@ void testAnnealing(string filename, int period, double  alphas[], double ile, do
 			for (int k = 0; k < ile; k++)
 			{
 				performanceCountStart = startTimer();
-				minimum += simulated_Annealing->algorithm(s, alphas[i], t0, endTemperature);
+				minimum += simulatedAnnealing->algorithm(s, alphas[i], t0, endTemperature);
 				performanceCountEnd = endTimer();
 				time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 			}
@@ -762,7 +789,7 @@ void testGenetic()
 	// PARAMETRY ALGORYTMU
 
 
-	int size = genetic_Algorithm->getSize();
+	int size = geneticAlgorithm->getSize();
 	int sizeOfPopulation = 50;					// Rozmiar populacji
 	int numberOfPopulation = 300;				// Liczba populacji
 	int numberOfGenes = 2;						// liczba genów ulegajaca mutacji
@@ -993,9 +1020,9 @@ void testGenetic()
 				{
 					cout << "Test dla pliku : " << files[i] << "\nWczytywanie...\n";
 					file << files[i] << endl;
-					delete genetic_Algorithm;
-					genetic_Algorithm = new GeneticAlgorithm(files[i]);
-					size = genetic_Algorithm->getSize();
+					delete geneticAlgorithm;
+					geneticAlgorithm = new GeneticAlgorithm(files[i]);
+					size = geneticAlgorithm->getSize();
 					if (which_test == 0)
 					{
 						cout << "Ilosc osobnikow w populacji\n";
@@ -1034,31 +1061,31 @@ void testGenetic()
 							if (which_test == 0)
 							{
 								performanceCountStart = startTimer();
-								solution += genetic_Algorithm->algorithm(arguments[k], numberOfPopulation, numberOfGenes, probability, arguments[k] / 2);
+								solution += geneticAlgorithm->algorithm(arguments[k], numberOfPopulation, numberOfGenes, probability, arguments[k] / 2);
 								performanceCountEnd = endTimer();
 							}
 							else if (which_test == 1)
 							{
 								performanceCountStart = startTimer();
-								solution += genetic_Algorithm->algorithm(sizeOfPopulation, arguments[k], numberOfGenes, probability, numberOfChild);
+								solution += geneticAlgorithm->algorithm(sizeOfPopulation, arguments[k], numberOfGenes, probability, numberOfChild);
 								performanceCountEnd = endTimer();
 							}
 							else if (which_test == 2)
 							{
 								performanceCountStart = startTimer();
-								solution += genetic_Algorithm->algorithm(sizeOfPopulation, numberOfPopulation, arguments[k], probability, numberOfChild);
+								solution += geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, arguments[k], probability, numberOfChild);
 								performanceCountEnd = endTimer();
 							}
 							else if (which_test == 3)
 							{
 								performanceCountStart = startTimer();
-								solution += genetic_Algorithm->algorithm(sizeOfPopulation, numberOfPopulation, size*0.1, arguments[k], numberOfChild);
+								solution += geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, size*0.1, arguments[k], numberOfChild);
 								performanceCountEnd = endTimer();
 							}
 							else if (which_test == 4)
 							{
 								performanceCountStart = startTimer();
-								solution += genetic_Algorithm->algorithm(sizeOfPopulation, numberOfPopulation, numberOfGenes, probability, size*arguments[k]);
+								solution += geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, numberOfGenes, probability, size*arguments[k]);
 								performanceCountEnd = endTimer();
 							}
 							time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
@@ -1137,7 +1164,7 @@ void testTabuAtsp()
 	// PARAMETRY ALGORYTMU
 
 
-	int size = tabu_search->getSize();
+	int size = tabuSearch->getSize();
 	//int iterations = 50000;						// liczba iteracji petli glownej algorytmu
 	//int not_change = size*4;					// maksymalna liczba iteracji bez poprawy rozwiazania
 	int div_not_change = 20;						// mnozone razy size-  max liczba iteracji bez poprawy rozwiazania do zastosowania dywersyfikacji
@@ -1340,9 +1367,9 @@ void testTabuAtsp()
 				{
 					cout << "Test dla pliku : " << files[i] << "\nWczytywanie...\n";
 					file << files[i] << endl;
-					delete tabu_search;
-					tabu_search = new TabuSearch(files[i]);
-					size = tabu_search->getSize();
+					delete tabuSearch;
+					tabuSearch = new TabuSearch(files[i]);
+					size = tabuSearch->getSize();
 					cout << "Kryterium stopu : ";
 					file << "Kryterium stopu : ";
 					if (stop_condition == 0) cout << " - liczba iteracji.\n";
@@ -1360,16 +1387,16 @@ void testTabuAtsp()
 						time = 0;
 						solution = 0;
 						if (stop_condition == 0)
-							tabu_search->setParameters(stopCriteria[k], -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 0);
+							tabuSearch->setParameters(stopCriteria[k], -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 0);
 						else if (stop_condition == 1)
-							tabu_search->setParameters(-1, -1, div_not_change*size, stopCriteria[k], num_of_candidates*size, tabu_length, true, 1);
+							tabuSearch->setParameters(-1, -1, div_not_change*size, stopCriteria[k], num_of_candidates*size, tabu_length, true, 1);
 						else if (stop_condition == 2)
-							tabu_search->setParameters(-1, stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 2);
+							tabuSearch->setParameters(-1, stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 2);
 						for (int j = 1; j <= repeat; j++)
 						{
 							cout << "REPEAT with diversification : " << j << endl;
 							performanceCountStart = startTimer();
-							solution += tabu_search->algorithm();
+							solution += tabuSearch->algorithm();
 							performanceCountEnd = endTimer();
 							time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 						}
@@ -1399,16 +1426,16 @@ void testTabuAtsp()
 						time = 0;
 						solution = 0;
 						if (stop_condition == 0)
-							tabu_search->setParameters(stopCriteria[k], -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 0);
+							tabuSearch->setParameters(stopCriteria[k], -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 0);
 						else if (stop_condition == 1)
-							tabu_search->setParameters(-1, -1, div_not_change*size, stopCriteria[k], num_of_candidates*size, tabu_length, false, 1);
+							tabuSearch->setParameters(-1, -1, div_not_change*size, stopCriteria[k], num_of_candidates*size, tabu_length, false, 1);
 						else if (stop_condition == 2)
-							tabu_search->setParameters(-1, stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 2);
+							tabuSearch->setParameters(-1, stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 2);
 						for (int j = 1; j <= repeat; j++)
 						{
 							cout << "REPEAT without diversification : " << j << endl;
 							performanceCountStart = startTimer();
-							solution += tabu_search->algorithm();
+							solution += tabuSearch->algorithm();
 							performanceCountEnd = endTimer();
 							time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 						}
