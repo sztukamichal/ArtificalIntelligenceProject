@@ -1325,12 +1325,12 @@ void tabuSearchTestMenu()
 	int num_of_candidates = 2;					// mnozone razy size - liczba kandydatów 
 	int tabu_length = 10;						// dlugosc listy tabu
 
-	while (!goBack){
+	while (!goBack) {
 		stopTest = false;
 		setAll = false;
 		dataFilesStr = arrayToString(dataFiles, numOfInstances);
 		bestKnownSolutionsStr = arrayToString(bestKnownSolutions, numOfInstances);
-		valuesOfStopCriteriaStr = arrayToString(stopCriteria, 3);
+		valuesOfStopCriteriaStr = arrayToString(stopCriteria, how_many_stops);
 
 		tabuTestMenuStream.str("");
 		tabuTestMenuStream.clear();
@@ -1384,15 +1384,19 @@ void tabuSearchTestMenu()
 			"|.........................................................................|\n"
 			"|.........................................................................|\n"
 			"|.........................................................................|\n";
-	tabuTestMenu = tabuTestMenuStream.str();
+	
 
 	if (showMenu) {
 		system("cls");
-		cout << tabuTestMenu;
+		cout << tabuTestMenuStream.str();
 	}
 	printConsole();
 		cin >> option;
 		switch (option){
+		case 'b':
+		case 'B':
+			goBack = true;
+			break;
 		case 'a':
 		case 'A':
 			setAll = true;
@@ -1478,11 +1482,7 @@ void tabuSearchTestMenu()
 			else {
 				resultFileStr = newStringValue;
 			}
-			break;
-		case 'b':
-		case 'B':
-			goBack = true;
-			break;
+
 		case 't':
 		case 'T':
 			resultFile.open(resultFileStr.c_str());
