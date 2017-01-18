@@ -348,8 +348,8 @@ void tabuMenu(string filename)
 	int stop_condition = 0;				// 0 - interacje, 1 - time, 2 - not_change
 	int solution = 0;
 
-	ostringstream geneticMenuStream;
-	string geneticMenu;
+	ostringstream tabuMenuStream;
+	string tabuMenu;
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
 	LARGE_INTEGER freq;
 	char option;
@@ -358,11 +358,12 @@ void tabuMenu(string filename)
 	bool loop = true;
 	bool loop2 = true;
 	bool loop3 = true;
+	int ktory;
 
 	while (!goBack){
-		geneticMenuStream.str("");
-		geneticMenuStream.clear();
-		geneticMenuStream <<
+		tabuMenuStream.str("");
+		tabuMenuStream.clear();
+		tabuMenuStream <<
 		"|.........................................................................|\n"
 		"|.......... ________________________________ .............................|\n"
 		"|..........|      _  _   _                  |.............................|\n"
@@ -376,29 +377,69 @@ void tabuMenu(string filename)
 		"|..|                                                             |........|\n"
 		"|..|   START SINGLE SOLUTION                         S           |........|\n"
 		"|..|   MAKE TESTS                                    T           |........|\n"
+		"|..|   CHANGE VALUE OF PARAMETER NR. X               X           |........|\n"
 		"|..|   GO BACK                                       B           |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|________________   INSTANCE   _______________________________|........|\n"
 		"|..|                                                             |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|   FILENAME :                           " << myfillandw(' ', 10) << filename << "           |........|\n"
 		"|..|   NUMBER OF CITIES :                          " << myfillandw(' ', 3) << size << "           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|_____________   PARAMETERS OF ALGORITHM   ___________________|........|\n"
+		"|..|                                                             |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|  1. STOPPING CONDITION                        " << myfillandw(' ', 3) << stop_condition << "           |........|\n"
+		"|..|  2. DIVERSIFICATION (1-yes,0-no)              " << myfillandw(' ', 3) << diversificationOn << "           |........|\n"
+		"|..|  3. PARAMETER not_change FOR DIVERSIFICATION  " << myfillandw(' ', 3) << div_not_change << "           |........|\n"
+		"|..|  4. LENGHT OF TABU LIST                       " << myfillandw(' ', 3) << tabu_length << "           |........|\n"
+		"|..|  5. NUMBER OF CANDIDATES                      " << myfillandw(' ', 3) << num_of_candidates << "           |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|_____________________________________________________________|........|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n";
-
 	
-	geneticMenu = geneticMenuStream.str();
+		tabuMenu = tabuMenuStream.str();
 	double time = 0;
 	if (showMenu) {
 		system("cls");
-		cout << geneticMenu;
+		cout << tabuMenu;
 	}
 	printConsole();
 	cin >> option;
 		switch (option){
+		case '1':
+			cout << "\nChoose stopping condition: \n0 - iterations, 1 - time, 2 - no change of solution\n";
+			cin >> ktory;
+			if (ktory >= 0 && ktory <3) stop_condition = ktory;
+			break;
+		case '2':
+			cout << "\nDiversification?\n1 - yes, 0 - no\n";
+			cin >> ktory;
+			if (ktory == 1)  diversificationOn = true; 
+			else if (ktory == 0) diversificationOn = false;
+			break;
+		case '3':
+			cout << "Insert value of the parameter not_change for diversification (e.g.not_change=2*size) : ";
+			cin >> ktory;
+			if (ktory>0) div_not_change = ktory;
+			break;
+		case '4':
+			do{
+				cout << "Insert the lengh of tabu list : ";
+				cin >> ktory;
+			} while (ktory <= 0);
+			tabu_length = ktory;
+			break;
+		case '5':
+			cout << "Insert the number of candidates (e.g.num_of_candidates=2*size) : ";
+			cin >> ktory;
+			if (ktory>1) num_of_candidates = ktory;
+			break;
 		case 's':
 		case 'S':
 			loop2 = true;			
@@ -555,8 +596,7 @@ void tabuMenu(string filename)
 
 void simulatedMenu(string filename)
 {
-	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	LARGE_INTEGER freq;
+	int size = simulatedAnnealing->getSize();
 	double alphas[5] = { 0.9, 0.95, 0.99, 0.995, 0.999 };
 	int period = 50;
 	double Temperature = 100;
@@ -564,41 +604,74 @@ void simulatedMenu(string filename)
 	double endTemperature = 0.02;
 	double ile = 10.0;
 
-	string menu = "|.........................................................................|\n"
+	int per = 50;
+	int solution = 0;
+	double tk = 0.2;
+	double alpha = 0.999;
+	double czas = 0;
+	double startTemp = 0;
+	
+	ostringstream simulatedMenuStream;
+	string simulatedMenu;
+	LARGE_INTEGER performanceCountStart, performanceCountEnd;
+	LARGE_INTEGER freq;
+	char option;
+	bool goBack = false;
+	bool showMenu = true;
+	bool loop = true;
+	bool loop2 = true;
+
+
+	while (!goBack){
+		simulatedMenuStream.str("");
+		simulatedMenuStream.clear();
+		simulatedMenuStream <<
+	    "|.........................................................................|\n"
 		"|.......... ________________________________ .............................|\n"
 		"|..........|      _  _   _                  |.............................|\n"
 		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
 		"|..........|    /     | |_ | \\| |_|         |.............................|\n"
 		"|..._______|________________________________|____________________.........|\n"
-		"|..|                   Simulated Annealing                       |........|\n"
-		"|..|     OPCJA                                    KLAWISZ        |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   1. POJEDYNCZE ROZWIAZANIE                     1           |........|\n"
-		"|..|   2. PRZEPROWADZ TESTY                          2           |........|\n"
-		"|..|   3. COFNIJ                                     3           |........|\n"
+		"|..|                   SIMULATED ANNEALING                       |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   OPTION:                                      KEY:         |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   START SINGLE SOLUTION                         S           |........|\n"
+		"|..|   MAKE TESTS                                    T           |........|\n"
+		"|..|   CHANGE VALUE OF PARAMETER NR. X               X           |........|\n"
+		"|..|   GO BACK                                       B           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|________________   INSTANCE   _______________________________|........|\n"
+		"|..|                                                             |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   FILENAME :                           " << myfillandw(' ', 10) << filename << "           |........|\n"
+		"|..|   NUMBER OF CITIES :                          " << myfillandw(' ', 3) << size << "           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|_____________   PARAMETERS OF ALGORITHM   ___________________|........|\n"
+		"|..|                                                             |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|  1. PARAMETER S                               " << myfillandw(' ', 3) << per << "           |........|\n"
+		"|..|  2. PARAMETER ALPHA                         " << myfillandw(' ', 5) << alpha << "           |........|\n"
+		"|..|  3. FINAL TEMPERATURE                        " << myfillandw(' ', 4) << tk << "           |........|\n"
 		"|..|_____________________________________________________________|........|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n";
-
-	int option;
-	bool loop = true;
-	bool loop2 = true;
-	bool loop3 = true;
-	while (loop3){
-		system("cls");
-		cout << menu;
-		cout << "Wczytany plik: " << filename << endl;
+		simulatedMenu = simulatedMenuStream.str();
+		czas = 0;
+		if (showMenu) {
+			system("cls");
+			cout << simulatedMenu;
+		}
+		printConsole();
 		cin >> option;
-		int per = 50;
-		int solution = 0;
-		double tk = 0.2;
-		double alpha = 0.999;
-		double czas = 0;
-		double startTemp = 0;
+
 		switch (option){
-		case 1://menu1
+		case 's'://menu1
+		case 'S':
 			loop2 = true;
 			while (loop2){
 				system("cls");
@@ -644,7 +717,8 @@ void simulatedMenu(string filename)
 				}
 			}
 			break;
-		case 2:
+		case 't':
+		case 'T':
 			if (filename == "brak pliku"){
 				system("cls");
 				cout << "Nie wybrano pliku";
@@ -704,12 +778,14 @@ void simulatedMenu(string filename)
 				}
 			}
 			break;
-		case 3:
-			loop3 = false;
+		case 'b':
+		case 'B':
+			goBack = true;
 			break;
 		default:
 			break;
 		}
+		showMenu = option != 't' && option != 'T' && option != 'S' && option != 's';
 	}
 };
 
@@ -1147,21 +1223,21 @@ void testTabuAtsp()
 		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
 		"|..........|    /     | |_ | \\| |_|         |.............................|\n"
 		"|..._______|________________________________|____________________.........|\n"
-		"|..|                   Tabu Search                               |........|\n"
-		"|..|     OPCJA                                    KLAWISZ        |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   1. ZOBACZ I USTAW PARAMETRY ALGORYTMU         1           |........|\n"
-		"|..|   2. ZOBACZ I USTAW PARAMETRY TESTU             2           |........|\n"
-		"|..|   3. PRZEPROWADZ TEST                           3           |........|\n"
+		"|..|                   TABU SEARCH                               |........|\n"
+		"|..|     OPTION                                     KEY          |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   4. COFNIJ                                     4           |........|\n"
+		"|..|   CHECK/EDIT PARAMETERS OF THE TEST             P           |........|\n"
+		"|..|   START THE TEST                                T           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   GO BACK                                       B           |........|\n"
 		"|..|_____________________________________________________________|........|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n";
 
-	int option;
+	char option;
 	bool loop = true;
 	bool loop2 = true;
 	bool loop3 = true;
@@ -1180,80 +1256,32 @@ void testTabuAtsp()
 		cin >> option;
 		switch (option)
 		{
-		case 1:
+		case 'p':
+		case 'P':
 			loop = true;
 			while (loop)
 			{
 				system("cls");
-				cout << "\n --- Aktualne parametry algorytmu ---\n\n";
-				cout << "SIZE : " << size << endl;
-				cout << "Warunek stopu(1): ";
-				if (stop_condition == 0) cout << " Liczba iteracji\n";
-				else if (stop_condition == 1) cout << " Czas\n";
-				else if (stop_condition == 2) cout << " Brak zmiany rozwiazania\n";
-				cout << "Mnoznik parametru not_change dla dywersyfikacji(2): " << div_not_change << endl;
-				cout << "Dlugosc listy tabu(3) : " << tabu_length << "\n";
-				cout << "Mnoznik liczby kandydatow(4) : " << num_of_candidates << endl;
-				cout << "\nCofnij(5)\nOpcja nr: ";
-				int ktory;
-				cin >> ktory;
-				cout << "\n";
-				switch (ktory)
-				{
-				case 1:
-					cout << "Podaj odpowiedni warunek stopu : \n 0 - interacje, 1 - czas, 2 - brak zmiany rozwiazania\n";
-					cin >> ktory;
-					if (ktory >= 0 && ktory <3) stop_condition = ktory;
-					break;
-				case 2:
-					cout << "Podaj liczbe przez jaka ma byc mnozony rozmiar(np.not_change=2*size) : ";
-					cin >> ktory;
-					if (ktory>0) div_not_change = ktory;
-					break;
-				case 3:
-					do{
-						cout << "Podaj dlugosc listy tabu : ";
-						cin >> ktory;
-					} while (ktory <= 0);
-					tabu_length = ktory;
-					break;
-				case 4:
-					cout << "Podaj liczbe przez jaka ma byc mnozony rozmiar(np.l_kandydatow = 2*size) : ";
-					cin >> ktory;
-					if (ktory>1) num_of_candidates = ktory;
-					break;
-				case 5:
-					loop = false;
-					break;
-				}
-			}
-			system("cls");
-			break;
-		case 2:
-			loop = true;
-			while (loop)
-			{
-				system("cls");
-				cout << "\n --- Aktualne parametry dla testow ---\n\n";
-				cout << "Testowany algorytm : Tabu Search\n";
-				cout << "Ilosc instancji(1) : " << ile_instancji << endl;
-				cout << "Nazwy plikow(.atsp) z miastami(1) : {";
+				cout << "\n --- PARAMETERS OF THE TEST ---\n\n";
+				cout << "Algorithm : Tabu Search\n";
+				cout << "Number of instances (1): " << ile_instancji << endl;
+				cout << "Names of files (.atsp) with cities (1) : {";
 				for (int i = 0; i<ile_instancji; i++)
 				{
 					cout << files[i];
 					if (i != ile_instancji - 1)cout << " , ";
 				}
 				cout << "}" << endl;
-				cout << "Najlepsze znane rozwiazania dla tych instancji(2) : {";
+				cout << "Best known solutions (2) : {";
 				for (int i = 0; i<ile_instancji; i++)
 				{
 					cout << bestSolutions[i];
 					if (i != ile_instancji - 1)cout << " , ";
 				}
 				cout << "}" << endl;
-				cout << "Ile i jakie kryteria zatrzymania algorytmu";
-				if (stop_condition == 0) cout << " (liczby iteracji)";
-				else if (stop_condition == 1) cout << " (czasy)";
+				cout << "Stopping criteria and its values";
+				if (stop_condition == 0) cout << " (number of iterations)";
+				else if (stop_condition == 1) cout << " (times)";
 				else if (stop_condition == 2) cout << " (brak zmiany rozwiazania)";
 				cout << "(3) : {";
 				for (int i = 0; i<how_many_stops; i++)
@@ -1262,9 +1290,9 @@ void testTabuAtsp()
 					if (i != how_many_stops - 1)cout << " , ";
 				}
 				cout << "}" << endl;
-				cout << "Ilosc powtorzen(4) : " << repeat;
-				cout << "\nNazwa pliku z wynikami(5) : " << file_result;
-				cout << "\nCofnij(6)\nOpcja nr: ";
+				cout << "Number of repetitions (4) : " << repeat;
+				cout << "\nFile with results (5) : " << file_result;
+				cout << "\nGo back (6)\n\nOption nr: ";
 
 				int ktory;
 				cin >> ktory;
@@ -1273,10 +1301,10 @@ void testTabuAtsp()
 				{
 				case 1:
 					do{
-						cout << "Podaj ilosc instancji (>0) : \n";
+						cout << "Insert number of instances (>0) : \n\n";
 						cin >> ile_instancji;
 					} while (ile_instancji <= 0);
-					cout << "Podaj nazwy plikow z miastami (.atsp) : \n";
+					cout << "Insert names of files with cities (.atsp) : \n";
 					for (int i = 0; i<ile_instancji; i++)
 					{
 						cout << i << " : ";
@@ -1284,7 +1312,7 @@ void testTabuAtsp()
 						cout << endl;
 					}
 				case 2:
-					cout << "Podaj najlepsze znane rozwiazania dla tych plikow\n";
+					cout << "Give the best knows solution for each file\n";
 					for (int i = 0; i<ile_instancji; i++)
 					{
 						cout << i << " : ";
@@ -1309,13 +1337,13 @@ void testTabuAtsp()
 					break;
 				case 4:
 					do{
-						cout << "Podaj ilosc powtorzen (>0) : ";
+						cout << "Insert number of repetitions (>0) : ";
 						cin >> repeat;
 					} while (repeat <= 0);
 					break;
 				case 5:
 					do{
-						cout << "Podaj nazwe pliku z rozszerzeniem .txt : ";
+						cout << "Give the name of file with extension .txt : ";
 						cin >> file_result;
 					} while (file_result.empty());
 					break;
@@ -1325,7 +1353,8 @@ void testTabuAtsp()
 				}
 			}
 			break;
-		case 3:
+		case 't':
+		case 'T':
 			file.open(file_result.c_str());
 			if (file.good()){
 				for (int i = 0; i<ile_instancji; i++)
@@ -1430,7 +1459,8 @@ void testTabuAtsp()
 			}
 			else cout << "\nProblem z plikiem wyjsciowym";
 			break;
-		case 4:
+		case 'b':
+		case 'B':
 			loop3 = false;
 			break;
 		default:
