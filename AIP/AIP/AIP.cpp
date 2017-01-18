@@ -292,6 +292,9 @@ int _tmain(int argc, _TCHAR* argv[]) {
             break;
         case 'Q':
         case 'q':
+            delete simulatedAnnealing;
+            delete tabuSearch;
+            delete geneticAlgorithm;
             exit(0);
         default:
             break;
@@ -452,7 +455,6 @@ void tabuSearchMenu(string filename) {
     ostringstream tabuMenuStream;
     string tabuMenu;
     LARGE_INTEGER performanceCountStart, performanceCountEnd;
-    LARGE_INTEGER freq;
     char option;
     bool goBack = false;
     bool showMenu = true;
@@ -656,7 +658,7 @@ void tabuSearchMenu(string filename) {
                     performanceCountStart = startTimer();
                     solution = tabuSearch->algorithm();
                     performanceCountEnd = endTimer();
-                    time = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+                    time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
                     duration(time, 1);
                     cout << "MIN: " << solution;
                     cout << "\nCzas trwania algorytmu: " << time << " [ms]" << endl;
@@ -688,7 +690,6 @@ void tabuSearchMenu(string filename) {
 };
 
 void simulatedAnnealingMenu(string filename) {
-    int size = simulatedAnnealing->getSize();
     double alphas[5] = { 0.9, 0.95, 0.99, 0.995, 0.999 };
     int period = 50;
     double Temperature = 100;
@@ -706,7 +707,6 @@ void simulatedAnnealingMenu(string filename) {
     ostringstream simulatedMenuStream;
     string simulatedMenu;
     LARGE_INTEGER performanceCountStart, performanceCountEnd;
-    LARGE_INTEGER freq;
     char option;
     bool goBack = false;
     bool showMenu = true;
@@ -738,7 +738,7 @@ void simulatedAnnealingMenu(string filename) {
                             "|..|                                                             |........|\n"
                             "|..|                                                             |........|\n"
                             "|..|   FILENAME :                           " << myfillandwr(' ', 10) << filename << "           |........|\n"
-                            "|..|   NUMBER OF CITIES :                          " << myfillandwr(' ', 3) << size << "           |........|\n"
+                            "|..|   NUMBER OF CITIES :                          " << myfillandwr(' ', 3) << simulatedAnnealing->getSize() << "           |........|\n"
                             "|..|                                                             |........|\n"
                             "|..|                                                             |........|\n"
                             "|..|_____________   PARAMETERS OF ALGORITHM   ___________________|........|\n"
