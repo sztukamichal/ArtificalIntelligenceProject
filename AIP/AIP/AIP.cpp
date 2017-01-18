@@ -283,8 +283,8 @@ void geneticMenu(string filename)
 			"|.........................................................................|\n"
 			"|.......... ________________________________ .............................|\n"
 			"|..........|      _  _   _                  |.............................|\n"
-			"|..........|     / |/ | |_ |\\ | | |        |.............................|\n"
-			"|..........|    /     | |_ | \\| |_|        |.............................|\n"
+			"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
+			"|..........|    /     | |_ | \\| |_|         |.............................|\n"
 			"|..._______|________________________________|____________________.........|\n"
 			"|..|                                                             |........|\n"
 			"|..|                   GENETIC ALGORITHM                         |........|\n"
@@ -379,34 +379,8 @@ void geneticMenu(string filename)
 
 void tabuMenu(string filename)
 {
-	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-
-	string menu = "|.........................................................................|\n"
-		"|.......... ________________________________ .............................|\n"
-		"|..........|      _  _   _                  |.............................|\n"
-		"|..........|     / |/ | |_ |\\ | | |        |.............................|\n"
-		"|..........|    /     | |_ | \\| |_|        |.............................|\n"
-		"|..._______|________________________________|____________________.........|\n"
-		"|..|                                                             |........|\n"
-		"|..|                   TABU SEARCH                               |........|\n"
-		"|..|                                                             |........|\n"
-		"|..|   OPTION:                                      KEY:         |........|\n"
-		"|..|                                                             |........|\n"
-		"|..|   START SINGLE SOLUTION                         S           |........|\n"
-		"|..|   MAKE TESTS                                    T           |........|\n"
-		"|..|   GO BACK                                       X           |........|\n"
-		"|..|_____________________________________________________________|........|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n";
-
-	int option;
-	bool loop = true;
-	bool loop2 = true;
-	bool loop3 = true;
-
 	int size = tabuSearch->getSize();
+
 	int iterations = 50000;					// liczba iteracji petli glownej algorytmu
 	int not_change = size * 4;					// maksymalna liczba iteracji bez poprawy rozwiazania
 	int div_not_change = size * 2;
@@ -415,46 +389,85 @@ void tabuMenu(string filename)
 	int tabu_length = 10;				// dlugosc listy tabu
 	bool diversificationOn = true;			// 0 - wylaczona 1 - wlaczona 
 	int stop_condition = 0;				// 0 - interacje, 1 - time, 2 - not_change
-
 	int solution = 0;
-	while (loop3){
+
+	ostringstream geneticMenuStream;
+	string geneticMenu;
+	LARGE_INTEGER performanceCountStart, performanceCountEnd;
+	LARGE_INTEGER freq;
+
+	while (!goBack){
+		geneticMenuStream.str("");
+		geneticMenuStream.clear();
+		geneticMenuStream <<
+		"|.........................................................................|\n"
+		"|.......... ________________________________ .............................|\n"
+		"|..........|      _  _   _                  |.............................|\n"
+		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
+		"|..........|    /     | |_ | \\| |_|         |.............................|\n"
+		"|..._______|________________________________|____________________.........|\n"
+		"|..|                                                             |........|\n"
+		"|..|                   TABU SEARCH                               |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   OPTION:                                      KEY:         |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   START SINGLE SOLUTION                         S           |........|\n"
+		"|..|   MAKE TESTS                                    T           |........|\n"
+		"|..|   GO BACK                                       B           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|________________   INSTANCE   _______________________________|........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   FILENAME :                           " << myfillandw(' ', 10) << filename << "           |........|\n"
+		"|..|   NUMBER OF CITIES :                          " << myfillandw(' ', 3) << size << "           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|_____________________________________________________________|........|\n"
+		"|.........................................................................|\n"
+		"|.........................................................................|\n"
+		"|.........................................................................|\n"
+		"|.........................................................................|\n";
+
+
+	geneticMenu = geneticMenuStream.str();
+	double time = 0;
+	if (showMenu) {
 		system("cls");
-		cout << menu;
-		cout << "Wczytany plik: " << filename << endl;
+		cout << geneticMenu;
+	}
+	printConsole();
 		cin >> option;
-		double time = 0;
 		switch (option){
-		case 1://menu1
+		case 's':
+		case 'S':
 			loop2 = true;
 			while (loop2){
 				system("cls");
-				cout << "\n --- Aktualne parametry algorytmu ---\n\n";
+				cout << "\n --- PARAMETERS OF THE ALGORITHM ---\n\n";
 				cout << "SIZE : " << size << endl;
-				cout << "Warunek stopu: ";
-				if (stop_condition == 0) cout << " Liczba iteracji\n";
-				else if (stop_condition == 1) cout << " Czas\n";
+				cout << "Stopping condition: ";
+				if (stop_condition == 0) cout << " Number of iterations\n";
+				else if (stop_condition == 1) cout << " Time\n";
 				else if (stop_condition == 2) cout << " Brak zmiany rozwiazania\n";
-				if (stop_condition == 0) cout << "Liczba iteracji : " << iterations << endl;
-				else if (stop_condition == 1) cout << "Czas : " << alg_time << endl;
+				if (stop_condition == 0) cout << "Number of iterations: " << iterations << endl;
+				else if (stop_condition == 1) cout << "Time : " << alg_time << endl;
 				else if (stop_condition == 2) cout << "Brak zmiany od : " << not_change << endl;
 				cout << "Stosowanie dywersyfikacji: ";
-				if (diversificationOn) cout << " tak" << endl;
-				else cout << " nie" << endl;
+				if (diversificationOn) cout << " yes" << endl;
+				else cout << " no" << endl;
 				if (diversificationOn) cout << "Parametr not_change dla dywersyfikacji: " << div_not_change << endl;
-				cout << "Dlugosc listy tabu : " << tabu_length << "\n";
-				cout << "Liczba kandydatow : " << num_of_candidates << endl;
-				cout << "1. Wyswietl macierz sasiedztwa\n2. Edytuj parametry\n3. Rozpocznij alogrytm\n4. Powrot\n";
+				cout << "Lenght of tabu list : " << tabu_length << "\n";
+				cout << "Number of candidates: " << num_of_candidates << "\n\n";
+				cout << "1. Show adjacency matrix\n2. Edit parameters\n3. Start the algorithm\n4. Go back\n";
 				cin >> option;
 				switch (option)
 				{
-				case 1:
+				case '1':
 					cout << endl;
 					tabuSearch->showMatrix();
-					cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
+					cout << endl << "Press a key to continue...";
 					cin.ignore();
 					cin.get();
 					break;
-				case 2:
+				case '2':
 					loop = true;
 					while (loop)
 					{
@@ -541,7 +554,7 @@ void tabuMenu(string filename)
 					}
 					system("cls");
 					break;
-				case 3:
+				case '3':
 					tabuSearch->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
 					performanceCountStart = startTimer();
 					solution = tabuSearch->algorithm();
@@ -554,7 +567,7 @@ void tabuMenu(string filename)
 					cin.ignore();
 					cin.get();
 					break;
-				case 4:
+				case '4':
 					loop2 = false;
 					break;
 				default:
@@ -562,15 +575,18 @@ void tabuMenu(string filename)
 				}
 			}
 			break;
-		case 2:
+		case 't':
+		case 'T':
 			testTabuAtsp();
 			break;
-		case 3:
-			loop3 = false;
+		case 'b':
+		case 'B':
+			goBack = true;
 			break;
 		default:
 			break;
 		}
+		showMenu = option != 't' && option != 'T' && option != 'S' && option != 's';
 	}
 };
 
@@ -853,15 +869,15 @@ void testGenetic()
 		geneticTestMenuStream.clear();
 		geneticTestMenuStream <<
 			"|.........................................................................|\n"
-			"|.......... ________________________________ .............................|\n"
-			"|..........|      _  _   _                  |.............................|\n"
-			"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
-			"|..........|    /     | |_ | \\| |_|         |.............................|\n"
-			"|..._______|________________________________|____________________.........|\n"
-			"|..|                                                             |........|\n"
+		"|.......... ________________________________ .............................|\n"
+		"|..........|      _  _   _                  |.............................|\n"
+		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
+		"|..........|    /     | |_ | \\| |_|         |.............................|\n"
+		"|..._______|________________________________|____________________.........|\n"
+		"|..|                                                             |........|\n"
 			"|..|                   GENETIC ALGORITHM                         |........|\n"
 			"|..|     OPTION                                     KEY          |........|\n"
-			"|..|                                                             |........|\n"
+		"|..|                                                             |........|\n"
 			"|..|	  START TEST                                 S           |........|\n"
 			"|..|      CHANGE VALUE OF PARAMETER NR. X            X           |........|\n"
 			"|..|      BACK                                       B           |........|\n"
@@ -885,17 +901,17 @@ void testGenetic()
 			"|..|                                                             |........|\n"
 			"|..|   6. NAME OF RESULT FILE                                    |........|\n"
 			"|..|                  " << myfillandw(' ', 26) << resultFileStr << "                 |........|\n"
-			"|..|_____________________________________________________________|........|\n"
-			"|.........................................................................|\n"
-			"|.........................................................................|\n"
-			"|.........................................................................|\n"
-			"|.........................................................................|\n";
+		"|..|_____________________________________________________________|........|\n"
+		"|.........................................................................|\n"
+		"|.........................................................................|\n"
+		"|.........................................................................|\n"
+		"|.........................................................................|\n";
 		geneticTestMenu = geneticTestMenuStream.str();
 		time = 0;
 		if (showMenu) {
-			system("cls");
+		system("cls");
 			cout << geneticTestMenu;
-		}
+				}
 		printConsole();
 		cin >> choice;
 
@@ -912,10 +928,10 @@ void testGenetic()
 					cout << endl << i << " of " << numOfInstances << " : ";
 					cin >> newStringValue;
 					if (newStringValue.find(".atsp") != string::npos) {
-					}
+				}
 					else {
 						newStringValue += ".atsp";
-					}
+				}
 
 					if (!fileExists(newStringValue)) {
 						cout << endl << "There is no such file in directory, try again.";
@@ -924,38 +940,38 @@ void testGenetic()
 					else {
 						dataFiles[i - 1] = newStringValue;
 					}
-				}
+					}
 			case '2':
 				cout << "Provide best known solutions for these instances." << endl;
 				for (int i = 1; i<=numOfInstances; i++)
-				{
+					{
 					cout << endl << i << " of " << numOfInstances << " : ";
 					cin >> bestKnownSolutions[i-1];
-				}
-				break;
+					}
+					break;
 			case '3':
 				cout << "Which factor you want to test? \n\t0 - size of population\n\t1 - quantity of population\n\t2 - quantity of mutating genes\n\t3 - probability of mutation\n\t4 - children quantity\nYour choice : ";
 				cin >> newValue;
 				if (newValue >= 0 && newValue <= 4) testScenario = newValue;
-				break;
+					break;
 			case '4':
 				cout << "How many values do you want to test? ";
 				cin >> numOfTestedValues;
 				cout << "Provide values of tested factor \n ";
 				for (int i = 1; i<=numOfTestedValues; i++)
-				{
+					{
 					cout << endl << i << " of " << numOfInstances << " : ";
 					cin >> valuesOfTestedFactor[i-1];
-				}
-				break;
+					}
+					break;
 			case '5':
 				cout << "Input new value for iteration per one scenario (>0): ";
 				cin >> newValue;
 				if (newValue>0) 
 					numOfIterationsPerSingleRun = newValue;
-				break;
+					break;
 			case '6':
-				do{
+					do{
 					cout << endl << "Input name of result file (.txt): ";
 					cin >> newStringValue;
 				} while (resultFileStr.empty());
@@ -992,15 +1008,15 @@ void testGenetic()
 						resultFile << "," << dataFiles[i] << endl;
 						resultFile << ",,Value of factor, time[ms], solution, percentage error/n";
 						
-						delete geneticAlgorithm;
+					delete geneticAlgorithm;
 						geneticAlgorithm = new GeneticAlgorithm(dataFiles[i]);
 
 						for (int k = 0; k<numOfTestedValues; k++)
-						{
+					{
 							cout << endl << "\t" << k+1 << " value of " << numOfTestedValues << " : " << valuesOfTestedFactor[k] << endl;
 							resultFile << ",," << valuesOfTestedFactor[k];
-							time = 0;
-							solution = 0;
+						time = 0;
+						solution = 0;
 							
 							switch (testScenario) {
 								case 0:
@@ -1028,12 +1044,12 @@ void testGenetic()
 								performanceCountStart = startTimer();
 								solution += geneticAlgorithm->algorithm();
 								performanceCountEnd = endTimer();
-								time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
-							}
+							time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+						}
 
 							time /= numOfIterationsPerSingleRun;
 							solution /= numOfIterationsPerSingleRun;
-							time = time / freq.QuadPart * 1000;
+						time = time / freq.QuadPart * 1000;
 							
 							resultFile << "," << time;
 							cout << "Mean time : " << time << endl;
@@ -1044,20 +1060,20 @@ void testGenetic()
 							percentangeError = (solution / (bestKnownSolutions[i] * 1.0) - 1) * 100;
 							cout << "Mean percentage error = " << percentangeError << endl;
 							resultFile << "," << percentangeError << "\n";
-						}
 					}
+				}
 					resultFile.close();
 					cout << endl << "Press any key to continue...";
-					cin.ignore();
-					cin.get();
-				}
-				break;
+				cin.ignore();
+				cin.get();
+			}
+			break;
 			case 'b':
 			case 'B':
 				goBack = true;
-				break;
-			default:
-				break;
+			break;
+		default:
+			break;
 		}
 	}
 }
