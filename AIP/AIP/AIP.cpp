@@ -292,6 +292,9 @@ int _tmain(int argc, _TCHAR* argv[]) {
 				break;
 			case 'Q':
 			case 'q':
+            delete simulatedAnnealing;
+            delete tabuSearch;
+            delete geneticAlgorithm;
 				exit(0);
 			default:
 				break;
@@ -452,7 +455,6 @@ void tabuSearchMenu(string filename) {
 	ostringstream tabuMenuStream;
 	string tabuMenu;
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	LARGE_INTEGER freq;
 	char option;
 	bool goBack = false;
 	bool showMenu = true;
@@ -665,7 +667,7 @@ void tabuSearchMenu(string filename) {
 					performanceCountStart = startTimer();
 					solution = tabuSearch->algorithm();
 					performanceCountEnd = endTimer();
-					time = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+                    time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 					duration(time, 1);
 					cout << "MIN: " << solution;
 					cout << "\nCzas trwania algorytmu: " << time << " [ms]" << endl;
@@ -692,12 +694,11 @@ void tabuSearchMenu(string filename) {
 		default:
 			break;
 		}
-		showMenu = option != 't' && option != 'T' && option != 'S' && option != 's';
+        showMenu = option != 'S' && option != 's';
 	}
 };
 
 void simulatedAnnealingMenu(string filename) {
-	int size = simulatedAnnealing->getSize();
 	double alphas[5] = { 0.9, 0.95, 0.99, 0.995, 0.999 };
 	int period = 50;
 	double Temperature = 100;
@@ -715,7 +716,6 @@ void simulatedAnnealingMenu(string filename) {
 	ostringstream simulatedMenuStream;
 	string simulatedMenu;
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	LARGE_INTEGER freq;
 	char option;
 	bool goBack = false;
 	bool showMenu = true;
@@ -753,7 +753,7 @@ void simulatedAnnealingMenu(string filename) {
 		"|..|                                                             |........|\n"
                             "|..|   FILENAME :                           " << myfillandwr(' ', 10) << filename << "           |........|\n"
 							"|..|                                                             |........|\n"
-                            "|..|   NUMBER OF CITIES :                          " << myfillandwr(' ', 3) << size << "           |........|\n"
+                            "|..|   NUMBER OF CITIES :                          " << myfillandwr(' ', 3) << simulatedAnnealing->getSize() << "           |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|_____________   PARAMETERS OF ALGORITHM   ___________________|........|\n"
@@ -1250,8 +1250,7 @@ void geneticAlgorithmTestMenu() {
 	}
 }
 
-void tabuSearchTestMenu()
-{
+void tabuSearchTestMenu() {
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
 	LARGE_INTEGER freq;
 	QueryPerformanceFrequency(&freq);
@@ -1325,7 +1324,7 @@ void tabuSearchTestMenu()
 	int num_of_candidates = 2;					// mnozone razy size - liczba kandydatów 
 	int tabu_length = 10;						// dlugosc listy tabu
 
-	while (!goBack) {
+    while (!goBack) {
 		stopTest = false;
 		setAll = false;
 		dataFilesStr = arrayToString(dataFiles, numOfInstances);
@@ -1384,7 +1383,7 @@ void tabuSearchTestMenu()
 			"|.........................................................................|\n"
 			"|.........................................................................|\n"
 			"|.........................................................................|\n";
-	
+
 
 	if (showMenu) {
 		system("cls");
@@ -1406,21 +1405,18 @@ void tabuSearchTestMenu()
 			if (numOfInstances <= 0)
 				break;
 			cout << "Provide names of data files (.atsp) : ";
-			for (int i = 1; i <= numOfInstances; i++)
-			{
+            for (int i = 1; i <= numOfInstances; i++) {
 				cout << endl << i << " of " << numOfInstances << " : ";
 				cin >> newStringValue;
 				if (newStringValue.find(".atsp") != string::npos) {
-				}
-				else {
+                } else {
 					newStringValue += ".atsp";
 				}
 
 				if (!fileExists(newStringValue)) {
 					cout << endl << "There is no such file in directory, try again.";
 					i--;
-				}
-				else {
+                } else {
 					dataFiles[i - 1] = newStringValue;
 				}
 					}
@@ -1447,8 +1443,7 @@ void tabuSearchTestMenu()
 			cout << "How many values of stopping criteria do you want to test ? \n";
 					cin >> how_many_stops;
 			cout << "Input values: \n ";
-			for (int i = 0; i<how_many_stops; i++)
-			{
+            for (int i = 0; i<how_many_stops; i++) {
 						cout << i << " : ";
 						cin >> stopCriteria[i];
 						cout << endl;
@@ -1456,21 +1451,20 @@ void tabuSearchTestMenu()
 			if (!setAll)
 					break;
 		case '5':
-			do{
+            do {
 				cout << "Insert number of repetitions of a test case (>0) : ";
 				cin >> repetitionsOfTestCase;
 			} while (repetitionsOfTestCase <= 0);
 			if (!setAll)
 					break;
 		case '6':
-			do{
+            do {
 				cout << endl << "Input name of result file (.csv): ";
 				cin >> newStringValue;
 			} while (resultFileStr.empty());
 
 			if (newStringValue.find(".csv") != string::npos) {
-			}
-			else {
+            } else {
 				newStringValue += ".csv";
 			}
 			if (fileExists(newStringValue)) {
@@ -1478,17 +1472,15 @@ void tabuSearchTestMenu()
 				cin >> option;
 				if (option == 'y')
 					resultFileStr = newStringValue;
-				}
-			else {
+            } else {
 				resultFileStr = newStringValue;
 			}
 
 		case 't':
 		case 'T':
 			resultFile.open(resultFileStr.c_str());
-			if (resultFile.good()){
-				for (int i = 0; i<numOfInstances; i++)
-				{
+            if (resultFile.good()) {
+                for (int i = 0; i<numOfInstances; i++) {
 					cout << "Test dla pliku : " << dataFiles[i] << "\nWczytywanie...\n";
 					resultFile << dataFiles[i] << endl;
 					delete tabuSearch;
@@ -1503,8 +1495,7 @@ void tabuSearchTestMenu()
 					else if (stop_condition == 1) resultFile << " - czas.\n";
 					else if (stop_condition == 2) resultFile << " - brak zmiany rozwiazania.\n";
 					resultFile << "WITH DIVERSIFICATION" << endl;
-					for (int k = 0; k<how_many_stops; k++)
-					{
+                    for (int k = 0; k<how_many_stops; k++) {
 						cout << "STOP AT: " << stopCriteria[k] << endl;
 						resultFile.width(12);
 						resultFile << stopCriteria[k];
@@ -1516,8 +1507,7 @@ void tabuSearchTestMenu()
 							tabuSearch->setParameters(-1, -1, div_not_change*size, (int)(stopCriteria[k]), num_of_candidates*size, tabu_length, true, 1);
 						else if (stop_condition == 2)
 							tabuSearch->setParameters(-1, (int)(stopCriteria[k]), div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 2);
-						for (int j = 1; j <= repetitionsOfTestCase; j++)
-						{
+                        for (int j = 1; j <= repetitionsOfTestCase; j++) {
 							cout << "REPEAT with diversification : " << j << endl;
 							performanceCountStart = startTimer();
 							solution += tabuSearch->algorithm();
@@ -1527,8 +1517,7 @@ void tabuSearchTestMenu()
 						time /= repetitionsOfTestCase;
 						solution /= repetitionsOfTestCase;
 						time = time / freq.QuadPart * 1000;
-						if (stop_condition != 1)
-						{
+                        if (stop_condition != 1) {
 							resultFile.width(13);
 							resultFile << time;
 						}
@@ -1542,8 +1531,7 @@ void tabuSearchTestMenu()
 						resultFile << percent << endl;
 					}
 					resultFile << "WITHOUT DIVERSIFICATION" << endl;
-					for (int k = 0; k<how_many_stops; k++)
-					{
+                    for (int k = 0; k<how_many_stops; k++) {
 						cout << "STOP AT: " << stopCriteria[k] << endl;
 						resultFile.width(12);
 						resultFile << stopCriteria[k];
@@ -1555,8 +1543,7 @@ void tabuSearchTestMenu()
 							tabuSearch->setParameters(-1, -1, div_not_change*size, (int)stopCriteria[k], num_of_candidates*size, tabu_length, false, 1);
 						else if (stop_condition == 2)
 							tabuSearch->setParameters(-1, (int)stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 2);
-						for (int j = 1; j <= repetitionsOfTestCase; j++)
-						{
+                        for (int j = 1; j <= repetitionsOfTestCase; j++) {
 							cout << "REPEAT without diversification : " << j << endl;
 							performanceCountStart = startTimer();
 							solution += tabuSearch->algorithm();
@@ -1566,8 +1553,7 @@ void tabuSearchTestMenu()
 						time /= repetitionsOfTestCase;
 						solution /= repetitionsOfTestCase;
 						time = time / freq.QuadPart * 1000;
-						if (stop_condition != 1)
-						{
+                        if (stop_condition != 1) {
 							resultFile.width(13);
 							resultFile << time;
 						}
@@ -1586,8 +1572,7 @@ void tabuSearchTestMenu()
 				cin.ignore();
 				cin.get();
 				resultFile.close();
-			}
-			else cout << "\nResult file error!";
+            } else cout << "\nResult file error!";
 			break;
 		default:
 			break;
