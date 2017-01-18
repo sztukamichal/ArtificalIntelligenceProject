@@ -64,6 +64,73 @@ void printConsole(){
 	cout << endl << "console> ";
 }
 
+void replaceAll(string& str, const string& from, const string& to) {
+	if (from.empty())
+		return;
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); 
+	}
+}
+
+string arrayToString(double array[], int size) {
+	ostringstream stream;
+	stream << "{";
+	for (int i = 0; i<size; i++) {
+		stream <<  array[i];
+		if (i != size - 1)
+			stream << ",";
+	}
+	stream << "}";
+	return stream.str();
+}
+
+string arrayToString(int array[], int size) {
+	ostringstream stream;
+	stream << "{";
+	for (int i = 0; i<size; i++) {
+		stream << array[i];
+		if (i != size - 1)
+			stream << ",";
+	}
+	stream << "}";
+	return stream.str();
+}
+
+string getCurrentTime() {
+	string result;
+	time_t t = time(0);
+	struct tm now;
+	localtime_s(&now, &t);
+	char buf[80];
+	strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &now);
+	result = buf;
+	replaceAll(result, ":", "-");
+	return result;
+}
+
+
+
+string arrayToString(string array[], int size) {
+	string result;
+	result = "{";
+	int posOfAtsp;
+	for (int i = 0; i<size; i++) {
+		posOfAtsp = array[i].find(".atsp");
+		if (posOfAtsp != string::npos) {
+			result += array[i].substr(0, posOfAtsp);
+		}
+		else{
+			result += array[i];
+		}
+		if (i != size - 1)
+			result += ",";
+	}
+	result += "}";
+	return result;
+}
+
 inline bool fileExists(const std::string& name) {
 	ifstream f(name.c_str());
 	return f.good();
@@ -103,7 +170,7 @@ GeneticAlgorithm* geneticAlgorithm;
 int _tmain(int argc, _TCHAR* argv[])
 {
 	void startProgram();
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	/*LARGE_INTEGER performanceCountStart, performanceCountEnd;
 	LARGE_INTEGER freq;
@@ -213,22 +280,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
 void geneticMenu(string filename)
 {
-	int size = geneticAlgorithm->getSize();
-	int sizeOfPopulation = 100;					// Rozmiar populacji
-	int numberOfPopulation = 100;				// Liczba populacji
-	int numberOfGenes = 1;						// liczba genów ulegajaca mutacji
-	int probability = 100;						// prawdopodobienstwo mutacji
-	int numberOfChild = 80;						// Ilosc potomkow
-
 	ostringstream geneticMenuStream;
-
 	string geneticMenu;
 	char choice;
 	bool goBack = false;
 	bool showMenu = true;
 	double time = 0;
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	LARGE_INTEGER freq;
 	int solution = 0;
 	int newValue;
 
@@ -256,15 +314,15 @@ void geneticMenu(string filename)
 			"|..|________________   INSTANCE   _______________________________|........|\n"
 			"|..|                                                             |........|\n"
 			"|..|      FILENAME :                        " << myfillandw(' ', 10) << filename << "           |........|\n"
-			"|..|      NUMBER OF CITIES :                       " << myfillandw(' ', 3) << size << "           |........|\n"
+			"|..|      NUMBER OF CITIES :                       " << myfillandw(' ', 3) << geneticAlgorithm->getSize() << "           |........|\n"
 			"|..|                                                             |........|\n"
 			"|..|_____________   PARAMETERS OF ALGORITHM   ___________________|........|\n"
 			"|..|                                                             |........|\n"
-			"|..|   1. SIZE OF POPULATION                       " << myfillandw(' ', 3) << sizeOfPopulation << "           |........|\n"
-			"|..|   2. POPULATION QUANTITY                      " << myfillandw(' ', 3) << numberOfPopulation << "           |........|\n"
-			"|..|   3. NUMBER OF GENES                          " << myfillandw(' ', 3) << numberOfGenes << "           |........|\n"
-			"|..|   4. PROBABILITY OF MUTATION                  " << myfillandw(' ', 3) << probability << "           |........|\n"
-			"|..|   5. CHILDREN QUANTITY                        " << myfillandw(' ', 3) << numberOfChild << "           |........|\n"
+			"|..|   1. SIZE OF POPULATION                       " << myfillandw(' ', 3) << geneticAlgorithm->sizeOfPopulation << "           |........|\n"
+			"|..|   2. POPULATION QUANTITY                      " << myfillandw(' ', 3) << geneticAlgorithm->numberOfPopulation << "           |........|\n"
+			"|..|   3. NUMBER OF GENES                          " << myfillandw(' ', 3) << geneticAlgorithm->numberOfGenes << "           |........|\n"
+			"|..|   4. PROBABILITY OF MUTATION                  " << myfillandw(' ', 3) << geneticAlgorithm->probability << "           |........|\n"
+			"|..|   5. CHILDREN QUANTITY                        " << myfillandw(' ', 3) << geneticAlgorithm->numberOfChild << "           |........|\n"
 			"|..|_____________________________________________________________|........|\n"
 			"|.........................................................................|\n"
 			"|.........................................................................|\n"
@@ -282,35 +340,35 @@ void geneticMenu(string filename)
 			case '1':
 				cout << "Input new value for size of population (>0): ";
 				cin >> newValue;
-				if (newValue>0) sizeOfPopulation = newValue;
+				if (newValue>0) geneticAlgorithm->sizeOfPopulation = newValue;
 				break;
 			case '2':
 				cout << "Input new value for quantity of populations (>0): ";
 				cin >> newValue;
-				if (newValue>0) numberOfPopulation = newValue;
+				if (newValue>0) geneticAlgorithm->numberOfPopulation = newValue;
 				break;
 			case '3':
 				cout << "Input new value for probability of mutation (0 < x <100): ";
 				cin >> newValue;
-				if (newValue>0) probability = newValue;
+				if (newValue>0) geneticAlgorithm->probability = newValue;
 				break;
 			case '4':
 				cout << "Input new value for number of genes (>0): ";
 				cin >> newValue;
-				if (newValue>0) numberOfGenes = newValue;
+				if (newValue>0) geneticAlgorithm->numberOfGenes = newValue;
 				break;
 			case '5':
 				cout << "Input new value for number of children (>0): ";
 				cin >> newValue;
-				if (newValue>0) numberOfChild = newValue;
+				if (newValue>0) geneticAlgorithm->numberOfChild = newValue;
 				break;
 			case 's':
 			case 'S':
 				cout << "Please wait... Computing...";
 				performanceCountStart = startTimer();
-				solution = geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, numberOfGenes, probability, numberOfChild);
+				solution = geneticAlgorithm->algorithm();
 				performanceCountEnd = endTimer();
-				time = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+				time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 				duration(time, 1);
 				cout << "MIN: " << solution;
 				cout << "\nDuration of computation: " << time << " [ms]" << endl;
@@ -329,7 +387,7 @@ void geneticMenu(string filename)
 			default:
 				break;
 		}
-		showMenu = choice != 't' && choice != 'T' && choice != 'S' && choice != 's';
+		showMenu = choice != 'S' && choice != 's';
 	}
 
 };
@@ -402,7 +460,7 @@ void tabuMenu(string filename)
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n";
-	
+
 		tabuMenu = tabuMenuStream.str();
 	double time = 0;
 	if (showMenu) {
@@ -663,7 +721,7 @@ void simulatedMenu(string filename)
 		simulatedMenu = simulatedMenuStream.str();
 		czas = 0;
 		if (showMenu) {
-			system("cls");
+		system("cls");
 			cout << simulatedMenu;
 		}
 		printConsole();
@@ -701,7 +759,7 @@ void simulatedMenu(string filename)
 					performanceCountStart = startTimer();
 					solution = simulatedAnnealing->algorithm(per, alpha, startTemp, tk);
 					performanceCountEnd = endTimer();
-					czas = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+					czas = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 					duration(czas, 1);
 					cout << solution << "\nCzas trwania algorytmu: " << czas << " [ms]" << endl;
 					cout << "Temperatura pocz¹tkowa: " << startTemp;
@@ -839,323 +897,300 @@ void testAnnealing(string filename, int period, double  alphas[], double ile, do
 
 void testGenetic()
 {
-	int ile_instancji = 7;
+	LARGE_INTEGER performanceCountStart, performanceCountEnd;
+	LARGE_INTEGER freq;
+	QueryPerformanceFrequency(&freq);
+	ofstream resultFile;
 
-	string* files = new string[ile_instancji]();			// nazwy plików z instancjami
-	files[0] = "br17.atsp";
-	files[1] = "ftv47.atsp";
-	files[2] = "ftv64.atsp";
-	files[3] = "kro124p.atsp";
-	files[4] = "ftv170.atsp";
-	files[5] = "rbg323.atsp";
-	files[6] = "rbg443.atsp";
+	ostringstream geneticTestMenuStream;
+	string geneticTestMenu;
+	string dataFilesStr;
+	string bestKnownSolutionsStr;
+	string testScenarioStr;
+	string valuesOfTestedFactorStr;
+	string resultFileStr = getCurrentTime() + ".csv" ;
 
-	int *bestSolutions = new int[ile_instancji]();			//najlepsze znane rozwiazania dla powyzszych instancji
-	bestSolutions[0] = 39;
-	bestSolutions[1] = 1776;
-	bestSolutions[2] = 1839;
-	bestSolutions[3] = 36230;
-	bestSolutions[4] = 2755;
-	bestSolutions[5] = 1326;
-	bestSolutions[6] = 2720;
+	int numOfInstances = 7;
+	// nazwy plików z instancjami
+	string* dataFiles = new string[numOfInstances]();			
+	dataFiles[0] = "br17.atsp";
+	dataFiles[1] = "ftv47.atsp";
+	dataFiles[2] = "ftv64.atsp";
+	dataFiles[3] = "kro124p.atsp";
+	dataFiles[4] = "ftv170.atsp";
+	dataFiles[5] = "rbg323.atsp";
+	dataFiles[6] = "rbg443.atsp";
 
-	// kryteria stopu - domyslnie ustawiane na czasy, rownie dobrze mozna ustawic liczbe iteracji bez zmiany rozwiazania lub liczbe iteracji
-	int how_many_dif = 6;
-	double *arguments = new double[how_many_dif]();
-	arguments[0] = 200;
-	arguments[1] = 100;
-	arguments[2] = 50;
-	arguments[3] = 25;
-	arguments[4] = 10;
-	arguments[5] = 5;
-	/*arguments[6] = 4;
-	arguments[7] = 10000;
-	arguments[8] = 15000;
-	arguments[9] = 20000;*/
+	//najlepsze znane rozwiazania dla powyzszych instancji
+	int *bestKnownSolutions = new int[numOfInstances]();			
+	bestKnownSolutions[0] = 39;
+	bestKnownSolutions[1] = 1776;
+	bestKnownSolutions[2] = 1839;
+	bestKnownSolutions[3] = 36230;
+	bestKnownSolutions[4] = 2755;
+	bestKnownSolutions[5] = 1326;
+	bestKnownSolutions[6] = 2720;
 
-	int which_test = 3;							// testy wg okreslonego parametru 0 - liczba osobnikow w populacji, 1 - ilosc populacji, 2 - ilosc mutowanych genow, 3 - prawdopodobienstwo mutacji, 4 - ilosc potomkow
+	int numOfTestedValues = 6;
+	double *valuesOfTestedFactor = new double[numOfTestedValues]();
+	valuesOfTestedFactor[0] = 200;
+	valuesOfTestedFactor[1] = 100;
+	valuesOfTestedFactor[2] = 50;
+	valuesOfTestedFactor[3] = 25;
+	valuesOfTestedFactor[4] = 10;
+	valuesOfTestedFactor[5] = 5;
 
-	int repeat = 2;											// ile powtorzen
-	string file_result = "wg_prawd.txt";
+	// testy wg okreslonego parametru 0 - liczba osobnikow w populacji, 1 - ilosc populacji, 2 - ilosc mutowanych genow, 3 - prawdopodobienstwo mutacji, 4 - ilosc potomkow
+	int testScenario = 3;							
+	// ile powtorzen
+	int numOfIterationsPerSingleRun = 2;											
+	// zmienna na rozwiazanie
+	int solution = 0;
 
-	// PARAMETRY ALGORYTMU
+	char choice;
+	bool goBack = false;
+	bool setAll = false;
+	bool showMenu = true;
+	double time = 0;
+	double percentangeError = 0;
+	int newValue;
+	string newStringValue;
+	bool stopTest = false;
 
+	string possibleTestScenario[5] = { "Size of population", "Population quantity", "Quantity of mutating genes", "Probability of mutation", "Children quantity" };
 
-	int size = geneticAlgorithm->getSize();
-	int sizeOfPopulation = 50;					// Rozmiar populacji
-	int numberOfPopulation = 300;				// Liczba populacji
-	int numberOfGenes = 2;						// liczba genów ulegajaca mutacji
-	int probability = 50;						// prawdopodobienstwo mutacji
-	int numberOfChild = 50;						// Ilosc potomkow
+	while (!goBack){
+		stopTest = false;
+		setAll = false;
+		dataFilesStr = arrayToString(dataFiles, numOfInstances);
+		bestKnownSolutionsStr = arrayToString(bestKnownSolutions, numOfInstances);
+		testScenarioStr = possibleTestScenario[testScenario];
+		valuesOfTestedFactorStr = arrayToString(valuesOfTestedFactor, numOfTestedValues);
 
-	int solution = 0;							// zmienna na rozwiazanie
-
-	string menu = "|.........................................................................|\n"
+		geneticTestMenuStream.str("");
+		geneticTestMenuStream.clear();
+		geneticTestMenuStream <<
+			"|.........................................................................|\n"
 		"|.......... ________________________________ .............................|\n"
 		"|..........|      _  _   _                  |.............................|\n"
 		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
 		"|..........|    /     | |_ | \\| |_|         |.............................|\n"
 		"|..._______|________________________________|____________________.........|\n"
-		"|..|                   Tabu Search                               |........|\n"
-		"|..|     OPCJA                                    KLAWISZ        |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   2. ZOBACZ I USTAW PARAMETRY TESTU             2           |........|\n"
-		"|..|   3. PRZEPROWADZ TEST                           3           |........|\n"
+			"|..|                   GENETIC ALGORITHM                         |........|\n"
+			"|..|     OPTION                                     KEY          |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   4. COFNIJ                                     4           |........|\n"
+			"|..|	  START TEST                                 S           |........|\n"
+			"|..|      CHANGE VALUE OF PARAMETER NR. X            X           |........|\n"
+			"|..|      SET ALL                                    A           |........|\n"
+			"|..|      BACK                                       B           |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|_____________   PARAMETERS OF TEST   ________________________|........|\n"
+			"|..|                                                             |........|\n"
+			"|..|   1. NUMBER OF INSTANCES                      " << myfillandw(' ', 3) << numOfInstances << "           |........|\n"
+			"|..|      DATA FILES [*.atsp]                                    |........|\n"
+			"|..|      "<< myfillandw(' ', 49)<< dataFilesStr <<"      |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|   2. BEST KNOWN SOLUTIONS                                   |........|\n"
+			"|..|      " << myfillandw(' ', 49) << bestKnownSolutionsStr <<"      |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|   3. TESTED FACTOR                                          |........|\n"
+			"|..|                  " << myfillandw(' ', 26) << testScenarioStr << "                 |........|\n"   
+			"|..|                                                             |........|\n"             
+			"|..|   4. VALUES OF TESTED FACTOR                                |........|\n"
+			"|..|                  " << myfillandw(' ', 26) << valuesOfTestedFactorStr << "                 |........|\n"
+			"|..|                                                             |........|\n"            
+			"|..|   5. ITERATIONS PER SCENARIO                  " << myfillandw(' ', 3) << numOfIterationsPerSingleRun << "           |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|   6. NAME OF RESULT FILE                                    |........|\n"
+			"|..|                  " << myfillandw(' ', 26) << resultFileStr << "                 |........|\n"
 		"|..|_____________________________________________________________|........|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n";
-
-	int option;
-	bool loop = true;
-	bool loop2 = true;
-	bool loop3 = true;
-	double time = 0;
-	double percent = 0;
-
-	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	LARGE_INTEGER freq;
-	QueryPerformanceFrequency(&freq);
-	ofstream file;
-
-
-	while (loop3){
+		geneticTestMenu = geneticTestMenuStream.str();
+		time = 0;
+		if (showMenu) {
 		system("cls");
-		cout << menu;
-		cin >> option;
-		switch (option)
-		{
-		case 2:
-			loop = true;
-			while (loop)
-			{
-				system("cls");
-				cout << "\n --- Aktualne parametry dla testow ---\n\n";
-				cout << "Testowany algorytm : Algorytm genetyczny\n";
-				cout << "Ilosc instancji(1) : " << ile_instancji << endl;
-				cout << "Nazwy plikow(.atsp) z miastami(1) : {";
-				for (int i = 0; i<ile_instancji; i++)
-				{
-					cout << files[i];
-					if (i != ile_instancji - 1)cout << " , ";
+			cout << geneticTestMenu;
 				}
-				cout << "}" << endl;
-				cout << "Najlepsze znane rozwiazania dla tych instancji(2) : {";
-				for (int i = 0; i<ile_instancji; i++)
-				{
-					cout << bestSolutions[i];
-					if (i != ile_instancji - 1)cout << " , ";
-				}
-				cout << "}" << endl;
-				cout << "Testy wedlug(3): ";
-				if (which_test == 0) cout << "Ilosc osobnikow w populacji\n";
-				else if (which_test == 1) cout << "Liczba populacji\n";
-				else if (which_test == 2) cout << "Ilosc mutowanych genow\n";
-				else if (which_test == 3) cout << "Prawdopodobienstwo mutacji\n";
-				else if (which_test == 4) cout << "Ilosc potomkow\n";
-				cout << "Argumenty testow";
-				cout << "(4) : {";
-				for (int i = 0; i<how_many_dif; i++)
-				{
-					cout << arguments[i];
-					if (i != how_many_dif - 1)cout << " , ";
-				}
-				cout << "}" << endl;
-				cout << "Ilosc powtorzen(5) : " << repeat;
-				cout << "\nNazwa pliku z wynikami(6) : " << file_result;
-				cout << "\nCofnij(7)\nOpcja nr: ";
+		printConsole();
+		cin >> choice;
 
-				int ktory;
-				cin >> ktory;
-				cout << "\n";
-				switch (ktory)
+		switch (choice) {
+			case 'a':
+			case 'A':
+				setAll = true;
+			case '1':
+				cout << "Input new value for instances quantity (>0): ";
+				cin >> newValue;
+				if (newValue <= 0)
+					break;
+				numOfInstances = newValue;
+				cout << "Provide names of data files (.atsp) : ";
+				for (int i = 1; i<=numOfInstances; i++)
 				{
-				case 1:
-					do{
-						cout << "Podaj ilosc instancji (>0) : \n";
-						cin >> ile_instancji;
-					} while (ile_instancji <= 0);
-					cout << "Podaj nazwy plikow z miastami (.atsp) : \n";
-					for (int i = 0; i<ile_instancji; i++)
-					{
-						cout << i << " : ";
-						cin >> files[i];
-						cout << endl;
-					}
-				case 2:
-					cout << "Podaj najlepsze znane rozwiazania dla tych plikow\n";
-					for (int i = 0; i<ile_instancji; i++)
-					{
-						cout << i << " : ";
-						cin >> bestSolutions[i];
-						cout << endl;
-					}
-					break;
-				case 3:
-					cout << "Ktory parametr chcesz testowac\n\t0 - ilosc osobnikow w populacji\n\t1 - liczba populacji\n\t2 - ilosc mutowanych genow\n\t3 - prawdopodobienstwo mutacji\n\t4 - ilosc potomkow\n";
-					cin >> ktory;
-					if (ktory >= 0 && ktory <= 4) which_test = ktory;
-					break;
-				case 4:
-					cout << "Podaj ilosc instancji : ";
-					cin >> how_many_dif;
-					cout << "Podaj wartosci liczb osobnikow w populacji\n ";
-					for (int i = 0; i<how_many_dif; i++)
-					{
-						cout << i << " : ";
-						cin >> arguments[i];
-						cout << endl;
-					}
-					break;
-				case 5:
-					cout << "Podaj ilosc powtorzen (>0) : ";
-					cin >> ktory;
-					if (ktory>0) repeat = ktory;
-					break;
-				case 6:
-					do{
-						cout << "Podaj nazwe pliku z rozszerzeniem .txt : ";
-						cin >> file_result;
-					} while (file_result.empty());
-					break;
-				case 7:
-					loop = false;
-					break;
+					cout << endl << i << " of " << numOfInstances << " : ";
+					cin >> newStringValue;
+					if (newStringValue.find(".atsp") != string::npos) {
 				}
+					else {
+						newStringValue += ".atsp";
+				}
+
+					if (!fileExists(newStringValue)) {
+						cout << endl << "There is no such file in directory, try again.";
+						i--;
+					}
+					else {
+						dataFiles[i - 1] = newStringValue;
+					}
+					}
+			case '2':
+				cout << "Provide best known solutions for these instances." << endl;
+				for (int i = 1; i<=numOfInstances; i++) {
+					cout << endl << i << " of " << numOfInstances << " : ";
+					cin >> bestKnownSolutions[i-1];
+					}
+				if(!setAll)
+					break;
+			case '3':
+				cout << "Which factor you want to test? \n\t0 - size of population\n\t1 - quantity of population\n\t2 - quantity of mutating genes\n\t3 - probability of mutation\n\t4 - children quantity\nYour choice : ";
+				cin >> newValue;
+				if (newValue >= 0 && newValue <= 4) testScenario = newValue;
+				if (!setAll)
+					break;
+			case '4':
+				cout << "How many values do you want to test? ";
+				cin >> numOfTestedValues;
+				cout << "Provide values of tested factor \n ";
+				for (int i = 1; i<=numOfTestedValues; i++) {
+					cout << endl << i << " of " << numOfTestedValues << " : ";
+					cin >> valuesOfTestedFactor[i-1];
+					}
+				if (!setAll)
+					break;
+			case '5':
+				cout << "Input new value for iteration per one scenario (>0): ";
+				cin >> newValue;
+				if (newValue>0) 
+					numOfIterationsPerSingleRun = newValue;
+				if (!setAll)
+					break;
+			case '6':
+					do{
+					cout << endl << "Input name of result file (.csv): ";
+					cin >> newStringValue;
+				} while (resultFileStr.empty());
+
+				if (newStringValue.find(".csv") != string::npos) {
 			}
-			break;
-		case 3:
-			file.open(file_result.c_str());
-			if (file.good()){
-				cout << "TEST WEDLUG: ";
-				file << "TEST WEDLUG: ";
-				if (which_test == 0)
-				{
-					cout << "Ilosc osobnikow w populacji\n";
-					file << "Ilosc osobnikow w populacji\n";
+				else {
+					newStringValue += ".csv";
 				}
-				else if (which_test == 1)
-				{
-					cout << "Liczba populacji\n";
-					file << "Liczba populacji\n";
+				if (fileExists(newStringValue)) {
+					cout << "There is a file with this name. Are you sure ? (y/n) \n : ";
+					cin >> choice;
+					if (choice == 'y')
+						resultFileStr = newStringValue;
 				}
-				else if (which_test == 2)
-				{
-					cout << "Ilosc mutowanych genow\n";
-					file << "Ilosc mutowanych genow\n";
+				else {
+					resultFileStr = newStringValue;
 				}
-				else if (which_test == 3)
-				{
-					cout << "Prawdopodobienstwo mutacji\n";
-					file << "Prawdopodobienstwo mutacji\n";
+				break;
+			case 's':
+			case 'S':
+				for (int i = 0; i < numOfInstances;  i++) {
+					if (!fileExists(dataFiles[i])) {
+						cout << "File " << dataFiles[i] << " does not exist. Can not start test..";
+						stopTest = true;
+						break;
 				}
-				else if (which_test == 4)
-				{
-					cout << "Ilosc potomkow\n";
-					file << "Ilosc potomkow\n";
 				}
-				for (int i = 0; i<ile_instancji; i++)
-				{
-					cout << "Test dla pliku : " << files[i] << "\nWczytywanie...\n";
-					file << files[i] << endl;
+				if (stopTest)
+					break;
+				resultFile.open(resultFileStr.c_str());
+				if (!resultFile.good()){
+					cout << "\nError with creating file.";
+					cout << endl << "Press any key to continue...";
+					cin.ignore();
+					cin.get();
+				} else {
+					cout << "Test started. Please wait, it may take a while..." << endl;
+					cout << "TESTED FACTOR: " << testScenarioStr << endl;
+					cout << "Number of runs per single scenario : " << numOfIterationsPerSingleRun << endl;
+					resultFile << "TESTED FACTOR: " << testScenarioStr << "\n";
+					resultFile << "Number of runs per single scenario : " << numOfIterationsPerSingleRun << " It means that every measurement is average of " << numOfIterationsPerSingleRun << " runs" << "\n";
+					for (int i = 0; i<numOfInstances; i++) {
+
+						cout << "Test for instance: " << dataFiles[i] << "\nLoading...\n";
+						resultFile << ";" << dataFiles[i] << "\n";
+						resultFile << ";;Value of factor; time[ms]; solution; percentage error\n";
+						
 					delete geneticAlgorithm;
-					geneticAlgorithm = new GeneticAlgorithm(files[i]);
-					size = geneticAlgorithm->getSize();
-					if (which_test == 0)
+						geneticAlgorithm = new GeneticAlgorithm(dataFiles[i]);
+
+						for (int k = 0; k<numOfTestedValues; k++)
 					{
-						cout << "Ilosc osobnikow w populacji\n";
-						file << "Ilosc osobnikow w populacji\n";
-					}
-					else if (which_test == 1)
-					{
-						cout << "Liczba populacji\n";
-						file << "Liczba populacji\n";
-					}
-					else if (which_test == 2)
-					{
-						cout << "Ilosc mutowanych genow\n";
-						file << "Ilosc mutowanych genow\n";
-					}
-					else if (which_test == 3)
-					{
-						cout << "Prawdopodobienstwo mutacji\n";
-						file << "Prawdopodobienstwo mutacji\n";
-					}
-					else if (which_test == 4)
-					{
-						cout << "Ilosc potomkow\n";
-						file << "Ilosc potomkow\n";
-					}
-					for (int k = 0; k<how_many_dif; k++)
-					{
-						cout << "STOP AT: " << arguments[k] << endl;
-						file.width(12);
-						file << arguments[k];
+							cout << endl << "\t" << k+1 << " value of " << numOfTestedValues << " : " << valuesOfTestedFactor[k] << endl;
+							resultFile << ";;" << valuesOfTestedFactor[k];
 						time = 0;
 						solution = 0;
-						for (int j = 1; j <= repeat; j++)
-						{
-							cout << "REPEAT NUMBER : " << j << endl;
-							if (which_test == 0)
-							{
-								performanceCountStart = startTimer();
-								solution += geneticAlgorithm->algorithm(arguments[k], numberOfPopulation, numberOfGenes, probability, arguments[k] / 2);
-								performanceCountEnd = endTimer();
+							
+							switch (testScenario) {
+								case 0:
+									geneticAlgorithm->sizeOfPopulation = (int)valuesOfTestedFactor[k];
+									geneticAlgorithm->numberOfChild = (int)valuesOfTestedFactor[k] / 2;
+									break;
+								case 1:
+									geneticAlgorithm->numberOfPopulation = (int)valuesOfTestedFactor[k];
+									break;
+								case 2:
+									geneticAlgorithm->numberOfGenes = (int)valuesOfTestedFactor[k];
+									break;
+								case 3:
+									geneticAlgorithm->numberOfGenes = (int)(geneticAlgorithm->getSize() * 0.1);
+									geneticAlgorithm->probability = (int)valuesOfTestedFactor[k];
+									break;
+								case 4:
+									geneticAlgorithm->numberOfGenes = (int)(geneticAlgorithm->getSize() * valuesOfTestedFactor[k]);
+									break;
 							}
-							else if (which_test == 1)
+
+							for (int j = 1; j <= numOfIterationsPerSingleRun; j++)
 							{
+								cout << "\t\tIteration " << j << " of " << numOfIterationsPerSingleRun << "..." << endl;
 								performanceCountStart = startTimer();
-								solution += geneticAlgorithm->algorithm(sizeOfPopulation, arguments[k], numberOfGenes, probability, numberOfChild);
+								solution += geneticAlgorithm->algorithm();
 								performanceCountEnd = endTimer();
-							}
-							else if (which_test == 2)
-							{
-								performanceCountStart = startTimer();
-								solution += geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, arguments[k], probability, numberOfChild);
-								performanceCountEnd = endTimer();
-							}
-							else if (which_test == 3)
-							{
-								performanceCountStart = startTimer();
-								solution += geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, size*0.1, arguments[k], numberOfChild);
-								performanceCountEnd = endTimer();
-							}
-							else if (which_test == 4)
-							{
-								performanceCountStart = startTimer();
-								solution += geneticAlgorithm->algorithm(sizeOfPopulation, numberOfPopulation, numberOfGenes, probability, size*arguments[k]);
-								performanceCountEnd = endTimer();
-							}
 							time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 						}
-						time /= repeat;
-						solution /= repeat;
+
+							time /= numOfIterationsPerSingleRun;
+							solution /= numOfIterationsPerSingleRun;
 						time = time / freq.QuadPart * 1000;
-						file.width(13);
-						file << time;
-						cout << "Sredni czas = " << time << endl;
-						file.width(13);
-						file << solution;
-						cout << "Sredni wynik = " << solution << endl;
-						percent = (solution / (bestSolutions[i] * 1.0) - 1) * 100;
-						cout << "Procent bledu = " << percent << endl;
-						file.width(13);
-						file << percent << endl;
-						if (percent == 0) k = how_many_dif;
+							
+						resultFile << ";" << time;
+							cout << "\tMean time [ms] : " << time << endl;
+							
+							resultFile << ";" << solution;
+							cout << "\tMean solution : " << solution << endl;
+							
+							percentangeError = (solution / (bestKnownSolutions[i] * 1.0) - 1) * 100;
+							cout << "\tMean percentage error = " << percentangeError << endl;
+							resultFile << ";" << percentangeError << "\n";
 					}
 				}
-				cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
+					resultFile.close();
+					cout << endl << "Press any key to continue...";
 				cin.ignore();
 				cin.get();
-				file.close();
 			}
-			else cout << "\nProblem z plikiem wyjsciowym";
 			break;
-		case 4:
-			loop3 = false;
+			case 'b':
+			case 'B':
+				goBack = true;
 			break;
 		default:
 			break;
@@ -1381,11 +1416,11 @@ void testTabuAtsp()
 						time = 0;
 						solution = 0;
 						if (stop_condition == 0)
-							tabuSearch->setParameters(stopCriteria[k], -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 0);
+							tabuSearch->setParameters((int)(stopCriteria[k]), -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 0);
 						else if (stop_condition == 1)
-							tabuSearch->setParameters(-1, -1, div_not_change*size, stopCriteria[k], num_of_candidates*size, tabu_length, true, 1);
+							tabuSearch->setParameters(-1, -1, div_not_change*size, (int)(stopCriteria[k]), num_of_candidates*size, tabu_length, true, 1);
 						else if (stop_condition == 2)
-							tabuSearch->setParameters(-1, stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 2);
+							tabuSearch->setParameters(-1, (int)(stopCriteria[k]), div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 2);
 						for (int j = 1; j <= repeat; j++)
 						{
 							cout << "REPEAT with diversification : " << j << endl;
@@ -1420,11 +1455,11 @@ void testTabuAtsp()
 						time = 0;
 						solution = 0;
 						if (stop_condition == 0)
-							tabuSearch->setParameters(stopCriteria[k], -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 0);
+							tabuSearch->setParameters((int)stopCriteria[k], -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 0);
 						else if (stop_condition == 1)
-							tabuSearch->setParameters(-1, -1, div_not_change*size, stopCriteria[k], num_of_candidates*size, tabu_length, false, 1);
+							tabuSearch->setParameters(-1, -1, div_not_change*size, (int)stopCriteria[k], num_of_candidates*size, tabu_length, false, 1);
 						else if (stop_condition == 2)
-							tabuSearch->setParameters(-1, stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 2);
+							tabuSearch->setParameters(-1, (int)stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 2);
 						for (int j = 1; j <= repeat; j++)
 						{
 							cout << "REPEAT without diversification : " << j << endl;

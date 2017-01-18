@@ -19,15 +19,19 @@ class GeneticAlgorithm {
 		int minCost;                                    // minimalny koszt podrozy
 		bool solved;                                    // parametr okreslajacy czy problem zostal rozwiazany
 
-		//PARAMETRYY ALGORYTMU
-		int numberOfPopulation;  // liczba populacji algorytmu
-
 	public:
+		//PARAMETRYY ALGORYTMU
+		int sizeOfPopulation;					// rozmiar populacji
+		int numberOfPopulation;					// Liczba populacji
+		int numberOfGenes;						// liczba genów ulegajaca mutacji
+		int probability;						// prawdopodobienstwo mutacji
+		int numberOfChild; 						// Ilosc potomkow
+
 		bool operator() (int* & a, int* & b) const{
 			return (matrix->costPermutation(a) < matrix->costPermutation(b));
 		}
 		bool hasDuplicate(int*, vector<int *>* population);
-		int algorithm(int sizeOfPopulation, int numberOfPopulation, int numberOfGenes, int probability, int numberOfChild); // funkcja algorytmu
+		int algorithm();
 		void initialPopulation(int);
 		void sortPopulation();
 		void deleteRunt(int);
@@ -43,6 +47,7 @@ class GeneticAlgorithm {
 		void showMatrix(){ matrix->show_matrix(); };
 		void calculateAllCosts(vector<int*>* population);
 		int* cross(int*, int*);
+		void setParameters(int sizeOfPopulation, int numberOfPopulation, int numberOfGenes, int probability, int numberOfChild);
 		Matrix* getMatrix(){ return matrix; };
 
 		GeneticAlgorithm(std::string);
