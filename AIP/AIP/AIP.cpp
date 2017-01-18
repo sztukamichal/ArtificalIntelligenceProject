@@ -240,8 +240,8 @@ void geneticMenu(string filename)
 			"|.........................................................................|\n"
 			"|.......... ________________________________ .............................|\n"
 			"|..........|      _  _   _                  |.............................|\n"
-			"|..........|     / |/ | |_ |\\ | | |        |.............................|\n"
-			"|..........|    /     | |_ | \\| |_|        |.............................|\n"
+			"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
+			"|..........|    /     | |_ | \\| |_|         |.............................|\n"
 			"|..._______|________________________________|____________________.........|\n"
 			"|..|                                                             |........|\n"
 			"|..|                   GENETIC ALGORITHM                         |........|\n"
@@ -336,35 +336,8 @@ void geneticMenu(string filename)
 
 void tabuMenu(string filename)
 {
-	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	LARGE_INTEGER freq;
-
-	string menu = "|.........................................................................|\n"
-		"|.......... ________________________________ .............................|\n"
-		"|..........|      _  _   _                  |.............................|\n"
-		"|..........|     / |/ | |_ |\\ | | |        |.............................|\n"
-		"|..........|    /     | |_ | \\| |_|        |.............................|\n"
-		"|..._______|________________________________|____________________.........|\n"
-		"|..|                                                             |........|\n"
-		"|..|                   TABU SEARCH                               |........|\n"
-		"|..|                                                             |........|\n"
-		"|..|   OPTION:                                      KEY:         |........|\n"
-		"|..|                                                             |........|\n"
-		"|..|   START SINGLE SOLUTION                         S           |........|\n"
-		"|..|   MAKE TESTS                                    T           |........|\n"
-		"|..|   GO BACK                                       X           |........|\n"
-		"|..|_____________________________________________________________|........|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n";
-
-	int option;
-	bool loop = true;
-	bool loop2 = true;
-	bool loop3 = true;
-
 	int size = tabuSearch->getSize();
+
 	int iterations = 50000;					// liczba iteracji petli glownej algorytmu
 	int not_change = size * 4;					// maksymalna liczba iteracji bez poprawy rozwiazania
 	int div_not_change = size * 2;
@@ -373,46 +346,91 @@ void tabuMenu(string filename)
 	int tabu_length = 10;				// dlugosc listy tabu
 	bool diversificationOn = true;			// 0 - wylaczona 1 - wlaczona 
 	int stop_condition = 0;				// 0 - interacje, 1 - time, 2 - not_change
-
 	int solution = 0;
-	while (loop3){
+
+	ostringstream geneticMenuStream;
+	string geneticMenu;
+	LARGE_INTEGER performanceCountStart, performanceCountEnd;
+	LARGE_INTEGER freq;
+	char option;
+	bool goBack = false;
+	bool showMenu = true;
+	bool loop = true;
+	bool loop2 = true;
+	bool loop3 = true;
+
+	while (!goBack){
+		geneticMenuStream.str("");
+		geneticMenuStream.clear();
+		geneticMenuStream <<
+		"|.........................................................................|\n"
+		"|.......... ________________________________ .............................|\n"
+		"|..........|      _  _   _                  |.............................|\n"
+		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
+		"|..........|    /     | |_ | \\| |_|         |.............................|\n"
+		"|..._______|________________________________|____________________.........|\n"
+		"|..|                                                             |........|\n"
+		"|..|                   TABU SEARCH                               |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   OPTION:                                      KEY:         |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   START SINGLE SOLUTION                         S           |........|\n"
+		"|..|   MAKE TESTS                                    T           |........|\n"
+		"|..|   GO BACK                                       B           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|________________   INSTANCE   _______________________________|........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   FILENAME :                           " << myfillandw(' ', 10) << filename << "           |........|\n"
+		"|..|   NUMBER OF CITIES :                          " << myfillandw(' ', 3) << size << "           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|_____________________________________________________________|........|\n"
+		"|.........................................................................|\n"
+		"|.........................................................................|\n"
+		"|.........................................................................|\n"
+		"|.........................................................................|\n";
+
+	
+	geneticMenu = geneticMenuStream.str();
+	double time = 0;
+	if (showMenu) {
 		system("cls");
-		cout << menu;
-		cout << "Wczytany plik: " << filename << endl;
-		cin >> option;
-		double time = 0;
+		cout << geneticMenu;
+	}
+	printConsole();
+	cin >> option;
 		switch (option){
-		case 1://menu1
-			loop2 = true;
+		case 's':
+		case 'S':
+			loop2 = true;			
 			while (loop2){
 				system("cls");
-				cout << "\n --- Aktualne parametry algorytmu ---\n\n";
+				cout << "\n --- PARAMETERS OF THE ALGORITHM ---\n\n";
 				cout << "SIZE : " << size << endl;
-				cout << "Warunek stopu: ";
-				if (stop_condition == 0) cout << " Liczba iteracji\n";
-				else if (stop_condition == 1) cout << " Czas\n";
+				cout << "Stopping condition: ";
+				if (stop_condition == 0) cout << " Number of iterations\n";
+				else if (stop_condition == 1) cout << " Time\n";
 				else if (stop_condition == 2) cout << " Brak zmiany rozwiazania\n";
-				if (stop_condition == 0) cout << "Liczba iteracji : " << iterations << endl;
-				else if (stop_condition == 1) cout << "Czas : " << alg_time << endl;
+				if (stop_condition == 0) cout << "Number of iterations: " << iterations << endl;
+				else if (stop_condition == 1) cout << "Time : " << alg_time << endl;
 				else if (stop_condition == 2) cout << "Brak zmiany od : " << not_change << endl;
 				cout << "Stosowanie dywersyfikacji: ";
-				if (diversificationOn) cout << " tak" << endl;
-				else cout << " nie" << endl;
+				if (diversificationOn) cout << " yes" << endl;
+				else cout << " no" << endl;
 				if (diversificationOn) cout << "Parametr not_change dla dywersyfikacji: " << div_not_change << endl;
-				cout << "Dlugosc listy tabu : " << tabu_length << "\n";
-				cout << "Liczba kandydatow : " << num_of_candidates << endl;
-				cout << "1. Wyswietl macierz sasiedztwa\n2. Edytuj parametry\n3. Rozpocznij alogrytm\n4. Powrot\n";
+				cout << "Lenght of tabu list : " << tabu_length << "\n";
+				cout << "Number of candidates: " << num_of_candidates << "\n\n";
+				cout << "1. Show adjacency matrix\n2. Edit parameters\n3. Start the algorithm\n4. Go back\n";
 				cin >> option;
 				switch (option)
 				{
-				case 1:
+				case '1':
 					cout << endl;
 					tabuSearch->showMatrix();
-					cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
+					cout << endl << "Press a key to continue...";
 					cin.ignore();
 					cin.get();
 					break;
-				case 2:
+				case '2':
 					loop = true;
 					while (loop)
 					{
@@ -499,7 +517,7 @@ void tabuMenu(string filename)
 					}
 					system("cls");
 					break;
-				case 3:
+				case '3':
 					tabuSearch->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
 					performanceCountStart = startTimer();
 					solution = tabuSearch->algorithm();
@@ -512,7 +530,7 @@ void tabuMenu(string filename)
 					cin.ignore();
 					cin.get();
 					break;
-				case 4:
+				case '4':
 					loop2 = false;
 					break;
 				default:
@@ -520,15 +538,18 @@ void tabuMenu(string filename)
 				}
 			}
 			break;
-		case 2:
+		case 't':
+		case 'T':
 			testTabuAtsp();
 			break;
-		case 3:
-			loop3 = false;
+		case 'b':
+		case 'B':
+			goBack = true;
 			break;
 		default:
 			break;
 		}
+		showMenu = option != 't' && option != 'T' && option != 'S' && option != 's';
 	}
 };
 
