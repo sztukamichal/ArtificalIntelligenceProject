@@ -1002,6 +1002,9 @@ void testGenetic()
 				resultFile.open(resultFileStr.c_str());
 				if (!resultFile.good()){
 					cout << "\nError with creating file.";
+					cout << endl << "Press any key to continue...";
+					cin.ignore();
+					cin.get();
 				} else {
 					cout << "Test started. Please wait, it may take a while..." << endl;
 					cout << "TESTED FACTOR: " << testScenarioStr << endl;
