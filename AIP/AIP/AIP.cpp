@@ -433,9 +433,13 @@ void tabuMenu(string filename)
 		"|..|                                                             |........|\n"
 		"|..|   OPTION:                                      KEY:         |........|\n"
 		"|..|                                                             |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|   START SINGLE SOLUTION                         S           |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|   MAKE TESTS                                    T           |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|   CHANGE VALUE OF PARAMETER NR. X               X           |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|   GO BACK                                       B           |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
@@ -443,6 +447,7 @@ void tabuMenu(string filename)
 		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|   FILENAME :                           " << myfillandw(' ', 10) << filename << "           |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|   NUMBER OF CITIES :                          " << myfillandw(' ', 3) << size << "           |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
@@ -450,9 +455,13 @@ void tabuMenu(string filename)
 		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|  1. STOPPING CONDITION                        " << myfillandw(' ', 3) << stop_condition << "           |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|  2. DIVERSIFICATION (1-yes,0-no)              " << myfillandw(' ', 3) << diversificationOn << "           |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|  3. PARAMETER not_change FOR DIVERSIFICATION  " << myfillandw(' ', 3) << div_not_change << "           |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|  4. LENGHT OF TABU LIST                       " << myfillandw(' ', 3) << tabu_length << "           |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|  5. NUMBER OF CANDIDATES                      " << myfillandw(' ', 3) << num_of_candidates << "           |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|_____________________________________________________________|........|\n"
@@ -1200,25 +1209,39 @@ void testGenetic()
 
 void testTabuAtsp()
 {
-	int ile_instancji = 7;
+	LARGE_INTEGER performanceCountStart, performanceCountEnd;
+	LARGE_INTEGER freq;
+	QueryPerformanceFrequency(&freq);
+	ofstream resultFile;
 
-	string* files = new string[ile_instancji]();			// nazwy plików z instancjami
-	files[0] = "br17.atsp";
-	files[1] = "ftv47.atsp";
-	files[2] = "ftv64.atsp";
-	files[3] = "kro124p.atsp";
-	files[4] = "ftv170.atsp";
-	files[5] = "rbg323.atsp";
-	files[6] = "rbg443.atsp";
+	ostringstream tabuTestMenuStream;
+	string tabuTestMenu;
+	string dataFilesStr;
+	string bestKnownSolutionsStr;
+	string valuesOfStopCriteriaStr;
+	string resultFileStr = getCurrentTime() + ".csv";
 
-	int *bestSolutions = new int[ile_instancji]();			//najlepsze znane rozwiazania dla powyzszych instancji
-	bestSolutions[0] = 39;
-	bestSolutions[1] = 1776;
-	bestSolutions[2] = 1839;
-	bestSolutions[3] = 36230;
-	bestSolutions[4] = 2755;
-	bestSolutions[5] = 1326;
-	bestSolutions[6] = 2720;
+	int numOfInstances = 7;
+
+	// nazwy plików z instancjami
+	string* dataFiles = new string[numOfInstances]();
+	dataFiles[0] = "br17.atsp";
+	dataFiles[1] = "ftv47.atsp";
+	dataFiles[2] = "ftv64.atsp";
+	dataFiles[3] = "kro124p.atsp";
+	dataFiles[4] = "ftv170.atsp";
+	dataFiles[5] = "rbg323.atsp";
+	dataFiles[6] = "rbg443.atsp";
+
+	//najlepsze znane rozwiazania dla powyzszych instancji
+	int *bestKnownSolutions = new int[numOfInstances]();
+	bestKnownSolutions[0] = 39;
+	bestKnownSolutions[1] = 1776;
+	bestKnownSolutions[2] = 1839;
+	bestKnownSolutions[3] = 36230;
+	bestKnownSolutions[4] = 2755;
+	bestKnownSolutions[5] = 1326;
+	bestKnownSolutions[6] = 2720;
 
 	// kryteria stopu - domyslnie ustawiane na czasy, rownie dobrze mozna ustawic liczbe iteracji bez zmiany rozwiazania lub liczbe iteracji
 	int how_many_stops = 10;
@@ -1234,25 +1257,42 @@ void testTabuAtsp()
 	stopCriteria[8] = 15000;
 	stopCriteria[9] = 20000;
 
-	int repeat = 2;											// ile powtorzen
-	string file_result = "l_kandydatow.txt";
+	// warunek stopu
+	int stop_condition = 0;		// 0 - interacje, 1 - time, 2 - not_change
+	string stop_condition_string = "Number of iterations";
+	// ile powtorzen
+	int repetitionsOfTestCase = 3;
+	// zmienna na rozwiazanie
+	int solution = 0;
 
-	// PARAMETRY ALGORYTMU
+	char option;
+	bool goBack = false;
+	bool setAll = false;
+	bool showMenu = true;
 
+	int newValue;
+	string newStringValue;
+	bool stopTest = false;
 
+	double time = 0;
+	double percent = 0;
 	int size = tabuSearch->getSize();
-	//int iterations = 50000;						// liczba iteracji petli glownej algorytmu
-	//int not_change = size*4;					// maksymalna liczba iteracji bez poprawy rozwiazania
 	int div_not_change = 20;						// mnozone razy size-  max liczba iteracji bez poprawy rozwiazania do zastosowania dywersyfikacji
 	//double alg_time = 1;						// czas dzialania algorytmu
 	int num_of_candidates = 2;					// mnozone razy size - liczba kandydatów 
 	int tabu_length = 10;						// dlugosc listy tabu
-	//bool diversificationOn = true;				// 0 - wylaczona 1 - wlaczona 
-	int stop_condition = 0;						// 0 - interacje, 1 - time, 2 - not_change
 
-	int solution = 0;							// zmienna na rozwiazanie
+	while (!goBack){
+		stopTest = false;
+		setAll = false;
+		dataFilesStr = arrayToString(dataFiles, numOfInstances);
+		bestKnownSolutionsStr = arrayToString(bestKnownSolutions, numOfInstances);
+		valuesOfStopCriteriaStr = arrayToString(stopCriteria, 3);
 
-	string menu = "|.........................................................................|\n"
+		tabuTestMenuStream.str("");
+		tabuTestMenuStream.clear();
+		tabuTestMenuStream <<
+	    "|.........................................................................|\n"
 		"|.......... ________________________________ .............................|\n"
 		"|..........|      _  _   _                  |.............................|\n"
 		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
@@ -1260,159 +1300,163 @@ void testTabuAtsp()
 		"|..._______|________________________________|____________________.........|\n"
 		"|..|                                                             |........|\n"
 		"|..|                   TABU SEARCH                               |........|\n"
+		"|..|                                                             |........|\n"
 		"|..|     OPTION                                     KEY          |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   CHECK/EDIT PARAMETERS OF THE TEST             P           |........|\n"
-		"|..|   START THE TEST                                T           |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   GO BACK                                       B           |........|\n"
+		"|..|      START TEST                                 T           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|      CHANGE VALUE OF PARAMETER NR. X            X           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|      SET ALL                                    A           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|      BACK                                       B           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|_____________   PARAMETERS OF TEST   ________________________|........|\n"
+		"|..|                                                             |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   1. NUMBER OF INSTANCES                      " << myfillandw(' ', 3) << numOfInstances << "           |........|\n"
+		"|..|      DATA FILES [*.atsp]                                    |........|\n"
+		"|..|      " << myfillandw(' ', 49) << dataFilesStr << "      |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   2. BEST KNOWN SOLUTIONS                                   |........|\n"
+		"|..|      " << myfillandw(' ', 49) << bestKnownSolutionsStr << "      |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   3. STOPPING CRITERIA                                          |........|\n"
+		"|..|                  " << myfillandw(' ', 26) << stop_condition_string << "                 |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   4. VALUES OF STOPPING CRITERIA                              |........|\n"
+		"|..|                  " << myfillandw(' ', 26) << valuesOfStopCriteriaStr << "                 |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   5. REPETITIONS OF TEST CASE                  " << myfillandw(' ', 3) << repetitionsOfTestCase << "           |........|\n"
+		"|..|                                                             |........|\n"
+		"|..|   6. NAME OF RESULT FILE                                    |........|\n"
+		"|..|                  " << myfillandw(' ', 26) << resultFileStr << "                 |........|\n"
 		"|..|_____________________________________________________________|........|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n";
+	tabuTestMenu = tabuTestMenuStream.str();
 
-	char option;
-	bool loop = true;
-	bool loop2 = true;
-	bool loop3 = true;
-	double time = 0;
-	double percent = 0;
-
-	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	LARGE_INTEGER freq;
-	QueryPerformanceFrequency(&freq);
-	ofstream file;
-
-
-	while (loop3){
+	if (showMenu) {
 		system("cls");
-		cout << menu;
-		cin >> option;
-		switch (option)
-		{
-		case 'p':
-		case 'P':
-			loop = true;
-			while (loop)
+		cout << tabuTestMenu;
+	}
+	printConsole();
+	cin >> option;
+		switch (option){
+		case 'a':
+		case 'A':
+			setAll = true;
+		case '1':
+			cout << "\nInput new value for instances quantity (>0): ";
+			cin >> numOfInstances;
+			if (numOfInstances <= 0)
+				break;
+			cout << "Provide names of data files (.atsp) : ";
+			for (int i = 1; i <= numOfInstances; i++)
 			{
-				system("cls");
-				cout << "\n --- PARAMETERS OF THE TEST ---\n\n";
-				cout << "Algorithm : Tabu Search\n";
-				cout << "Number of instances (1): " << ile_instancji << endl;
-				cout << "Names of files (.atsp) with cities (1) : {";
-				for (int i = 0; i<ile_instancji; i++)
-				{
-					cout << files[i];
-					if (i != ile_instancji - 1)cout << " , ";
+				cout << endl << i << " of " << numOfInstances << " : ";
+				cin >> newStringValue;
+				if (newStringValue.find(".atsp") != string::npos) {
 				}
-				cout << "}" << endl;
-				cout << "Best known solutions (2) : {";
-				for (int i = 0; i<ile_instancji; i++)
-				{
-					cout << bestSolutions[i];
-					if (i != ile_instancji - 1)cout << " , ";
+				else {
+					newStringValue += ".atsp";
 				}
-				cout << "}" << endl;
-				cout << "Stopping criteria and its values";
-				if (stop_condition == 0) cout << " (number of iterations)";
-				else if (stop_condition == 1) cout << " (times)";
-				else if (stop_condition == 2) cout << " (brak zmiany rozwiazania)";
-				cout << "(3) : {";
-				for (int i = 0; i<how_many_stops; i++)
-				{
-					cout << stopCriteria[i];
-					if (i != how_many_stops - 1)cout << " , ";
-				}
-				cout << "}" << endl;
-				cout << "Number of repetitions (4) : " << repeat;
-				cout << "\nFile with results (5) : " << file_result;
-				cout << "\nGo back (6)\n\nOption nr: ";
 
-				int ktory;
-				cin >> ktory;
-				cout << "\n";
-				switch (ktory)
-				{
-				case 1:
-					do{
-						cout << "Insert number of instances (>0) : \n\n";
-						cin >> ile_instancji;
-					} while (ile_instancji <= 0);
-					cout << "Insert names of files with cities (.atsp) : \n";
-					for (int i = 0; i<ile_instancji; i++)
-					{
-						cout << i << " : ";
-						cin >> files[i];
-						cout << endl;
-					}
-				case 2:
-					cout << "Give the best knows solution for each file\n";
-					for (int i = 0; i<ile_instancji; i++)
-					{
-						cout << i << " : ";
-						cin >> bestSolutions[i];
-						cout << endl;
-					}
-					break;
-				case 3:
-					cout << "Podaj ilosc kryteriow zatrzymania : ";
-					cin >> how_many_stops;
-					cout << "Podaj wartosc kryterium ";
-					if (stop_condition == 0) cout << " (liczby iteracji)";
-					else if (stop_condition == 1) cout << " (czasy)";
-					else if (stop_condition == 2) cout << " (brak zmiany rozwiazania)";
-					cout << "\n";
-					for (int i = 0; i<how_many_stops; i++)
-					{
-						cout << i << " : ";
-						cin >> stopCriteria[i];
-						cout << endl;
-					}
-					break;
-				case 4:
-					do{
-						cout << "Insert number of repetitions (>0) : ";
-						cin >> repeat;
-					} while (repeat <= 0);
-					break;
-				case 5:
-					do{
-						cout << "Give the name of file with extension .txt : ";
-						cin >> file_result;
-					} while (file_result.empty());
-					break;
-				case 6:
-					loop = false;
-					break;
+				if (!fileExists(newStringValue)) {
+					cout << endl << "There is no such file in directory, try again.";
+					i--;
 				}
+				else {
+					dataFiles[i - 1] = newStringValue;
+				}
+			}
+			if (!setAll)
+				break;
+		case '2':
+			cout << "Provide best known solutions for these instances." << endl;
+			for (int i = 1; i <= numOfInstances; i++) {
+				cout << endl << i << " of " << numOfInstances << " : ";
+				cin >> bestKnownSolutionsStr[i - 1];
+			}
+			if (!setAll)
+				break;
+		case '3':
+			cout << "Choose stopping criteria:\n0 - interacje, 1 - time, 2 - not_change\n\nYour choice : ";
+			cin >> newValue;
+			if (newValue >= 0 && newValue <= 2) stop_condition = newValue;
+			if (stop_condition == 0) stop_condition_string = "Number of iterations";
+			else if (stop_condition == 1) stop_condition_string = "Time";
+			else if (stop_condition == 2) stop_condition_string = "No change";
+			if (!setAll)
+				break;
+		case '4':
+			cout << "How many values of stopping criteria do you want to test ? \n";
+			cin >> how_many_stops;
+			cout << "Input values: \n ";
+			for (int i = 0; i<how_many_stops; i++)
+			{
+				cout << i << " : ";
+				cin >> stopCriteria[i];
+				cout << endl;
+			}
+			if (!setAll)
+				break;
+		case '5':
+			do{
+				cout << "Insert number of repetitions of a test case (>0) : ";
+				cin >> repetitionsOfTestCase;
+			} while (repetitionsOfTestCase <= 0);
+			if (!setAll)
+				break;
+		case '6':
+			do{
+				cout << endl << "Input name of result file (.csv): ";
+				cin >> newStringValue;
+			} while (resultFileStr.empty());
+
+			if (newStringValue.find(".csv") != string::npos) {
+			}
+			else {
+				newStringValue += ".csv";
+			}
+			if (fileExists(newStringValue)) {
+				cout << "There is a file with this name. Are you sure ? (y/n) \n : ";
+				cin >> option;
+				if (option == 'y')
+					resultFileStr = newStringValue;
+			}
+			else {
+				resultFileStr = newStringValue;
 			}
 			break;
 		case 't':
 		case 'T':
-			file.open(file_result.c_str());
-			if (file.good()){
-				for (int i = 0; i<ile_instancji; i++)
+			resultFile.open(resultFileStr.c_str());
+			if (resultFile.good()){
+				for (int i = 0; i<numOfInstances; i++)
 				{
-					cout << "Test dla pliku : " << files[i] << "\nWczytywanie...\n";
-					file << files[i] << endl;
+					cout << "Test dla pliku : " << dataFiles[i] << "\nWczytywanie...\n";
+					resultFile << dataFiles[i] << endl;
 					delete tabuSearch;
-					tabuSearch = new TabuSearch(files[i]);
+					tabuSearch = new TabuSearch(dataFiles[i]);
 					size = tabuSearch->getSize();
 					cout << "Kryterium stopu : ";
-					file << "Kryterium stopu : ";
+					resultFile << "Kryterium stopu : ";
 					if (stop_condition == 0) cout << " - liczba iteracji.\n";
 					else if (stop_condition == 1) cout << " - czas.\n";
 					else if (stop_condition == 2) cout << " - brak zmiany rozwiazania.\n";
-					if (stop_condition == 0) file << " - liczba iteracji.\n";
-					else if (stop_condition == 1) file << " - czas.\n";
-					else if (stop_condition == 2) file << " - brak zmiany rozwiazania.\n";
-					file << "WITH DIVERSIFICATION" << endl;
+					if (stop_condition == 0) resultFile << " - liczba iteracji.\n";
+					else if (stop_condition == 1) resultFile << " - czas.\n";
+					else if (stop_condition == 2) resultFile << " - brak zmiany rozwiazania.\n";
+					resultFile << "WITH DIVERSIFICATION" << endl;
 					for (int k = 0; k<how_many_stops; k++)
 					{
 						cout << "STOP AT: " << stopCriteria[k] << endl;
-						file.width(12);
-						file << stopCriteria[k];
+						resultFile.width(12);
+						resultFile << stopCriteria[k];
 						time = 0;
 						solution = 0;
 						if (stop_condition == 0)
@@ -1421,7 +1465,7 @@ void testTabuAtsp()
 							tabuSearch->setParameters(-1, -1, div_not_change*size, (int)(stopCriteria[k]), num_of_candidates*size, tabu_length, true, 1);
 						else if (stop_condition == 2)
 							tabuSearch->setParameters(-1, (int)(stopCriteria[k]), div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 2);
-						for (int j = 1; j <= repeat; j++)
+						for (int j = 1; j <= repetitionsOfTestCase; j++)
 						{
 							cout << "REPEAT with diversification : " << j << endl;
 							performanceCountStart = startTimer();
@@ -1429,29 +1473,29 @@ void testTabuAtsp()
 							performanceCountEnd = endTimer();
 							time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 						}
-						time /= repeat;
-						solution /= repeat;
+						time /= repetitionsOfTestCase;
+						solution /= repetitionsOfTestCase;
 						time = time / freq.QuadPart * 1000;
 						if (stop_condition != 1)
 						{
-							file.width(13);
-							file << time;
+							resultFile.width(13);
+							resultFile << time;
 						}
-						cout << "Sredni czas = " << time << endl;
-						file.width(13);
-						file << solution;
-						cout << "Sredni wynik = " << solution << endl;
-						percent = (solution / (bestSolutions[i] * 1.0) - 1) * 100;
-						cout << "Procent bledu = " << percent << endl;
-						file.width(13);
-						file << percent << endl;
+						cout << "Average time = " << time << endl;
+						resultFile.width(13);
+						resultFile << solution;
+						cout << "Average solution = " << solution << endl;
+						percent = (solution / (bestKnownSolutions[i] * 1.0) - 1) * 100;
+						cout << "Average percentage error = " << percent << endl;
+						resultFile.width(13);
+						resultFile << percent << endl;
 					}
-					file << "WITHOUT DIVERSIFICATION" << endl;
+					resultFile << "WITHOUT DIVERSIFICATION" << endl;
 					for (int k = 0; k<how_many_stops; k++)
 					{
 						cout << "STOP AT: " << stopCriteria[k] << endl;
-						file.width(12);
-						file << stopCriteria[k];
+						resultFile.width(12);
+						resultFile << stopCriteria[k];
 						time = 0;
 						solution = 0;
 						if (stop_condition == 0)
@@ -1460,7 +1504,7 @@ void testTabuAtsp()
 							tabuSearch->setParameters(-1, -1, div_not_change*size, (int)stopCriteria[k], num_of_candidates*size, tabu_length, false, 1);
 						else if (stop_condition == 2)
 							tabuSearch->setParameters(-1, (int)stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 2);
-						for (int j = 1; j <= repeat; j++)
+						for (int j = 1; j <= repetitionsOfTestCase; j++)
 						{
 							cout << "REPEAT without diversification : " << j << endl;
 							performanceCountStart = startTimer();
@@ -1468,35 +1512,35 @@ void testTabuAtsp()
 							performanceCountEnd = endTimer();
 							time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 						}
-						time /= repeat;
-						solution /= repeat;
+						time /= repetitionsOfTestCase;
+						solution /= repetitionsOfTestCase;
 						time = time / freq.QuadPart * 1000;
 						if (stop_condition != 1)
 						{
-							file.width(13);
-							file << time;
+							resultFile.width(13);
+							resultFile << time;
 						}
-						cout << "Sredni czas = " << time << endl;
-						file.width(13);
-						file << solution;
-						cout << "Sredni wynik = " << solution << endl;
-						percent = (solution / (bestSolutions[i] * 1.0) - 1) * 100;
-						cout << "Procent bledu = " << percent << endl;
-						file.width(13);
-						file << percent << endl;
+						cout << "Average time = " << time << endl;
+						resultFile.width(13);
+						resultFile << solution;
+						cout << "Average solution = " << solution << endl;
+						percent = (solution / (bestKnownSolutions[i] * 1.0) - 1) * 100;
+						cout << "Average percentage error = " << percent << endl;
+						resultFile.width(13);
+						resultFile << percent << endl;
 					}
 
 				}
-				cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
+				cout << endl << "Press a key to continue...";
 				cin.ignore();
 				cin.get();
-				file.close();
+				resultFile.close();
 			}
-			else cout << "\nProblem z plikiem wyjsciowym";
+			else cout << "\nResult file error!";
 			break;
 		case 'b':
 		case 'B':
-			loop3 = false;
+			goBack = true;
 			break;
 		default:
 			break;
