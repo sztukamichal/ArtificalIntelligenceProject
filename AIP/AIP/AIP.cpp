@@ -694,7 +694,7 @@ void tabuSearchMenu(string filename) {
         default:
             break;
         }
-        showMenu = option != 't' && option != 'T' && option != 'S' && option != 's';
+        showMenu = option != 'S' && option != 's';
     }
 };
 
