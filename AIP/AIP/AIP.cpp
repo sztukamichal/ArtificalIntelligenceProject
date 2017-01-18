@@ -395,45 +395,51 @@ void tabuMenu(string filename)
 	string geneticMenu;
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
 	LARGE_INTEGER freq;
+	char option;
+	bool goBack = false;
+	bool showMenu = true;
+	bool loop = true;
+	bool loop2 = true;
+	bool loop3 = true;
 
 	while (!goBack){
 		geneticMenuStream.str("");
 		geneticMenuStream.clear();
 		geneticMenuStream <<
-		"|.........................................................................|\n"
-		"|.......... ________________________________ .............................|\n"
-		"|..........|      _  _   _                  |.............................|\n"
-		"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
-		"|..........|    /     | |_ | \\| |_|         |.............................|\n"
-		"|..._______|________________________________|____________________.........|\n"
-		"|..|                                                             |........|\n"
-		"|..|                   TABU SEARCH                               |........|\n"
-		"|..|                                                             |........|\n"
-		"|..|   OPTION:                                      KEY:         |........|\n"
-		"|..|                                                             |........|\n"
-		"|..|   START SINGLE SOLUTION                         S           |........|\n"
-		"|..|   MAKE TESTS                                    T           |........|\n"
-		"|..|   GO BACK                                       B           |........|\n"
-		"|..|                                                             |........|\n"
-		"|..|________________   INSTANCE   _______________________________|........|\n"
-		"|..|                                                             |........|\n"
-		"|..|   FILENAME :                           " << myfillandw(' ', 10) << filename << "           |........|\n"
-		"|..|   NUMBER OF CITIES :                          " << myfillandw(' ', 3) << size << "           |........|\n"
-		"|..|                                                             |........|\n"
-		"|..|_____________________________________________________________|........|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n"
-		"|.........................................................................|\n";
+			"|.........................................................................|\n"
+			"|.......... ________________________________ .............................|\n"
+			"|..........|      _  _   _                  |.............................|\n"
+			"|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
+			"|..........|    /     | |_ | \\| |_|         |.............................|\n"
+			"|..._______|________________________________|____________________.........|\n"
+			"|..|                                                             |........|\n"
+			"|..|                   TABU SEARCH                               |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|   OPTION:                                      KEY:         |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|   START SINGLE SOLUTION                         S           |........|\n"
+			"|..|   MAKE TESTS                                    T           |........|\n"
+			"|..|   GO BACK                                       B           |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|________________   INSTANCE   _______________________________|........|\n"
+			"|..|                                                             |........|\n"
+			"|..|   FILENAME :                           " << myfillandw(' ', 10) << filename << "           |........|\n"
+			"|..|   NUMBER OF CITIES :                          " << myfillandw(' ', 3) << size << "           |........|\n"
+			"|..|                                                             |........|\n"
+			"|..|_____________________________________________________________|........|\n"
+			"|.........................................................................|\n"
+			"|.........................................................................|\n"
+			"|.........................................................................|\n"
+			"|.........................................................................|\n";
 
 
-	geneticMenu = geneticMenuStream.str();
-	double time = 0;
-	if (showMenu) {
-		system("cls");
-		cout << geneticMenu;
-	}
-	printConsole();
+		geneticMenu = geneticMenuStream.str();
+		double time = 0;
+		if (showMenu) {
+			system("cls");
+			cout << geneticMenu;
+		}
+		printConsole();
 		cin >> option;
 		switch (option){
 		case 's':
@@ -544,7 +550,7 @@ void tabuMenu(string filename)
 							cin >> ktory;
 							if (ktory>1) num_of_candidates = ktory;
 							break;
-						/*case 7:
+							/*case 7:
 							tabu_search->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
 							break;*/
 						case 7:
@@ -559,7 +565,7 @@ void tabuMenu(string filename)
 					performanceCountStart = startTimer();
 					solution = tabuSearch->algorithm();
 					performanceCountEnd = endTimer();
-					time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+					time = (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 					duration(time, 1);
 					cout << "MIN: " << solution;
 					cout << "\nCzas trwania algorytmu: " << time << " [ms]" << endl;
