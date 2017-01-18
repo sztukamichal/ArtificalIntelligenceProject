@@ -64,6 +64,16 @@ void printConsole(){
 	cout << endl << "console> ";
 }
 
+void replaceAll(string& str, const string& from, const string& to) {
+	if (from.empty())
+		return;
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); 
+	}
+}
+
 string arrayToString(double array[], int size) {
 	ostringstream stream;
 	stream << "{";
@@ -89,13 +99,18 @@ string arrayToString(int array[], int size) {
 }
 
 string getCurrentTime() {
+	string result;
 	time_t t = time(0);
 	struct tm now;
 	localtime_s(&now, &t);
 	char buf[80];
-	strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &now);
-	return buf;
+	strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &now);
+	result = buf;
+	replaceAll(result, ":", "-");
+	return result;
 }
+
+
 
 string arrayToString(string array[], int size) {
 	string result;
@@ -857,15 +872,19 @@ void testGenetic()
 
 	char choice;
 	bool goBack = false;
+	bool setAll = false;
 	bool showMenu = true;
 	double time = 0;
 	double percentangeError = 0;
 	int newValue;
 	string newStringValue;
+	bool stopTest = false;
 
 	string possibleTestScenario[5] = { "Size of population", "Population quantity", "Quantity of mutating genes", "Probability of mutation", "Children quantity" };
 
 	while (!goBack){
+		stopTest = false;
+		setAll = false;
 		dataFilesStr = arrayToString(dataFiles, numOfInstances);
 		bestKnownSolutionsStr = arrayToString(bestKnownSolutions, numOfInstances);
 		testScenarioStr = possibleTestScenario[testScenario];
@@ -886,6 +905,7 @@ void testGenetic()
 		"|..|                                                             |........|\n"
 			"|..|	  START TEST                                 S           |........|\n"
 			"|..|      CHANGE VALUE OF PARAMETER NR. X            X           |........|\n"
+			"|..|      SET ALL                                    A           |........|\n"
 			"|..|      BACK                                       B           |........|\n"
 			"|..|                                                             |........|\n"
 			"|..|_____________   PARAMETERS OF TEST   ________________________|........|\n"
@@ -922,6 +942,9 @@ void testGenetic()
 		cin >> choice;
 
 		switch (choice) {
+			case 'a':
+			case 'A':
+				setAll = true;
 			case '1':
 				cout << "Input new value for instances quantity (>0): ";
 				cin >> newValue;
@@ -949,36 +972,38 @@ void testGenetic()
 					}
 			case '2':
 				cout << "Provide best known solutions for these instances." << endl;
-				for (int i = 1; i<=numOfInstances; i++)
-					{
+				for (int i = 1; i<=numOfInstances; i++) {
 					cout << endl << i << " of " << numOfInstances << " : ";
 					cin >> bestKnownSolutions[i-1];
-					}
+				}
+				if(!setAll)
 					break;
 			case '3':
 				cout << "Which factor you want to test? \n\t0 - size of population\n\t1 - quantity of population\n\t2 - quantity of mutating genes\n\t3 - probability of mutation\n\t4 - children quantity\nYour choice : ";
 				cin >> newValue;
 				if (newValue >= 0 && newValue <= 4) testScenario = newValue;
+				if (!setAll)
 					break;
 			case '4':
 				cout << "How many values do you want to test? ";
 				cin >> numOfTestedValues;
 				cout << "Provide values of tested factor \n ";
-				for (int i = 1; i<=numOfTestedValues; i++)
-					{
-					cout << endl << i << " of " << numOfInstances << " : ";
+				for (int i = 1; i<=numOfTestedValues; i++) {
+					cout << endl << i << " of " << numOfTestedValues << " : ";
 					cin >> valuesOfTestedFactor[i-1];
-					}
+				}
+				if (!setAll)
 					break;
 			case '5':
 				cout << "Input new value for iteration per one scenario (>0): ";
 				cin >> newValue;
 				if (newValue>0) 
 					numOfIterationsPerSingleRun = newValue;
+				if (!setAll)
 					break;
 			case '6':
-					do{
-					cout << endl << "Input name of result file (.txt): ";
+				do{
+					cout << endl << "Input name of result file (.csv): ";
 					cin >> newStringValue;
 				} while (resultFileStr.empty());
 
@@ -999,6 +1024,15 @@ void testGenetic()
 				break;
 			case 's':
 			case 'S':
+				for (int i = 0; i < numOfInstances;  i++) {
+					if (!fileExists(dataFiles[i])) {
+						cout << "File " << dataFiles[i] << " does not exist. Can not start test..";
+						stopTest = true;
+						break;
+					}
+				}
+				if (stopTest)
+					break;
 				resultFile.open(resultFileStr.c_str());
 				if (!resultFile.good()){
 					cout << "\nError with creating file.";
@@ -1010,20 +1044,20 @@ void testGenetic()
 					cout << "TESTED FACTOR: " << testScenarioStr << endl;
 					cout << "Number of runs per single scenario : " << numOfIterationsPerSingleRun << endl;
 					resultFile << "TESTED FACTOR: " << testScenarioStr << "\n";
-					resultFile << "Number of runs per single scenario : " << numOfIterationsPerSingleRun << "It means that every measurement is average of " << numOfIterationsPerSingleRun << " runs" << "\n";
+					resultFile << "Number of runs per single scenario : " << numOfIterationsPerSingleRun << " It means that every measurement is average of " << numOfIterationsPerSingleRun << " runs" << "\n";
 					for (int i = 0; i<numOfInstances; i++) {
 
 						cout << "Test for instance: " << dataFiles[i] << "\nLoading...\n";
-						resultFile << "," << dataFiles[i] << endl;
-						resultFile << ",,Value of factor, time[ms], solution, percentage error/n";
+						resultFile << ";" << dataFiles[i] << "\n";
+						resultFile << ";;Value of factor; time[ms]; solution; percentage error\n";
 						
-					delete geneticAlgorithm;
+						delete geneticAlgorithm;
 						geneticAlgorithm = new GeneticAlgorithm(dataFiles[i]);
 
 						for (int k = 0; k<numOfTestedValues; k++)
 					{
 							cout << endl << "\t" << k+1 << " value of " << numOfTestedValues << " : " << valuesOfTestedFactor[k] << endl;
-							resultFile << ",," << valuesOfTestedFactor[k];
+							resultFile << ";;" << valuesOfTestedFactor[k];
 						time = 0;
 						solution = 0;
 							
@@ -1049,7 +1083,7 @@ void testGenetic()
 
 							for (int j = 1; j <= numOfIterationsPerSingleRun; j++)
 							{
-								cout << "\t\tIteration " << j << " of " << numOfIterationsPerSingleRun << endl;
+								cout << "\t\tIteration " << j << " of " << numOfIterationsPerSingleRun << "..." << endl;
 								performanceCountStart = startTimer();
 								solution += geneticAlgorithm->algorithm();
 								performanceCountEnd = endTimer();
@@ -1060,15 +1094,15 @@ void testGenetic()
 							solution /= numOfIterationsPerSingleRun;
 						time = time / freq.QuadPart * 1000;
 							
-							resultFile << "," << time;
-							cout << "Mean time : " << time << endl;
+						resultFile << ";" << time;
+							cout << "\tMean time [ms] : " << time << endl;
 							
-							resultFile << "," << solution;
-							cout << "Mean solution : " << solution << endl;
+							resultFile << ";" << solution;
+							cout << "\tMean solution : " << solution << endl;
 							
 							percentangeError = (solution / (bestKnownSolutions[i] * 1.0) - 1) * 100;
-							cout << "Mean percentage error = " << percentangeError << endl;
-							resultFile << "," << percentangeError << "\n";
+							cout << "\tMean percentage error = " << percentangeError << endl;
+							resultFile << ";" << percentangeError << "\n";
 					}
 				}
 					resultFile.close();
