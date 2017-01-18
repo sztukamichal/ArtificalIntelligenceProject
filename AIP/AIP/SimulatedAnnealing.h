@@ -7,16 +7,23 @@ private:
     Matrix * matrix;
     int size;
 
-public:
-    int algorithm(int period, double alpa, double& temperature, double endTemperature);
-    double initialTemperature();
+    double generateInitialTemperature();
     bool probability(int delta, double temperature);
     int* randomPermutation();
     void swapPermutation(const int * permutation, int* nextState);
     int* setMinimalTour(const int* permutation);
     int cost(int* permutation);
     void showPermutation(const int*);
-    Matrix* getMacierz() {
+
+public:
+    int period;
+    double alpha;
+    double initialTemperature;
+    double finalTemperature;
+    bool autoGenerateInitialTemperature;
+
+    int algorithm();
+    Matrix* getMatrix() {
         return matrix;
     }
     int getSize() {

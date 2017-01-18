@@ -8,22 +8,25 @@ using namespace std;
 
 const double e = 2.71828182845904523536;
 
-int SimulatedAnnealing::algorithm(int period, double alpha, double& temperature, double endTemperature) {
+int SimulatedAnnealing::algorithm() {
     int* minimalTour;
     int* nextState = new int[size];
     int* currentPermutation = new int[size];
-    double T = initialTemperature();
-    double TK = endTemperature;
-    temperature += T;
+
+    if (autoGenerateInitialTemperature) {
+        initialTemperature = generateInitialTemperature();
+    }
+    double T = initialTemperature;
 
     currentPermutation = randomPermutation();								// wygenerowanie losowej permutacji
     int min = cost(currentPermutation);										// policzenie kosztu pierwszej permutacji
     int currentPermutationCost = min;
     minimalTour = setMinimalTour(currentPermutation);
 
-    while (T >TK) {
+    int a, b;
+
+    while (T > finalTemperature) {
         for (int i = 0; i < period; i++) {									// epoki
-            int a, b;
             do {
                 a = rand() % size;
                 b = rand() % size;
@@ -61,7 +64,7 @@ bool SimulatedAnnealing::probability(int delta, double Temperature) {
     return r < prob;
 }
 
-double SimulatedAnnealing::initialTemperature() {
+double SimulatedAnnealing::generateInitialTemperature() {
     double delta = 0;
     int *currentPermutation = randomPermutation();							//losowa permutacja
     int currentPermutationCost = cost(currentPermutation);
@@ -117,6 +120,13 @@ int SimulatedAnnealing::cost(int* permutation) {
 SimulatedAnnealing::SimulatedAnnealing(string filename) {
     matrix = new Matrix(filename);
     this->size = matrix->getSize();
+
+    //Default values of prameters
+    period = 50;
+    alpha = 0.999;
+    initialTemperature = 100;
+    finalTemperature = 0.2;
+    autoGenerateInitialTemperature = true;
 }
 
 SimulatedAnnealing::~SimulatedAnnealing() {
