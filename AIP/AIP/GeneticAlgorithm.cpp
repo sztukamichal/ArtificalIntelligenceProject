@@ -11,6 +11,13 @@ GeneticAlgorithm::GeneticAlgorithm(std::string filename) {
 	minCost = 0;
 	solved = false;
 	populationCost = 0;
+
+	//Default values of prameters
+	sizeOfPopulation = 50;					
+	numberOfPopulation = 300;				
+	numberOfGenes = 2;						
+	probability = 50;						
+	numberOfChild = 50;						
 }
 
 void GeneticAlgorithm::showPopulation(vector<int*>* population) {
@@ -217,7 +224,7 @@ void GeneticAlgorithm::calculateAllCosts(vector<int*>* population) {
 	}
 }
 
-int GeneticAlgorithm::algorithm(int sizeOfPopulation, int numberOfPopulation, int numberOfGenes, int probability, int numberOfChild) {       // matrix->show_matrix();
+int GeneticAlgorithm::algorithm() {       // matrix->show_matrix();
 	population = new vector<int*>();
 	initialPopulation(sizeOfPopulation);
 	//showPopulation(this->population);
@@ -297,6 +304,14 @@ void GeneticAlgorithm::deleteRunt(int size) {
 		//showPermutation(*it);
 		population->erase(it);
 	}
+}
+
+void GeneticAlgorithm::setParameters(int sizeOfPopulation, int numberOfPopulation, int numberOfGenes, int probability, int numberOfChild) {
+	this->sizeOfPopulation = sizeOfPopulation;
+	this->numberOfPopulation = numberOfPopulation;
+	this->numberOfGenes = numberOfGenes;
+	this->probability = probability;
+	this->numberOfChild = numberOfChild;
 }
 
 GeneticAlgorithm::~GeneticAlgorithm() {
