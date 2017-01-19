@@ -1585,6 +1585,15 @@ void tabuSearchTestMenu() {
 
         case 's':
         case 'S':
+			for (int i = 0; i < numOfInstances; i++) {
+				if (!fileExists(dataFiles[i])) {
+					cout << "File " << dataFiles[i] << " does not exist. Can not start test..";
+					stopTest = true;
+					break;
+				}
+			}
+			if (stopTest)
+				break;
             resultFile.open(resultFileStr.c_str());
             if (resultFile.good()) {
                 for (int i = 0; i<numOfInstances; i++) {
