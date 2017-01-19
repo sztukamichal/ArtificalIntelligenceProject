@@ -81,6 +81,12 @@ void replaceAll(string& str, const string& from, const string& to) {
 	}
 }
 
+string doubleToString(double value) {
+    ostringstream stream;
+    stream << value;
+    return stream.str();
+}
+
 string arrayToString(double array[], int size) {
 	ostringstream stream;
 	stream << "{";
@@ -143,7 +149,7 @@ inline bool fileExists(const std::string& name) {
 //---------- END ---------------
 
 void geneticAlgorithmTestMenu();
-void simulatedAnnealingTestMenu(string filename, int period, double  alphas[], double ile, double endTemperature);
+void simulatedAnnealingTestMenu();
 void tabuSearchTestMenu();
 void geneticAlgorithmMenu(string);
 void simulatedAnnealingMenu(string);
@@ -223,7 +229,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
                            "|.........................................................................|\n"
                            "|.........................................................................|\n";
             cout << mainMenuStream.str() << endl;
-		
+
 
 		if (isProperlyLoaded) {
             cout << endl << "Loaded from file: " << fileName <<endl;
@@ -305,7 +311,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 }
 
 void geneticAlgorithmMenu(string filename) {
-	ostringstream geneticMenuStream;
+    ostringstream menuStream;
 	char choice;
 	bool goBack = false;
 	bool showMenu = true;
@@ -317,9 +323,9 @@ void geneticAlgorithmMenu(string filename) {
 
     while (!goBack) {
         setAll = false;
-		geneticMenuStream.str("");
-		geneticMenuStream.clear();
-		geneticMenuStream <<
+        menuStream.str("");
+        menuStream.clear();
+        menuStream <<
 			"|.........................................................................|\n"
 			"|.......... ________________________________ .............................|\n"
 			"|..........|      _  _   _                  |.............................|\n"
@@ -370,7 +376,7 @@ void geneticAlgorithmMenu(string filename) {
 			"|.........................................................................|\n";
 		if (showMenu) {
 			system("cls");
-            cout << geneticMenuStream.str();
+            cout << menuStream.str();
 		}
 		printConsole();
 		cin >> choice;
@@ -534,20 +540,20 @@ void tabuSearchMenu(string filename) {
 			cin >> ktory;
 			if (ktory >= 0 && ktory <3) stop_condition = ktory;
 			if (!setAll)
-				break;
+			break;
 		case '2':
 			cout << "\nDiversification?\n1 - yes, 0 - no\n";
 			cin >> ktory;
 			if (ktory == 1)  diversificationOn = true; 
 			else if (ktory == 0) diversificationOn = false;
 			if (!setAll)
-				break;
+			break;
 		case '3':
 			cout << "\nInsert value of the parameter not_change for diversification (e.g.not_change=2*size) : ";
 			cin >> ktory;
 			if (ktory>0) div_not_change = ktory;
 			if (!setAll)
-				break;
+			break;
 		case '4':
             do {
 				cout << "\nInsert the lengh of tabu list : ";
@@ -555,7 +561,7 @@ void tabuSearchMenu(string filename) {
 			} while (ktory <= 0);
 			tabu_length = ktory;
 			if (!setAll)
-				break;
+			break;
 		case '5':
 			cout << "\nInsert the number of candidates (e.g.num_of_candidates=2*size) : ";
 			cin >> ktory;
@@ -564,18 +570,18 @@ void tabuSearchMenu(string filename) {
 		case 's':
 		case 'S':
 			cout << "\nPlease wait... Computing...\n\n";
-			tabuSearch->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
-			performanceCountStart = startTimer();
-			solution = tabuSearch->algorithm();
-			performanceCountEnd = endTimer();
-			time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
-			duration(time, 1);
+					tabuSearch->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
+					performanceCountStart = startTimer();
+					solution = tabuSearch->algorithm();
+					performanceCountEnd = endTimer();
+                    time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+					duration(time, 1);
 			cout << "Solution: " << solution;
 			cout << "\nComputation time: " << time << " [ms]\n\n";
 			cout << "Press any key to continue...";
-			cin.ignore();
-			cin.get();
-			break;
+					cin.ignore();
+					cin.get();
+					break;
 		case 't':
 		case 'T':
             tabuSearchTestMenu();
@@ -593,32 +599,28 @@ void tabuSearchMenu(string filename) {
 
 void simulatedAnnealingMenu(string filename) {
 	double alphas[5] = { 0.9, 0.95, 0.99, 0.995, 0.999 };
-	int period = 50;
-	double Temperature = 100;
-	bool autTemp = true;
-	double endTemperature = 0.02;
 	double ile = 10.0;
 
-	int per = 50;
 	int solution = 0;
-	double tk = 0.2;
-	double alpha = 0.999;
-	double czas = 0;
-	double startTemp = 0;
+    double time = 0;
 	
 	ostringstream simulatedMenuStream;
-	string simulatedMenu;
 	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	char option;
+
+    char choice;
+    char choice2;
 	bool goBack = false;
 	bool showMenu = true;
-	bool loop = true;
-	bool loop2 = true;
-
+    bool setAll = false;
+    int newValue;
+    double newDoubleValue;
+    string initialTemperatureString;
 
     while (!goBack) {
+        setAll = false;
 		simulatedMenuStream.str("");
 		simulatedMenuStream.clear();
+        initialTemperatureString = simulatedAnnealing->autoGenerateInitialTemperature ? "Auto" : doubleToString(simulatedAnnealing->initialTemperature);
 		simulatedMenuStream <<
 	    "|.........................................................................|\n"
 		"|.......... ________________________________ .............................|\n"
@@ -630,214 +632,417 @@ void simulatedAnnealingMenu(string filename) {
 		"|..|                                                             |........|\n"
 		"|..|                   SIMULATED ANNEALING                       |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   OPTION:                                      KEY:         |........|\n"
+                            "|..|      OPTION                                    KEY          |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   START SINGLE SOLUTION                         S           |........|\n"
+                            "|..|      START SINGLE SOLUTION                      S           |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   MAKE TESTS                                    T           |........|\n"
+                            "|..|      MAKE TESTS                                 T           |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   CHANGE VALUE OF PARAMETER NR. X               X           |........|\n"
+                            "|..|      CHANGE VALUE OF PARAMETER NR. X            X           |........|\n"
 		"|..|                                                             |........|\n"
-		"|..|   GO BACK                                       B           |........|\n"
+                            "|..|      SET ALL                                    A           |........|\n"
 		"|..|                                                             |........|\n"
+                            "|..|                                                             |........|\n"
+                            "|..|      GO BACK                                    B           |........|\n"
+                            "|..|                                                             |........|\n"
 		"|..|________________   INSTANCE   _______________________________|........|\n"
 		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
-                            "|..|   FILENAME :                           " << myfillandwr(' ', 10) << filename << "           |........|\n"
+                            "|..|      FILENAME :                        " << myfillandwr(' ', 10) << filename << "           |........|\n"
 							"|..|                                                             |........|\n"
-                            "|..|   NUMBER OF CITIES :                          " << myfillandwr(' ', 3) << simulatedAnnealing->getSize() << "           |........|\n"
+                            "|..|      NUMBER OF CITIES :                       " << myfillandwr(' ', 3) << simulatedAnnealing->getSize() << "           |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
 		"|..|_____________   PARAMETERS OF ALGORITHM   ___________________|........|\n"
 		"|..|                                                             |........|\n"
 		"|..|                                                             |........|\n"
-                            "|..|  1. PARAMETER S                               " << myfillandwr(' ', 3) << per << "           |........|\n"
+                            "|..|   1. DURATION (ERA)                          " << myfillandwr(' ', 4) << simulatedAnnealing->period << "           |........|\n"
 							"|..|                                                             |........|\n"
-                            "|..|  2. PARAMETER ALPHA                         " << myfillandwr(' ', 5) << alpha << "           |........|\n"
-	    "|..|                                                             |........|\n"
-                            "|..|  3. FINAL TEMPERATURE                        " << myfillandwr(' ', 4) << tk << "           |........|\n"
+                            "|..|   2. PARAMETER ALPHA                        " << myfillandwr(' ', 5) << simulatedAnnealing->alpha << "           |........|\n"
+							"|..|                                                             |........|\n"
+                            "|..|   3. FINAL TEMPERATURE                     " << myfillandwr(' ', 6) << simulatedAnnealing->finalTemperature << "           |........|\n"
 		"|..|                                                             |........|\n"
+                            "|..|   4. INITIAL TEMPERATURE                   " << myfillandwr(' ', 6) << initialTemperatureString << "           |........|\n"
+                            "|..|                                                             |........|\n"
 		"|..|_____________________________________________________________|........|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n"
 		"|.........................................................................|\n";
-		simulatedMenu = simulatedMenuStream.str();
-		czas = 0;
 		if (showMenu) {
 		system("cls");
-			cout << simulatedMenu;
+            cout << simulatedMenuStream.str();
 		}
 		printConsole();
-		cin >> option;
+        cin >> choice;
 
-        switch (option) {
-		case 's'://menu1
-		case 'S':
-			loop2 = true;
-            while (loop2) {
-				system("cls");
-				cout << "Parametr s: " << per << endl << "Parametr alpha: " << alpha << endl << "Temperatura koncowa: " << tk << endl << endl;
-				cout << "1. Wyswietl macierz sasiedztwa\n2. Edytuj parametry\n3. Rozpocznij alogrytm\n4. Powrot\n";
-				cin >> option;
-                switch (option) {
-				case 1:
-					cout << endl;
-					simulatedAnnealing->getMacierz()->show_matrix();
-					cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
-					cin.ignore();
-					cin.get();
+        switch (choice) {
+        case 'a':
+        case 'A':
+            setAll = true;
+        case '1':
+            cout << "Input new value for duration (era) ( > 0 ): ";
+            cin >> newValue;
+            if (newValue>0) simulatedAnnealing->period = newValue;
+            if (!setAll)
 					break;
-				case 2:
-					cout << "\nPodaj s:\n";
-					cin >> per;
-					cout << "\nPodaj alpha:\n";
-					cin >> alpha;
-					cout << "\nPodaj temperature koncowa\n";
-					cin >> tk;
-					system("cls");
+        case '2':
+            cout << "Input new value for alpha ( 0 < alpha < 1 ): ";
+            cin >> newDoubleValue;
+            if (newDoubleValue>0 && newDoubleValue<1) simulatedAnnealing->alpha = newDoubleValue;
+            if (!setAll)
 					break;
-				case 3:
-					cout << "MIN: ";
+        case '3':
+            cout << "Input new value for final temperature ( > 0 ): ";
+            cin >> newDoubleValue;
+            if (newDoubleValue>0) simulatedAnnealing->finalTemperature = newDoubleValue;
+            if (!setAll)
+                break;
+        case '4':
+            cout << "Do you want to auto-generate initial temperature ? (y/n) : ";
+            cin >> choice2;
+            if (choice2 == 'y') {
+                simulatedAnnealing->autoGenerateInitialTemperature = true;
+            } else {
+                simulatedAnnealing->autoGenerateInitialTemperature = false;
+                cout << "Input new value for initial temperature ( > " << simulatedAnnealing->finalTemperature << " ): ";
+                cin >> newDoubleValue;
+                if (newDoubleValue>simulatedAnnealing->finalTemperature) simulatedAnnealing->initialTemperature = newDoubleValue;
+            }
+            break;
+        case 's':
+        case 'S':
+            time = 0;
+            cout << "\nPlease wait... Computing..." << endl;
 					performanceCountStart = startTimer();
-					solution = simulatedAnnealing->algorithm(per, alpha, startTemp, tk);
+            solution = simulatedAnnealing->algorithm();
 					performanceCountEnd = endTimer();
-					czas = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
-					duration(czas, 1);
-					cout << solution << "\nCzas trwania algorytmu: " << czas << " [ms]" << endl;
-					cout << "Temperatura pocz¹tkowa: " << startTemp;
-					cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
+            time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+            duration(time, 1);
+            cout << "\t Solution: " << solution << endl;
+            cout << "\t Computation time: " << time << " [ms]" << endl;
+            if (simulatedAnnealing->autoGenerateInitialTemperature) {
+                cout << "\t Initial temperature: " << simulatedAnnealing->initialTemperature << endl;
+            }
+            cout << "Press any key to continue...";
 					cin.ignore();
 					cin.get();
 					break;
-				case 4:
-					loop2 = false;
+        case 't':
+        case 'T':
+            simulatedAnnealingTestMenu();
 					break;
+        case 'b':
+        case 'B':
+            goBack = true;
+            break;
 				default:
 					break;
 				}
+        showMenu = choice != 'S' && choice != 's';
 			}
-			break;
-		case 't':
-		case 'T':
-            if (filename == "brak pliku") {
-				system("cls");
-				cout << "Nie wybrano pliku";
-				cin.ignore();
-				cin.get();
-				break;
-			}
-			loop = true;
-            while (loop) {
-				system("cls");
-				cout << "Aktualne parametry alpha: ";
-				for (int i = 0; i < 5; i++)
-					cout << alphas[i] << "  ";
-				cout << "\nAktualne parametry s: n , (n^2)/2, " << period << endl;
-				cout << "Temperatura poczatkowa: ";
-				if (autTemp)cout << "automatycznie\n";
-				else cout << Temperature;
-				cout << "Temperatura koncowa: " << endTemperature << endl;
-				cout << "Ilosc powtorzen algorytmu: " << ile << endl << endl;
-				cout << "1. Edytuj parametry alpha\n2. Edytuj parametr s\n3. Edytuj temperature poczatkowa\n4. Edytuj temperature koncowa\n5. Edytuj liczbe powtorzen\n6. Rozpocznij test algorytmu z powyzszymi parametrami\n7. Powrot\n";
-				cin >> option;
-                switch (option) {
-				case 1:
-					system("cls");
-                    for (int i = 0; i < 5; i++) {
-						cout << "Podaj parametra alpha \n" << i << endl;
-						cin >> alphas[i];
-						cout << endl;
-					}
-					break;
-				case 2:
-					system("cls");
-					cout << "Podaj parametr s\n";
-					cin >> period;
-					break;
-                case 3:
-                    break;
-				case 4:
-					system("cls");
-					cout << "Podaj temperature koncowa\n";
-					cin >> endTemperature;
-					break;
-				case 5:
-					system("cls");
-					cout << "Podaj liczbe powtorzen\n";
-					cin >> ile;
-					break;
-				case 6:
-					system("cls");
-                    simulatedAnnealingTestMenu(filename, period, alphas, ile, endTemperature);
-					cin.ignore();
-					cin.get();
-				case 7:
-					loop = false;
-					break;
-                default:
-                    break;
-				}
-			}
-			break;
-		case 'b':
-		case 'B':
-			goBack = true;
-			break;
-		default:
-			break;
-		}
-		showMenu = option != 't' && option != 'T' && option != 'S' && option != 's';
-	}
 };
 
-void simulatedAnnealingTestMenu(string filename, int period, double  alphas[], double ile, double endTemperature) {
-	int s;
-	LARGE_INTEGER performanceCountStart, performanceCountEnd;
-	LARGE_INTEGER freq;
-	QueryPerformanceFrequency(&freq);
-	ofstream plik;
-	//filename.find('.');
-	plik.open("wyniki " + filename + ".txt");
-	plik << filename << endl << "PERIOD ALPHA T0 TIME MINIMUM" << endl;
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 3; j++) {
-            switch (j) {
+void simulatedAnnealingTestMenu() {
+
+    LARGE_INTEGER performanceCountStart, performanceCountEnd;
+    LARGE_INTEGER freq;
+    QueryPerformanceFrequency(&freq);
+    ofstream resultFile;
+
+    ostringstream testMenuStream;
+    string dataFilesStr;
+    string bestKnownSolutionsStr;
+    string valuesOfTestedFactorStr;
+    string resultFileStr = getCurrentTime() + ".csv";
+
+    int numOfInstances = 7;
+    string* dataFiles = new string[numOfInstances]();
+    dataFiles[0] = "br17.atsp";
+    dataFiles[1] = "ftv47.atsp";
+    dataFiles[2] = "ftv64.atsp";
+    dataFiles[3] = "kro124p.atsp";
+    dataFiles[4] = "ftv170.atsp";
+    dataFiles[5] = "rbg323.atsp";
+    dataFiles[6] = "rbg443.atsp";
+
+    int *bestKnownSolutions = new int[numOfInstances]();
+    bestKnownSolutions[0] = 39;
+    bestKnownSolutions[1] = 1776;
+    bestKnownSolutions[2] = 1839;
+    bestKnownSolutions[3] = 36230;
+    bestKnownSolutions[4] = 2755;
+    bestKnownSolutions[5] = 1326;
+    bestKnownSolutions[6] = 2720;
+
+    int numOfTestedValues = 6;
+    double *valuesOfTestedFactor = new double[numOfTestedValues]();
+    valuesOfTestedFactor[0] = 200;
+    valuesOfTestedFactor[1] = 100;
+    valuesOfTestedFactor[2] = 50;
+    valuesOfTestedFactor[3] = 25;
+    valuesOfTestedFactor[4] = 10;
+    valuesOfTestedFactor[5] = 5;
+
+    int testScenario = 3;
+    string possibleTestScenario[4] = { "Initial temperature", "Final temperature", "Parameter alpha", "Period" };
+    int repetitionsOfTestCase = 2;
+    int solution = 0;
+
+    char choice;
+    bool goBack = false;
+    bool setAll = false;
+    bool stopTest = false;
+    bool showMenu = true;
+
+    double time = 0;
+    double percentangeError = 0;
+
+    int newValue;
+    string newStringValue;
+
+    while (!goBack) {
+        stopTest = false;
+        setAll = false;
+        dataFilesStr = arrayToString(dataFiles, numOfInstances);
+        bestKnownSolutionsStr = arrayToString(bestKnownSolutions, numOfInstances);
+        valuesOfTestedFactorStr = arrayToString(valuesOfTestedFactor, numOfTestedValues);
+
+        testMenuStream.str("");
+        testMenuStream.clear();
+        testMenuStream <<
+                       "|.........................................................................|\n"
+                       "|.......... ________________________________ .............................|\n"
+                       "|..........|      _  _   _                  |.............................|\n"
+                       "|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
+                       "|..........|    /     | |_ | \\| |_|         |.............................|\n"
+                       "|..._______|________________________________|____________________.........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                   SIMULATED ANNEALING                       |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      OPTION:                                   KEY:         |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      START TEST                                 S           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      CHANGE VALUE OF PARAMETER NR. X            X           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      SET ALL                                    A           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      BACK                                       B           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|_____________   PARAMETERS OF TEST   ________________________|........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|   1. NUMBER OF INSTANCES                      " << myfillandwr(' ', 3) << numOfInstances << "           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      " << myfillandwl(' ', 49) << dataFilesStr << "      |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|   2. BEST KNOWN SOLUTIONS                                   |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      " << myfillandwl(' ', 49) << bestKnownSolutionsStr << "      |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|   3. TESTED FACTOR                                          |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      " << myfillandwl(' ', 26) << possibleTestScenario[testScenario] << "                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|   4. VALUES OF TESTED FACTOR                                |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      " << myfillandwl(' ', 26) << valuesOfTestedFactorStr << "                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|   5. REPETITIONS OF TEST CASE                   " << myfillandwl(' ', 3) << repetitionsOfTestCase << "         |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|   6. NAME OF RESULT FILE                                    |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      " << myfillandwl(' ', 26) << resultFileStr << "                             |........|\n"
+                       "|..|_____________________________________________________________|........|\n"
+                       "|.........................................................................|\n"
+                       "|.........................................................................|\n"
+                       "|.........................................................................|\n"
+                       "|.........................................................................|\n";
+        if (showMenu) {
+				system("cls");
+            cout << testMenuStream.str();
+        }
+        showMenu = true;
+        printConsole();
+        cin >> choice;
+
+        if (choice == 's' || choice == 'S') {
+            showMenu = false;
+        }
+
+        switch (choice) {
+        case 'a':
+        case 'A':
+            setAll = true;
+        case '1':
+            cout << "Input new value for instances quantity (>0): ";
+            cin >> newValue;
+            if (newValue <= 0)
+				break;
+            numOfInstances = newValue;
+            cout << "Provide names of data files (.atsp) : ";
+            for (int i = 1; i <= numOfInstances; i++) {
+                cout << endl << i << " of " << numOfInstances << " : ";
+                cin >> newStringValue;
+                if (newStringValue.find(".atsp") == string::npos) {
+                    newStringValue += ".atsp";
+                }
+
+                if (!fileExists(newStringValue)) {
+                    cout << endl << "There is no such file in directory, try again.";
+                    i--;
+                } else {
+                    dataFiles[i - 1] = newStringValue;
+                }
+			}
+        case '2':
+            cout << "Provide best known solutions for these instances." << endl;
+            for (int i = 1; i <= numOfInstances; i++) {
+                cout << endl << i << " of " << numOfInstances << " : ";
+                cin >> bestKnownSolutions[i - 1];
+					}
+            if (!setAll)
+					break;
+        case '3':
+            cout << "Which factor you want to test?";
+            for (int i = 0; i < (sizeof(possibleTestScenario) / sizeof(*possibleTestScenario)); i++) {
+                cout << "\n\t" << i << " - " + possibleTestScenario[i];
+            }
+            cout << "\nYour choice: ";
+            cin >> newValue;
+            if (newValue >= 0 && newValue <= 4) testScenario = newValue;
+            if (!setAll)
+					break;
+        case '4':
+            cout << "How many values do you want to test? ";
+            cin >> numOfTestedValues;
+            cout << "Provide values of tested factor \n ";
+            for (int i = 1; i <= numOfTestedValues; i++) {
+                cout << endl << i << " of " << numOfTestedValues << " : ";
+                cin >> valuesOfTestedFactor[i - 1];
+            }
+            if (!setAll)
+					break;
+        case '5':
+            cout << "How many repetitions of test case ? (results will be averaged) (>0): ";
+            cin >> newValue;
+            if (newValue>0)
+                repetitionsOfTestCase = newValue;
+            if (!setAll)
+                    break;
+        case '6':
+            do {
+                cout << endl << "Input name of result file (.csv): ";
+                cin >> newStringValue;
+            } while (resultFileStr.empty());
+
+            if (newStringValue.find(".csv") != string::npos) {
+            } else {
+                newStringValue += ".csv";
+				}
+            if (fileExists(newStringValue)) {
+                cout << "There is a file with this name. Are you sure ? (y/n) \n : ";
+                cin >> choice;
+                if (choice == 'y')
+                    resultFileStr = newStringValue;
+            } else {
+                resultFileStr = newStringValue;
+			}
+			break;
+        case 's':
+        case 'S':
+            for (int i = 0; i < numOfInstances; i++) {
+                if (!fileExists(dataFiles[i])) {
+                    cout << "File " << dataFiles[i] << " does not exist. Can not start test..";
+                    stopTest = true;
+			break;
+		}
+	}
+            if (stopTest)
+                break;
+            resultFile.open(resultFileStr.c_str());
+            if (!resultFile.good()) {
+                cout << "\nError with creating file.";
+                cout << endl << "Press any key to continue...";
+                cin.ignore();
+                cin.get();
+            } else {
+
+                cout << "Test started. Please wait, it may take a while..." << endl;
+                cout << "TESTED FACTOR: " << possibleTestScenario[testScenario] << endl;
+                cout << "Number of runs per single scenario : " << repetitionsOfTestCase << endl;
+
+                resultFile << "TESTED FACTOR: " << possibleTestScenario[testScenario] << "\n";
+                resultFile << "Number of runs per single scenario : " << repetitionsOfTestCase << " It means that every measurement is average of " << repetitionsOfTestCase << " runs" << "\n";
+
+                for (int i = 0; i<numOfInstances; i++) {
+
+                    cout << "Test for instance: " << dataFiles[i] << "\nLoading...\n";
+                    resultFile << ";" << dataFiles[i] << "\n";
+                    resultFile << ";;Value of factor; time[ms]; solution; percentage error\n";
+
+                    delete simulatedAnnealing;
+                    simulatedAnnealing = new SimulatedAnnealing(dataFiles[i]);
+
+                    for (int k = 0; k<numOfTestedValues; k++) {
+                        cout << endl << "\t" << k + 1 << " value of " << numOfTestedValues << " : " << valuesOfTestedFactor[k] << endl;
+                        resultFile << ";;" << valuesOfTestedFactor[k];
+                        time = 0;
+                        solution = 0;
+
+                        switch (testScenario) {
             case 0:
-                s = period;
+                            simulatedAnnealing->initialTemperature = valuesOfTestedFactor[k];
                 break;
             case 1:
-                s = simulatedAnnealing->getSize();
+                            simulatedAnnealing->finalTemperature = valuesOfTestedFactor[k];
                 break;
             case 2:
-                s = (simulatedAnnealing->getSize()*simulatedAnnealing->getSize()) / 2;
+                            simulatedAnnealing->alpha = valuesOfTestedFactor[k];
                 break;
-			default:
+                        case 3:
+                            simulatedAnnealing->period = (int)valuesOfTestedFactor[k];
 				break;
 			}
 
-			double time = 0;
-			double t0 = 0;
-			int minimum = 0;
-            for (int k = 0; k < ile; k++) {
+                        for (int j = 1; j <= repetitionsOfTestCase; j++) {
+                            cout << "\t\tIteration " << j << " of " << repetitionsOfTestCase << "..." << endl;
 				performanceCountStart = startTimer();
-				minimum += simulatedAnnealing->algorithm(s, alphas[i], t0, endTemperature);
+                            solution += simulatedAnnealing->algorithm();
 				performanceCountEnd = endTimer();
 				time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 			}
-			time = time / freq.QuadPart * 1000;
-			plik << s << " ";// << " ALPHA ";
-			plik << alphas[i] << " ";//
-			plik << t0 / ile << " ";
-			plik << time / ile << " ";
-			plik << minimum / ile;
-			plik << endl;
-			cout << endl << "----------------------------------------------";
-			cout << endl << "EPOKA " << s << " ALPHA " << alphas[i] << " T0 " << t0 / ile;
-			cout << " TIME " << time / ile;
-			cout << endl << " MINIMUM " << minimum / ile;
 
+                        time /= repetitionsOfTestCase;
+                        solution /= repetitionsOfTestCase;
+			time = time / freq.QuadPart * 1000;
+
+                        resultFile << ";" << time;
+                        cout << "\tMean time [ms] : " << time << endl;
+
+                        resultFile << ";" << solution;
+                        cout << "\tMean solution : " << solution << endl;
+
+                        percentangeError = (solution / (bestKnownSolutions[i] * 1.0) - 1) * 100;
+                        cout << "\tMean percentage error = " << percentangeError << endl;
+                        resultFile << ";" << percentangeError << "\n";
+                    }
+                }
+                resultFile.close();
+                cout << endl << "Press any key to continue...";
+                cin.ignore();
+                cin.get();
+            }
+            break;
+        case 'b':
+        case 'B':
+            goBack = true;
+            break;
+        default:
+            break;
 		}
 	}
 };
@@ -851,7 +1056,6 @@ void geneticAlgorithmTestMenu() {
 	ostringstream geneticTestMenuStream;
 	string dataFilesStr;
 	string bestKnownSolutionsStr;
-	string testScenarioStr;
 	string valuesOfTestedFactorStr;
 	string resultFileStr = getCurrentTime() + ".csv" ;
 
@@ -888,7 +1092,7 @@ void geneticAlgorithmTestMenu() {
 	// testy wg okreslonego parametru 0 - liczba osobnikow w populacji, 1 - ilosc populacji, 2 - ilosc mutowanych genow, 3 - prawdopodobienstwo mutacji, 4 - ilosc potomkow
 	int testScenario = 3;							
 	// ile powtorzen
-	int numOfIterationsPerSingleRun = 2;											
+    int repetitionsOfTestCase = 2;
 	// zmienna na rozwiazanie
 	int solution = 0;
 
@@ -909,7 +1113,6 @@ void geneticAlgorithmTestMenu() {
 		setAll = false;
 		dataFilesStr = arrayToString(dataFiles, numOfInstances);
 		bestKnownSolutionsStr = arrayToString(bestKnownSolutions, numOfInstances);
-		testScenarioStr = possibleTestScenario[testScenario];
 		valuesOfTestedFactorStr = arrayToString(valuesOfTestedFactor, numOfTestedValues);
 
 		geneticTestMenuStream.str("");
@@ -948,13 +1151,13 @@ void geneticAlgorithmTestMenu() {
 			"|..|                                                             |........|\n"
 			"|..|   3. TESTED FACTOR                                          |........|\n"
                               "|..|                                                             |........|\n"
-                              "|..|      " << myfillandwl(' ', 26) << testScenarioStr << "                             |........|\n"
+                              "|..|      " << myfillandwl(' ', 26) << possibleTestScenario[testScenario] << "                             |........|\n"
 			"|..|                                                             |........|\n"             
 			"|..|   4. VALUES OF TESTED FACTOR                                |........|\n"
                               "|..|                                                             |........|\n"
                               "|..|      " << myfillandwl(' ', 26) << valuesOfTestedFactorStr << "                             |........|\n"
 			"|..|                                                             |........|\n"            
-                              "|..|   5. REPETITIONS OF TEST CASE                   " << myfillandwl(' ', 3) << numOfIterationsPerSingleRun << "         |........|\n"
+                              "|..|   5. REPETITIONS OF TEST CASE                   " << myfillandwl(' ', 3) << repetitionsOfTestCase << "         |........|\n"
 			"|..|                                                             |........|\n"
 			"|..|   6. NAME OF RESULT FILE                                    |........|\n"
                               "|..|                                                             |........|\n"
@@ -968,8 +1171,13 @@ void geneticAlgorithmTestMenu() {
 		system("cls");
             cout << geneticTestMenuStream.str();
 				}
+        showMenu = true;
 		printConsole();
 		cin >> choice;
+
+        if (choice == 's' || choice == 'S') {
+            showMenu = false;
+        }
 
 		switch (choice) {
 			case 'a':
@@ -1005,7 +1213,11 @@ void geneticAlgorithmTestMenu() {
 				if(!setAll)
 					break;
 			case '3':
-				cout << "Which factor you want to test? \n\t0 - size of population\n\t1 - quantity of population\n\t2 - quantity of mutating genes\n\t3 - probability of mutation\n\t4 - children quantity\nYour choice : ";
+            cout << "Which factor you want to test?";
+            for (int i = 0; i < (sizeof(possibleTestScenario) / sizeof(*possibleTestScenario)); i++) {
+                cout << "\n\t" << i << " - " + possibleTestScenario[i];
+            }
+            cout << "\nYour choice: ";
 				cin >> newValue;
 				if (newValue >= 0 && newValue <= 4) testScenario = newValue;
 				if (!setAll)
@@ -1021,10 +1233,10 @@ void geneticAlgorithmTestMenu() {
 				if (!setAll)
 					break;
 			case '5':
-				cout << "Input new value for iteration per one scenario (>0): ";
+            cout << "How many repetitions of test case ? (results will be averaged) (>0): ";
 				cin >> newValue;
 				if (newValue>0) 
-					numOfIterationsPerSingleRun = newValue;
+                repetitionsOfTestCase = newValue;
 				if (!setAll)
 					break;
 			case '6':
@@ -1065,10 +1277,10 @@ void geneticAlgorithmTestMenu() {
 					cin.get();
 				} else {
 					cout << "Test started. Please wait, it may take a while..." << endl;
-					cout << "TESTED FACTOR: " << testScenarioStr << endl;
-					cout << "Number of runs per single scenario : " << numOfIterationsPerSingleRun << endl;
-					resultFile << "TESTED FACTOR: " << testScenarioStr << "\n";
-					resultFile << "Number of runs per single scenario : " << numOfIterationsPerSingleRun << " It means that every measurement is average of " << numOfIterationsPerSingleRun << " runs" << "\n";
+                cout << "TESTED FACTOR: " << possibleTestScenario[testScenario] << endl;
+                cout << "Number of runs per single scenario : " << repetitionsOfTestCase << endl;
+                resultFile << "TESTED FACTOR: " << possibleTestScenario[testScenario] << "\n";
+                resultFile << "Number of runs per single scenario : " << repetitionsOfTestCase << " It means that every measurement is average of " << repetitionsOfTestCase << " runs" << "\n";
 					for (int i = 0; i<numOfInstances; i++) {
 
 						cout << "Test for instance: " << dataFiles[i] << "\nLoading...\n";
@@ -1104,16 +1316,16 @@ void geneticAlgorithmTestMenu() {
 									break;
 							}
 
-                        for (int j = 1; j <= numOfIterationsPerSingleRun; j++) {
-								cout << "\t\tIteration " << j << " of " << numOfIterationsPerSingleRun << "..." << endl;
+                        for (int j = 1; j <= repetitionsOfTestCase; j++) {
+                            cout << "\t\tIteration " << j << " of " << repetitionsOfTestCase << "..." << endl;
 								performanceCountStart = startTimer();
 								solution += geneticAlgorithm->algorithm();
 								performanceCountEnd = endTimer();
 							time += (performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
 						}
 
-							time /= numOfIterationsPerSingleRun;
-							solution /= numOfIterationsPerSingleRun;
+                        time /= repetitionsOfTestCase;
+                        solution /= repetitionsOfTestCase;
 						time = time / freq.QuadPart * 1000;
 							
 						resultFile << ";" << time;
@@ -1284,7 +1496,7 @@ void tabuSearchTestMenu() {
 	}
 	printConsole();
 		cin >> option;
-		switch (option){
+        switch (option) {
 		case 'b':
 		case 'B':
 			goBack = true;
