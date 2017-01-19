@@ -163,7 +163,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 
     srand((unsigned int)time(NULL));
 
-    bool showMenu = true;
+    //bool showMenu = true;
     bool isProperlyLoaded = false;
     char choice;
     string fileName = "br17.atsp";
@@ -179,65 +179,65 @@ int _tmain(int argc, _TCHAR* argv[]) {
     }
 
     while (1) {
-        if (showMenu) {
-            system("cls");
-            mainMenuStream.str("");
-            mainMenuStream.clear();
-            mainMenuStream <<
-                           "|.........................................................................|\n"
-                           "|.......... ________________________________ .............................|\n"
-                           "|..........|      _  _   _                  |.............................|\n"
-                           "|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
-                           "|..........|    /     | |_ | \\| |_|         |.............................|\n"
-                           "|..._______|________________________________|____________________.........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|                       ALGORITHMS                            |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      OPTION                                    KEY          |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      SIMULATED ANNEALING                        S           |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      TABU SEARCH                                T           |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      GENETIC ALGORITHM                          G           |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|                        OPTIONS                              |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      LOAD FROM FILE (.atsp)                     L           |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      PREVIEW LOADED DATA                        P           |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      QUIT                                       Q           |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|________________   INSTANCE   _______________________________|........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      FILENAME :                        " << myfillandwr(' ', 10) << fileName << "           |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      NUMBER OF CITIES :                       " << myfillandwr(' ', 3) << sizeOfInstance << "           |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|________________   AUTHORS    _______________________________|........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|      MICHAL SZTUKA                        200798            |........|\n"
-                           "|..|      JOANNA TUROWSKA                      236088            |........|\n"
-                           "|..|                                                             |........|\n"
-                           "|..|_____________________________________________________________|........|\n"
-                           "|.........................................................................|\n"
-                           "|.........................................................................|\n";
-            cout << mainMenuStream.str() << endl;
-        }
+        if (!isProperlyLoaded) fileName = "No file";
+        system("cls");
+        mainMenuStream.str("");
+        mainMenuStream.clear();
+        mainMenuStream <<
+                       "|.........................................................................|\n"
+                       "|.......... ________________________________ .............................|\n"
+                       "|..........|      _  _   _                  |.............................|\n"
+                       "|..........|     / |/ | |_ |\\ | | |         |.............................|\n"
+                       "|..........|    /     | |_ | \\| |_|         |.............................|\n"
+                       "|..._______|________________________________|____________________.........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                       ALGORITHMS                            |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      OPTION                                    KEY          |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      SIMULATED ANNEALING                        S           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      TABU SEARCH                                T           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      GENETIC ALGORITHM                          G           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                        OPTIONS                              |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      LOAD FROM FILE (.atsp)                     L           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      PREVIEW LOADED DATA                        P           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      QUIT                                       Q           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|________________   INSTANCE   _______________________________|........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      FILENAME :                        " << myfillandwr(' ', 10) << fileName << "           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      NUMBER OF CITIES :                       " << myfillandwr(' ', 3) << sizeOfInstance << "           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|________________   AUTHORS    _______________________________|........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      MICHAL SZTUKA                        200798            |........|\n"
+                       "|..|      JOANNA TUROWSKA                      236088            |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|_____________________________________________________________|........|\n"
+                       "|.........................................................................|\n"
+                       "|.........................................................................|\n";
+        cout << mainMenuStream.str() << endl;
+
 
         if (isProperlyLoaded) {
-            cout << endl << "Loaded from default file: " << fileName;
+            cout << endl << "Loaded from file: " << fileName <<endl;
         } else {
-            cout << endl << "There was a problem with loading data. " << fileName << " may not exist.";
+            cout << endl << "There was a problem with loading data from file."<<endl;
         }
 
-        showMenu = false;
+        //showMenu = false;
         printConsole();
         cin >> choice;
 
@@ -246,7 +246,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
             //just to ommit switch clause
             choice = 'o';
         } else if (choice != 'l' && choice != 'L') {
-            showMenu = true;
+            //showMenu = true;
         }
 
         switch (choice) {
@@ -282,7 +282,6 @@ int _tmain(int argc, _TCHAR* argv[]) {
                 sizeOfInstance = geneticAlgorithm->getSize();
                 isProperlyLoaded = sizeOfInstance > 0;
             } else {
-                cout << endl << "Some errors with file occured, check if this file exist.";
                 isProperlyLoaded = false;
             }
             break;
@@ -417,14 +416,14 @@ void geneticAlgorithmMenu(string filename) {
         case 's':
         case 'S':
             time = 0;
-            cout << "\nPlease wait... Computing..." << endl;
+            cout << "\nPlease wait... Computing...\n\n";
             performanceCountStart = startTimer();
             solution = geneticAlgorithm->algorithm();
             performanceCountEnd = endTimer();
             time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
             duration(time, 1);
-            cout << "\t Solution: " << solution;
-            cout << "\n\t Duration of computation: " << time << " [ms]" << endl;
+            cout << "Solution: " << solution;
+            cout << "\nComputation time: " << time << " [ms]\n\n";
             cout << "Press any key to continue...";
             cin.ignore();
             cin.get();
@@ -470,6 +469,7 @@ void tabuSearchMenu(string filename) {
     int ktory;
 
     while (!goBack) {
+        bool setAll = false;
         tabuMenuStream.str("");
         tabuMenuStream.clear();
         tabuMenuStream <<
@@ -491,8 +491,10 @@ void tabuSearchMenu(string filename) {
                        "|..|                                                             |........|\n"
                        "|..|   CHANGE VALUE OF PARAMETER NR. X               X           |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|   GO BACK                                       B           |........|\n"
+                       "|..|   SET ALL                                       A           |........|\n"
                        "|..|                                                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|   GO BACK                                       B           |........|\n"
                        "|..|                                                             |........|\n"
                        "|..|________________   INSTANCE   _______________________________|........|\n"
                        "|..|                                                             |........|\n"
@@ -530,164 +532,55 @@ void tabuSearchMenu(string filename) {
         printConsole();
         cin >> option;
         switch (option) {
+        case 'a':
+        case 'A':
+            setAll = true;
         case '1':
             cout << "\nChoose stopping condition: \n0 - iterations, 1 - time, 2 - no change of solution\n";
             cin >> ktory;
             if (ktory >= 0 && ktory <3) stop_condition = ktory;
-            break;
+            if (!setAll)
+                break;
         case '2':
             cout << "\nDiversification?\n1 - yes, 0 - no\n";
             cin >> ktory;
             if (ktory == 1)  diversificationOn = true;
             else if (ktory == 0) diversificationOn = false;
-            break;
+            if (!setAll)
+                break;
         case '3':
-            cout << "Insert value of the parameter not_change for diversification (e.g.not_change=2*size) : ";
+            cout << "\nInsert value of the parameter not_change for diversification (e.g.not_change=2*size) : ";
             cin >> ktory;
             if (ktory>0) div_not_change = ktory;
-            break;
+            if (!setAll)
+                break;
         case '4':
             do {
-                cout << "Insert the lengh of tabu list : ";
+                cout << "\nInsert the lengh of tabu list : ";
                 cin >> ktory;
             } while (ktory <= 0);
             tabu_length = ktory;
-            break;
+            if (!setAll)
+                break;
         case '5':
-            cout << "Insert the number of candidates (e.g.num_of_candidates=2*size) : ";
+            cout << "\nInsert the number of candidates (e.g.num_of_candidates=2*size) : ";
             cin >> ktory;
             if (ktory>1) num_of_candidates = ktory;
             break;
         case 's':
         case 'S':
-            loop2 = true;
-            while (loop2) {
-                system("cls");
-                cout << "\n --- PARAMETERS OF THE ALGORITHM ---\n\n";
-                cout << "SIZE : " << size << endl;
-                cout << "Stopping condition: ";
-                if (stop_condition == 0) cout << " Number of iterations\n";
-                else if (stop_condition == 1) cout << " Time\n";
-                else if (stop_condition == 2) cout << " Brak zmiany rozwiazania\n";
-                if (stop_condition == 0) cout << "Number of iterations: " << iterations << endl;
-                else if (stop_condition == 1) cout << "Time : " << alg_time << endl;
-                else if (stop_condition == 2) cout << "Brak zmiany od : " << not_change << endl;
-                cout << "Stosowanie dywersyfikacji: ";
-                if (diversificationOn) cout << " yes" << endl;
-                else cout << " no" << endl;
-                if (diversificationOn) cout << "Parametr not_change dla dywersyfikacji: " << div_not_change << endl;
-                cout << "Lenght of tabu list : " << tabu_length << "\n";
-                cout << "Number of candidates: " << num_of_candidates << "\n\n";
-                cout << "1. Show adjacency matrix\n2. Edit parameters\n3. Start the algorithm\n4. Go back\n";
-                cin >> option;
-                switch (option) {
-                case '1':
-                    cout << endl;
-                    tabuSearch->showMatrix();
-                    cout << endl << "Press a key to continue...";
-                    cin.ignore();
-                    cin.get();
-                    break;
-                case '2':
-                    loop = true;
-                    while (loop) {
-                        system("cls");
-                        cout << "\n --- Aktualne parametry algorytmu ---\n\n";
-                        cout << "SIZE : " << size << endl;
-                        cout << "Warunek stopu(1): ";
-                        if (stop_condition == 0) cout << " Liczba iteracji\n";
-                        else if (stop_condition == 1) cout << " Czas\n";
-                        else if (stop_condition == 2) cout << " Brak zmiany rozwiazania\n";
-                        if (stop_condition == 0) cout << "Liczba iteracji(2) : " << iterations << endl;
-                        else if (stop_condition == 1) cout << "Czas(2) : " << alg_time << endl;
-                        else if (stop_condition == 2) cout << "Brak zmiany od(2) : " << not_change << endl;
-                        cout << "Stosowanie dywersyfikacji(3) : ";
-                        if (diversificationOn) cout << " tak" << endl;
-                        else cout << " nie" << endl;
-                        if (diversificationOn) cout << "Parametr not_change dla dywersyfikacji(4): " << div_not_change << endl;
-                        cout << "Dlugosc listy tabu(5) : " << tabu_length << "\n";
-                        cout << "Liczba kandydatow(6) : " << num_of_candidates << endl;
-                        cout << "\nPowrot(7)\n\nOpcja nr: ";
-                        int ktory;
-                        cin >> ktory;
-                        cout << "\n";
-                        switch (ktory) {
-                        case 1:
-                            cout << "Podaj odpowiedni warunek stopu : \n 0 - interacje, 1 - czas, 2 - brak zmiany rozwiazania\n";
-                            cin >> ktory;
-                            if (ktory >= 0 && ktory <3) stop_condition = ktory;
-                            break;
-                        case 2:
-                            if (stop_condition == 0) {
-                                cout << "Podaj liczbe iteracji\n";
-                                cin >> ktory;
-                                if (ktory>10) iterations = ktory;
-                            } else if (stop_condition == 1) {
-                                cout << "Podaj czas \n";
-                                double czas;
-                                cin >> czas;
-                                if (czas>0.0) alg_time = czas;
-                            } else if (stop_condition == 2) {
-                                cout << "Brak zmiany od ilu iteracji \n";
-                                cin >> ktory;
-                                if (ktory > 0)not_change = ktory;
-                            }
-                            break;
-                        case 3:
-                            cout << "Czy stosowac dywersyfikacje : \n 0 - nie , 1 - tak\n";
-                            cin >> ktory;
-                            if (ktory == 0) diversificationOn = false;
-                            else diversificationOn = true;
-                            break;
-                        case 4:
-                            do {
-                                cout << "Podaj max liczbe iteracji bez poprawy rozwiazania dla dywersyfikacji (>0) : ";
-                                cin >> ktory;
-                            } while (ktory <= 0);
-                            div_not_change = ktory;
-                            break;
-                        case 5:
-                            do {
-                                cout << "Podaj dlugosc listy tabu : ";
-                                cin >> ktory;
-                            } while (ktory <= 0);
-                            tabu_length = ktory;
-                            break;
-                        case 6:
-                            cout << "Ilu kandydatow\n";
-                            cin >> ktory;
-                            if (ktory>1) num_of_candidates = ktory;
-                            break;
-                        /*case 7:
-                        	tabu_search->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
-                        	break;*/
-                        case 7:
-                            loop = false;
-                            break;
-                        }
-                    }
-                    system("cls");
-                    break;
-                case '3':
-                    tabuSearch->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
-                    performanceCountStart = startTimer();
-                    solution = tabuSearch->algorithm();
-                    performanceCountEnd = endTimer();
-                    time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
-                    duration(time, 1);
-                    cout << "MIN: " << solution;
-                    cout << "\nCzas trwania algorytmu: " << time << " [ms]" << endl;
-                    cout << endl << "Nacisnij dowolny klawisz aby kontynuowac...";
-                    cin.ignore();
-                    cin.get();
-                    break;
-                case '4':
-                    loop2 = false;
-                    break;
-                default:
-                    break;
-                }
-            }
+            cout << "\nPlease wait... Computing...\n\n";
+            tabuSearch->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
+            performanceCountStart = startTimer();
+            solution = tabuSearch->algorithm();
+            performanceCountEnd = endTimer();
+            time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
+            duration(time, 1);
+            cout << "Solution: " << solution;
+            cout << "\nComputation time: " << time << " [ms]\n\n";
+            cout << "Press any key to continue...";
+            cin.ignore();
+            cin.get();
             break;
         case 't':
         case 'T':
@@ -1583,7 +1476,7 @@ void tabuSearchTestMenu() {
                            "|..|                                                             |........|\n"
                            "|..|   4. VALUES OF STOPPING CRITERIA                            |........|\n"
                            "|..|                                                             |........|\n"
-                           "|..|      " << myfillandwl(' ', 26) << valuesOfStopCriteriaStr << "                             |........|\n"
+                           "|..|      " << myfillandwl(' ', 52) << valuesOfStopCriteriaStr << "   |........|\n"
                            "|..|                                                             |........|\n"
                            "|..|   5. REPETITIONS OF TEST CASE                   " << myfillandwl(' ', 3) << repetitionsOfTestCase << "         |........|\n"
                            "|..|                                                             |........|\n"
@@ -1643,7 +1536,7 @@ void tabuSearchTestMenu() {
             if (!setAll)
                 break;
         case '3':
-            cout << "Choose stopping criteria:\n0 - interacje, 1 - time, 2 - not_change\n\nYour choice : ";
+            cout << "Choose stopping criteria:\n0 - number of iterations, 1 - time, 2 - not_change\n\nYour choice : ";
             cin >> newValue;
             if (newValue >= 0 && newValue <= 2) stop_condition = newValue;
             if (stop_condition == 0) stop_condition_string = "Number of iterations";
@@ -1654,7 +1547,7 @@ void tabuSearchTestMenu() {
         case '4':
             cout << "How many values of stopping criteria do you want to test ? \n";
             cin >> how_many_stops;
-            cout << "Input values: \n ";
+            cout << "Input values:\n";
             for (int i = 0; i<how_many_stops; i++) {
                 cout << i << " : ";
                 cin >> stopCriteria[i];
@@ -1687,25 +1580,27 @@ void tabuSearchTestMenu() {
             } else {
                 resultFileStr = newStringValue;
             }
+            if (!setAll)
+                break;
 
-        case 't':
-        case 'T':
+        case 's':
+        case 'S':
             resultFile.open(resultFileStr.c_str());
             if (resultFile.good()) {
                 for (int i = 0; i<numOfInstances; i++) {
-                    cout << "Test dla pliku : " << dataFiles[i] << "\nWczytywanie...\n";
+                    cout << "Test for file: " << dataFiles[i] << "\nReading...\n";
                     resultFile << dataFiles[i] << endl;
                     delete tabuSearch;
                     tabuSearch = new TabuSearch(dataFiles[i]);
                     size = tabuSearch->getSize();
-                    cout << "Kryterium stopu : ";
-                    resultFile << "Kryterium stopu : ";
-                    if (stop_condition == 0) cout << " - liczba iteracji.\n";
-                    else if (stop_condition == 1) cout << " - czas.\n";
-                    else if (stop_condition == 2) cout << " - brak zmiany rozwiazania.\n";
-                    if (stop_condition == 0) resultFile << " - liczba iteracji.\n";
-                    else if (stop_condition == 1) resultFile << " - czas.\n";
-                    else if (stop_condition == 2) resultFile << " - brak zmiany rozwiazania.\n";
+                    cout << "Stopping criteria : ";
+                    resultFile << "Stopping criteria : ";
+                    if (stop_condition == 0) cout << " - number of itarations.\n";
+                    else if (stop_condition == 1) cout << " - time.\n";
+                    else if (stop_condition == 2) cout << " - no change.\n";
+                    if (stop_condition == 0) resultFile << " - - number of itarations.\n";
+                    else if (stop_condition == 1) resultFile << " - time.\n";
+                    else if (stop_condition == 2) resultFile << " - no change.\n";
                     resultFile << "WITH DIVERSIFICATION" << endl;
                     for (int k = 0; k<how_many_stops; k++) {
                         cout << "STOP AT: " << stopCriteria[k] << endl;
