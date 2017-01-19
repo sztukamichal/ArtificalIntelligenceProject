@@ -179,7 +179,10 @@ int _tmain(int argc, _TCHAR* argv[]) {
     }
 
     while (1) {
-        if (!isProperlyLoaded) fileName = "No file";
+		if (!isProperlyLoaded) {
+			fileName = "No file";
+			sizeOfInstance = 0;
+		}
         system("cls");
         mainMenuStream.str("");
         mainMenuStream.clear();
