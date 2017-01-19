@@ -1476,7 +1476,7 @@ void tabuSearchTestMenu() {
 			"|..|                                                             |........|\n"
 			"|..|   4. VALUES OF STOPPING CRITERIA                            |........|\n"
 			"|..|                                                             |........|\n"
-			"|..|      " << myfillandwl(' ', 49) << valuesOfStopCriteriaStr << "     |........|\n"
+			"|..|      " << myfillandwl(' ', 52) << valuesOfStopCriteriaStr << "   |........|\n"
 			"|..|                                                             |........|\n"
 			"|..|   5. REPETITIONS OF TEST CASE                   " << myfillandwl(' ', 3) << repetitionsOfTestCase << "         |........|\n"
 			"|..|                                                             |........|\n"
@@ -1547,7 +1547,7 @@ void tabuSearchTestMenu() {
 		case '4':
 			cout << "How many values of stopping criteria do you want to test ? \n";
 					cin >> how_many_stops;
-			cout << "Input values: \n ";
+			cout << "Input values:\n";
             for (int i = 0; i<how_many_stops; i++) {
 						cout << i << " : ";
 						cin >> stopCriteria[i];
