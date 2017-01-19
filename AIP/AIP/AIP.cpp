@@ -362,13 +362,13 @@ void geneticAlgorithmMenu(string filename) {
                    "|..|                                                             |........|\n"
                    "|..|   1. SIZE OF POPULATION                       " << myfillandwr(' ', 3) << geneticAlgorithm->sizeOfPopulation << "           |........|\n"
                    "|..|                                                             |........|\n"
-                   "|..|   2. POPULATION QUANTITY                      " << myfillandwr(' ', 3) << geneticAlgorithm->numberOfPopulation << "           |........|\n"
+                   "|..|   2. POPULATION QUANTITY                      " << myfillandwr(' ', 3) << geneticAlgorithm->numberOfPopulations << "           |........|\n"
                    "|..|                                                             |........|\n"
                    "|..|   3. NUMBER OF GENES                          " << myfillandwr(' ', 3) << geneticAlgorithm->numberOfGenes << "           |........|\n"
                    "|..|                                                             |........|\n"
                    "|..|   4. PROBABILITY OF MUTATION                  " << myfillandwr(' ', 3) << geneticAlgorithm->probability << "           |........|\n"
                    "|..|                                                             |........|\n"
-                   "|..|   5. CHILDREN QUANTITY                        " << myfillandwr(' ', 3) << geneticAlgorithm->numberOfChild << "           |........|\n"
+                   "|..|   5. CHILDREN QUANTITY                        " << myfillandwr(' ', 3) << geneticAlgorithm->numberOfChildren << "           |........|\n"
                    "|..|                                                             |........|\n"
                    "|..|_____________________________________________________________|........|\n"
                    "|.........................................................................|\n"
@@ -394,7 +394,7 @@ void geneticAlgorithmMenu(string filename) {
         case '2':
             cout << "Input new value for quantity of populations (>0): ";
             cin >> newValue;
-            if (newValue>0) geneticAlgorithm->numberOfPopulation = newValue;
+            if (newValue>0) geneticAlgorithm->numberOfPopulations = newValue;
             if (!setAll)
                 break;
         case '3':
@@ -412,7 +412,7 @@ void geneticAlgorithmMenu(string filename) {
         case '5':
             cout << "Input new value for number of children (>0): ";
             cin >> newValue;
-            if (newValue>0) geneticAlgorithm->numberOfChild = newValue;
+            if (newValue>0) geneticAlgorithm->numberOfChildren = newValue;
             break;
         case 's':
         case 'S':
@@ -1406,10 +1406,10 @@ void geneticAlgorithmTestMenu() {
                         switch (testScenario) {
                         case 0:
                             geneticAlgorithm->sizeOfPopulation = (int)valuesOfTestedFactor[k];
-                            geneticAlgorithm->numberOfChild = (int)valuesOfTestedFactor[k] / 2;
+                            geneticAlgorithm->numberOfChildren = (int)valuesOfTestedFactor[k] / 2;
                             break;
                         case 1:
-                            geneticAlgorithm->numberOfPopulation = (int)valuesOfTestedFactor[k];
+                            geneticAlgorithm->numberOfPopulations = (int)valuesOfTestedFactor[k];
                             break;
                         case 2:
                             geneticAlgorithm->numberOfGenes = (int)valuesOfTestedFactor[k];

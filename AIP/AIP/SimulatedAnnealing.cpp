@@ -9,78 +9,77 @@ using namespace std;
 const double e = 2.71828182845904523536;
 
 int SimulatedAnnealing::algorithm() {
-    int* minimalTour;
-    int* nextState = new int[size];
     int* currentPermutation = new int[size];
+    currentPermutation = getRandomPermutation();
 
     if (autoGenerateInitialTemperature) {
         initialTemperature = generateInitialTemperature();
     }
-    double T = initialTemperature;
+    double temperature = initialTemperature;
 
-    currentPermutation = randomPermutation();								// wygenerowanie losowej permutacji
-    int min = cost(currentPermutation);										// policzenie kosztu pierwszej permutacji
-    int currentPermutationCost = min;
-    minimalTour = setMinimalTour(currentPermutation);
+    int currentPermutationCost = computeCostOf(currentPermutation);
+    int nextPermutationCost;
+    bestPath = copyPermutation(currentPermutation);
+    int minimalFoundCost = currentPermutationCost;
 
-    int a, b;
+    int cityA, cityB;
+    bool isBetterSolution;
+    bool isTheBestSoFar;
 
-    while (T > finalTemperature) {
-        for (int i = 0; i < period; i++) {									// epoki
+    while (temperature > finalTemperature) {
+        for (int i = 0; i < period; i++) {
             do {
-                a = rand() % size;
-                b = rand() % size;
-            } while (a == b);												// losowanie dwóch miast
-            swap(currentPermutation[a], currentPermutation[b]);				// zamiana miast
-            int nextStateCost = cost(currentPermutation);					// nextState
-            if (nextStateCost < currentPermutationCost) {
-                currentPermutationCost = nextStateCost;
-                if (nextStateCost < min) {
-                    min = nextStateCost;
-                    minimalTour = setMinimalTour(currentPermutation);
+                cityA = rand() % size;
+                cityB = rand() % size;
+            } while (cityA == cityB);
+            swap(currentPermutation[cityA], currentPermutation[cityB]);
+
+            nextPermutationCost = computeCostOf(currentPermutation);
+            isBetterSolution = nextPermutationCost < currentPermutationCost;
+
+            if (isBetterSolution) {
+                currentPermutationCost = nextPermutationCost;
+                isTheBestSoFar = nextPermutationCost < minimalFoundCost;
+                if (isTheBestSoFar) {
+                    minimalFoundCost = nextPermutationCost;
+                    delete[]bestPath;
+                    bestPath = copyPermutation(currentPermutation);
                 }
-            } else if (!probability(nextStateCost - currentPermutationCost, T)) {
-                swap(currentPermutation[a], currentPermutation[b]);
-            } else currentPermutationCost = nextStateCost;
+            } else if (!acceptWorseSolution(nextPermutationCost - currentPermutationCost, temperature)) {
+                swap(currentPermutation[cityA], currentPermutation[cityB]);
+            } else
+                currentPermutationCost = nextPermutationCost;
         }
-        T *= alpha;
+        temperature *= alpha;
     }
     delete[]currentPermutation;
-    delete[]minimalTour;
-    delete[]nextState;
-    return min;
+    return minimalFoundCost;
 }
 
-void SimulatedAnnealing::showPermutation(const int * permutation) {
-    for (int i = 0; i < size; i++) {
-        cout << permutation[i] << "  ";
-    }
-    cout << endl;
-}
-
-bool SimulatedAnnealing::probability(int delta, double Temperature) {
+bool SimulatedAnnealing::acceptWorseSolution(int delta, double Temperature) {
     double prob = pow(e, -delta / Temperature);
     double r = (double)rand() / RAND_MAX;
     return r < prob;
 }
 
 double SimulatedAnnealing::generateInitialTemperature() {
-    double delta = 0;
-    int *currentPermutation = randomPermutation();							//losowa permutacja
-    int currentPermutationCost = cost(currentPermutation);
+    double delta = 0, delta2;
+    int *currentPermutation = getRandomPermutation();							//losowa permutacja
+    int currentPermutationCost = computeCostOf(currentPermutation);
     int *nextPermutation;
 
     for (int i = 0; i < size*size; i++) {
-        nextPermutation = randomPermutation();
-        double delta2 = cost(nextPermutation) - currentPermutationCost;
+        nextPermutation = getRandomPermutation();
+        delta2 = computeCostOf(nextPermutation) - currentPermutationCost;
         delete[]nextPermutation;
-        if (delta2>delta) delta = delta2;
+        if (delta2>delta)
+            delta = delta2;
     }
     delete[]currentPermutation;
     return delta * 10;
 }
 
-int*  SimulatedAnnealing::randomPermutation() {
+int*  SimulatedAnnealing::getRandomPermutation() {
     int * permutation = new int[size];
     for (int i = 0; i < size; i++) {
         permutation[i] = i;
@@ -89,7 +88,7 @@ int*  SimulatedAnnealing::randomPermutation() {
     return permutation;
 }
 
-int* SimulatedAnnealing::setMinimalTour(const int * permutation) {
+int* SimulatedAnnealing::copyPermutation(const int * permutation) {
     int * next = new int[size];
     for (int i = 0; i < size; i++) {
         next[i] = permutation[i];
@@ -97,25 +96,20 @@ int* SimulatedAnnealing::setMinimalTour(const int * permutation) {
     return next;
 }
 
-void SimulatedAnnealing::swapPermutation(const int * permutation, int* nextState) {
-    //int * next = new int[size];
-    for (int i = 0; i < size; i++) {
-        nextState[i] = permutation[i];
-    }
-
-    int a, b;
-    do {
-        a = rand() % size;
-        b = rand() % size;
-    } while (a == b);
-
-    swap(nextState[a], nextState[b]);
-    //	return next;
-}
-
-int SimulatedAnnealing::cost(int* permutation) {
+int SimulatedAnnealing::computeCostOf(int* permutation) {
     return matrix->costPermutation(permutation);
 }
+
+string SimulatedAnnealing::bestPathToString() {
+    string result = "";
+    for (int i = 0; i < size; i++) {
+        if (i < size - 1)
+            result += bestPath[i] + "  -> ";
+        else
+            result += bestPath[i];
+    }
+    return result;
+};
 
 SimulatedAnnealing::SimulatedAnnealing(string filename) {
     matrix = new Matrix(filename);
@@ -131,5 +125,6 @@ SimulatedAnnealing::SimulatedAnnealing(string filename) {
 
 SimulatedAnnealing::~SimulatedAnnealing() {
     delete matrix;
+    delete[]bestPath;
     size = 0;
 }

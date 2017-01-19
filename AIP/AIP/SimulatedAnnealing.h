@@ -2,17 +2,19 @@
 #include "Matrix.h"
 #include <string>
 
+using namespace std;
+
 class SimulatedAnnealing {
 private:
     Matrix * matrix;
     int size;
+    int* bestPath;
 
     double generateInitialTemperature();
-    bool probability(int delta, double temperature);
-    int* randomPermutation();
-    void swapPermutation(const int * permutation, int* nextState);
-    int* setMinimalTour(const int* permutation);
-    int cost(int* permutation);
+    bool acceptWorseSolution(int delta, double temperature);
+    int* getRandomPermutation();
+    int* copyPermutation(const int* permutation);
+    int computeCostOf(int* permutation);
     void showPermutation(const int*);
 
 public:
@@ -23,14 +25,13 @@ public:
     bool autoGenerateInitialTemperature;
 
     int algorithm();
-    Matrix* getMatrix() {
-        return matrix;
-    }
+    string bestPathToString();
+
     int getSize() {
         return size;
     };
 
-    SimulatedAnnealing(std::string filename);
+    SimulatedAnnealing(string filename);
 
     ~SimulatedAnnealing();
 };
