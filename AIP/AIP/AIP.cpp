@@ -179,10 +179,10 @@ int _tmain(int argc, _TCHAR* argv[]) {
     }
 
     while (1) {
-		if (!isProperlyLoaded) {
-			fileName = "No file";
-			sizeOfInstance = 0;
-		}
+        if (!isProperlyLoaded) {
+            fileName = "No file";
+            sizeOfInstance = 0;
+        }
         system("cls");
         mainMenuStream.str("");
         mainMenuStream.clear();
@@ -617,13 +617,15 @@ void simulatedAnnealingMenu(string filename) {
     bool setAll = false;
     int newValue;
     double newDoubleValue;
-    string initialTemperatureString;
+    string initialTemperatureStr;
+    string variantStr;
 
     while (!goBack) {
         setAll = false;
         simulatedMenuStream.str("");
         simulatedMenuStream.clear();
-        initialTemperatureString = simulatedAnnealing->autoGenerateInitialTemperature ? "Auto" : doubleToString(simulatedAnnealing->initialTemperature);
+        initialTemperatureStr = simulatedAnnealing->autoGenerateInitialTemperature ? "Auto" : doubleToString(simulatedAnnealing->initialTemperature);
+        variantStr = simulatedAnnealing->blackAndWhite ? "Black and White" : "Classic";
         simulatedMenuStream <<
                             "|.........................................................................|\n"
                             "|.......... ________________________________ .............................|\n"
@@ -666,7 +668,9 @@ void simulatedAnnealingMenu(string filename) {
                             "|..|                                                             |........|\n"
                             "|..|   3. FINAL TEMPERATURE                     " << myfillandwr(' ', 6) << simulatedAnnealing->finalTemperature << "           |........|\n"
                             "|..|                                                             |........|\n"
-                            "|..|   4. INITIAL TEMPERATURE                   " << myfillandwr(' ', 6) << initialTemperatureString << "           |........|\n"
+                            "|..|   4. INITIAL TEMPERATURE                   " << myfillandwr(' ', 6) << initialTemperatureStr << "           |........|\n"
+                            "|..|                                                             |........|\n"
+                            "|..|   5. TSP VARIANT       " << myfillandwr(' ', 26) << variantStr << "           |........|\n"
                             "|..|                                                             |........|\n"
                             "|..|_____________________________________________________________|........|\n"
                             "|.........................................................................|\n"
@@ -713,6 +717,18 @@ void simulatedAnnealingMenu(string filename) {
                 cin >> newDoubleValue;
                 if (newDoubleValue>simulatedAnnealing->finalTemperature) simulatedAnnealing->initialTemperature = newDoubleValue;
             }
+            if (!setAll)
+                break;
+        case '5':
+            cout << "Which variant of TSP problem do you want to solve ?";
+            cout << "\n\t 1 - Classic";
+            cout << "\n\t 2 - Black and White";
+            cout << "\nYour choice: ";
+            cin >> newValue;
+            if (newValue == 1)
+                simulatedAnnealing->blackAndWhite = false;
+            else
+                simulatedAnnealing->blackAndWhite = true;
             break;
         case 's':
         case 'S':
@@ -723,14 +739,12 @@ void simulatedAnnealingMenu(string filename) {
             performanceCountEnd = endTimer();
             time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
             duration(time, 1);
-            cout << "\t Solution: " << solution << endl;
-            cout << "\t Computation time: " << time << " [ms]" << endl;
             if (simulatedAnnealing->autoGenerateInitialTemperature) {
-                cout << "\t Initial temperature: " << simulatedAnnealing->initialTemperature << endl;
+                cout << "\n\t Initial temperature: " << simulatedAnnealing->initialTemperature << endl;
             }
-            cout << "Press any key to continue...";
-            cin.ignore();
-            cin.get();
+            cout << "\n\t Solution: " << solution << endl;
+            cout << "\n\t Computation time: " << time << " [ms]" << endl;
+            cout << "\n\t " << simulatedAnnealing->bestPathToString() << endl;
             break;
         case 't':
         case 'T':
@@ -978,7 +992,17 @@ void simulatedAnnealingTestMenu() {
                 cout << "TESTED FACTOR: " << possibleTestScenario[testScenario] << endl;
                 cout << "Number of runs per single scenario : " << repetitionsOfTestCase << endl;
 
-                resultFile << "TESTED FACTOR: " << possibleTestScenario[testScenario] << "\n";
+                resultFile << "Results of testing simulated annealing\n;parameter;alpha;final temperature;period;initial temperature; tsp version \n";
+                resultFile << ";value;" << simulatedAnnealing->alpha << ";" << simulatedAnnealing->finalTemperature << ";" << simulatedAnnealing->period << ";";
+                if (!simulatedAnnealing->autoGenerateInitialTemperature)
+                    resultFile << simulatedAnnealing->initialTemperature << ";";
+                else
+                    resultFile << "Auto;";
+                if (simulatedAnnealing->blackAndWhite)
+                    resultFile << "Black and white";
+                else
+                    resultFile << "Classic";
+                resultFile << "\nTESTED FACTOR: " << possibleTestScenario[testScenario] << "\n";
                 resultFile << "Number of runs per single scenario : " << repetitionsOfTestCase << " It means that every measurement is average of " << repetitionsOfTestCase << " runs" << "\n";
 
                 for (int i = 0; i<numOfInstances; i++) {
@@ -1588,15 +1612,15 @@ void tabuSearchTestMenu() {
 
         case 's':
         case 'S':
-			for (int i = 0; i < numOfInstances; i++) {
-				if (!fileExists(dataFiles[i])) {
-					cout << "File " << dataFiles[i] << " does not exist. Can not start test..";
-					stopTest = true;
-					break;
-				}
-			}
-			if (stopTest)
-				break;
+            for (int i = 0; i < numOfInstances; i++) {
+                if (!fileExists(dataFiles[i])) {
+                    cout << "File " << dataFiles[i] << " does not exist. Can not start test..";
+                    stopTest = true;
+                    break;
+                }
+            }
+            if (stopTest)
+                break;
             resultFile.open(resultFileStr.c_str());
             if (resultFile.good()) {
                 for (int i = 0; i<numOfInstances; i++) {

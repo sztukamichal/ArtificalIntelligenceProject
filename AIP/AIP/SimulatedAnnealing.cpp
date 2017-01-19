@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <Windows.h>
+#include <sstream>
 
 using namespace std;
 
@@ -10,7 +11,7 @@ const double e = 2.71828182845904523536;
 
 int SimulatedAnnealing::algorithm() {
     int* currentPermutation = new int[size];
-    currentPermutation = getRandomPermutation();
+    currentPermutation = getRandomPermutation(blackAndWhite);
 
     if (autoGenerateInitialTemperature) {
         initialTemperature = generateInitialTemperature();
@@ -28,10 +29,7 @@ int SimulatedAnnealing::algorithm() {
 
     while (temperature > finalTemperature) {
         for (int i = 0; i < period; i++) {
-            do {
-                cityA = rand() % size;
-                cityB = rand() % size;
-            } while (cityA == cityB);
+            setTwoRandomCities(cityA, cityB, blackAndWhite);
             swap(currentPermutation[cityA], currentPermutation[cityB]);
 
             nextPermutationCost = computeCostOf(currentPermutation);
@@ -64,12 +62,12 @@ bool SimulatedAnnealing::acceptWorseSolution(int delta, double Temperature) {
 
 double SimulatedAnnealing::generateInitialTemperature() {
     double delta = 0, delta2;
-    int *currentPermutation = getRandomPermutation();							//losowa permutacja
+    int *currentPermutation = getRandomPermutation(blackAndWhite);							//losowa permutacja
     int currentPermutationCost = computeCostOf(currentPermutation);
     int *nextPermutation;
 
     for (int i = 0; i < size*size; i++) {
-        nextPermutation = getRandomPermutation();
+        nextPermutation = getRandomPermutation(blackAndWhite);
         delta2 = computeCostOf(nextPermutation) - currentPermutationCost;
         delete[]nextPermutation;
         if (delta2>delta)
@@ -79,12 +77,43 @@ double SimulatedAnnealing::generateInitialTemperature() {
     return delta * 10;
 }
 
-int*  SimulatedAnnealing::getRandomPermutation() {
+int*  SimulatedAnnealing::getRandomPermutation(bool blackAndWhite) {
     int * permutation = new int[size];
-    for (int i = 0; i < size; i++) {
-        permutation[i] = i;
+    if (blackAndWhite) {
+        int numOfOdds = 0;
+        int numOfEven = 0;
+        if (size % 2 == 0) {
+            numOfOdds = size / 2;
+            numOfEven = size / 2;
+        } else {
+            numOfOdds = (size - 1) / 2;
+            numOfEven = (size + 1) / 2;
+        }
+        int * oddSet = new int[numOfOdds];
+        int * evenSet = new int[numOfEven];
+
+        for (int i = 0; i < size; i++) {
+            if (i % 2 == 0) {
+                evenSet[i / 2] = i ;
+            } else
+                oddSet[(i-1) / 2] = i;
+        }
+        random_shuffle(&oddSet[0], &oddSet[numOfOdds]);
+        random_shuffle(&evenSet[0], &evenSet[numOfEven]);
+        for (int i = 0; i < size; i++) {
+            if (i % 2 == 0) {
+                permutation[i] = evenSet[i / 2];
+            } else {
+                permutation[i] = oddSet[(i - 1) / 2];
+            }
+        }
+
+    } else {
+        for (int i = 0; i < size; i++) {
+            permutation[i] = i;
+        }
+        random_shuffle(&permutation[0], &permutation[size]);
     }
-    random_shuffle(&permutation[0], &permutation[size]);
     return permutation;
 }
 
@@ -101,14 +130,40 @@ int SimulatedAnnealing::computeCostOf(int* permutation) {
 }
 
 string SimulatedAnnealing::bestPathToString() {
-    string result = "";
-    for (int i = 0; i < size; i++) {
-        if (i < size - 1)
-            result += bestPath[i] + "  -> ";
-        else
-            result += bestPath[i];
+    ostringstream resultStream;
+    int j = 0;
+    int i = 0;
+    for (j = 0; j < size; j++) {
+        if (bestPath[j] == 0) {
+            break;
+        }
     }
-    return result;
+    for (j; i < size; i++, j++) {
+        if (j == size) {
+            j = 0;
+        }
+        if (i < size - 1) {
+            resultStream << bestPath[j];
+            resultStream << " -> ";
+        } else
+            resultStream << bestPath[j];
+    }
+    return resultStream.str();
+
+};
+
+void SimulatedAnnealing::setTwoRandomCities(int & cityA, int & cityB, bool blackAndWhite) {
+    if (blackAndWhite) {
+        do {
+            cityA = rand() % size;
+            cityB = rand() % size;
+        } while (cityA == cityB || (cityA % 2 == 0 && cityB % 2 != 0) || (cityA % 2 == 1 && cityB % 2 != 1));
+    } else {
+        do {
+            cityA = rand() % size;
+            cityB = rand() % size;
+        } while (cityA == cityB);
+    }
 };
 
 SimulatedAnnealing::SimulatedAnnealing(string filename) {
@@ -121,6 +176,7 @@ SimulatedAnnealing::SimulatedAnnealing(string filename) {
     initialTemperature = 100;
     finalTemperature = 0.2;
     autoGenerateInitialTemperature = true;
+    blackAndWhite = false;
 }
 
 SimulatedAnnealing::~SimulatedAnnealing() {
