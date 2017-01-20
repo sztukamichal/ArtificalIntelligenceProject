@@ -487,9 +487,12 @@ void tabuSearchMenu(string filename) {
     bool loop2 = true;
     bool loop3 = true;
     int ktory;
+    string variantStr;
+    int newValue;
 
     while (!goBack) {
         bool setAll = false;
+        variantStr = tabuSearch->blackAndWhite ? "Black and White" : "Classic";
         tabuMenuStream.str("");
         tabuMenuStream.clear();
         tabuMenuStream <<
@@ -536,6 +539,8 @@ void tabuSearchMenu(string filename) {
                        "|..|  4. LENGHT OF TABU LIST                       " << myfillandwr(' ', 3) << tabu_length << "           |........|\n"
                        "|..|                                                             |........|\n"
                        "|..|  5. NUMBER OF CANDIDATES                      " << myfillandwr(' ', 3) << num_of_candidates << "           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|   6. TSP VARIANT       " << myfillandwr(' ', 26) << variantStr << "           |........|\n"
                        "|..|                                                             |........|\n"
                        "|..|_____________________________________________________________|........|\n"
                        "|.........................................................................|\n"
@@ -586,21 +591,32 @@ void tabuSearchMenu(string filename) {
             cout << "\nInsert the number of candidates (e.g.num_of_candidates=2*size) : ";
             cin >> ktory;
             if (ktory>1) num_of_candidates = ktory;
+            if (!setAll)
+                break;
+        case '6':
+            cout << "Which variant of TSP problem do you want to solve ?";
+            cout << "\n\t 1 - Classic";
+            cout << "\n\t 2 - Black and White";
+            cout << "\nYour choice: ";
+            cin >> newValue;
+            if (newValue == 1)
+                tabuSearch->blackAndWhite = false;
+            else
+                tabuSearch->blackAndWhite = true;
             break;
         case 's':
         case 'S':
-            cout << "\nPlease wait... Computing...\n\n";
+            time = 0;
+            cout << "\nPlease wait... Computing..." << endl;
             tabuSearch->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
             performanceCountStart = startTimer();
             solution = tabuSearch->algorithm();
             performanceCountEnd = endTimer();
             time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
             duration(time, 1);
-            cout << "Solution: " << solution;
-            cout << "\nComputation time: " << time << " [ms]\n\n";
-            cout << "Press any key to continue...";
-            cin.ignore();
-            cin.get();
+            cout << "\n\t Solution: " << solution << endl;
+            cout << "\n\t Computation time: " << time << " [s]" << endl;
+            cout << "\n\t " << tabuSearch->bestPathToString() << endl;
             break;
         case 't':
         case 'T':
