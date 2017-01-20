@@ -14,12 +14,12 @@ TabuSearch::TabuSearch(string filename) {
     solved = false;
 
 
-    iterations = 50000;					// liczba iteracji petli glownej algorytmu
+    iterations = this->getSize() * this->getSize();					// liczba iteracji petli glownej algorytmu
     not_change = this->getSize() * 4;					// maksymalna liczba iteracji bez poprawy rozwiazania
     div_not_change = this->getSize() * 2;
     alg_time = 1;				// czas dzialania algorytmu
     num_of_candidates = this->getSize();			// liczba kandydatów
-    tabu_length = 10;				// dlugosc listy tabu
+    tabu_length = this->getSize()/2;				// dlugosc listy tabu
     diverisfication_is_On = true;			// 0 - wylaczona 1 - wlaczona
     stop_condition = 0;				// 0 - interacje, 1 - time, 2 - not_change
 

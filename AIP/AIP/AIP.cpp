@@ -826,15 +826,13 @@ void simulatedAnnealingTestMenu() {
     string valuesOfTestedFactorStr;
     string resultFileStr = getCurrentTime() + ".csv";
 
-    int numOfInstances = 7;
+    int numOfInstances = 5;
     string* dataFiles = new string[numOfInstances]();
     dataFiles[0] = "br17.atsp";
     dataFiles[1] = "ftv47.atsp";
     dataFiles[2] = "ftv64.atsp";
     dataFiles[3] = "kro124p.atsp";
     dataFiles[4] = "ftv170.atsp";
-    dataFiles[5] = "rbg323.atsp";
-    dataFiles[6] = "rbg443.atsp";
 
     int *bestKnownSolutions = new int[numOfInstances]();
     bestKnownSolutions[0] = 39;
@@ -842,8 +840,6 @@ void simulatedAnnealingTestMenu() {
     bestKnownSolutions[2] = 1839;
     bestKnownSolutions[3] = 36230;
     bestKnownSolutions[4] = 2755;
-    bestKnownSolutions[5] = 1326;
-    bestKnownSolutions[6] = 2720;
 
     int numOfTestedValues = 6;
     double *valuesOfTestedFactor = new double[numOfTestedValues]();

@@ -15,11 +15,11 @@ GeneticAlgorithm::GeneticAlgorithm(string filename) {
     costOfAllPopulation = 0;
 
     //Default values of prameters
-    sizeOfPopulation = 50;
-    numberOfPopulations = 300;
+    sizeOfPopulation = size*2;
+    numberOfPopulations = size*2;
     numberOfGenes = 2;
     probability = 50;
-    numberOfChildren = 50;
+    numberOfChildren = size*2;
 }
 
 void GeneticAlgorithm::showPopulation(vector<int*>* population) {
