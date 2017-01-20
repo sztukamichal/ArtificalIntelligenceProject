@@ -1,9 +1,5 @@
 #include "stdafx.h"
 #include "SimulatedAnnealing.h"
-#include <algorithm>
-#include <iostream>
-#include <Windows.h>
-#include <sstream>
 
 using namespace std;
 
@@ -11,7 +7,7 @@ const double e = 2.71828182845904523536;
 
 int SimulatedAnnealing::algorithm() {
     int* currentPermutation = new int[size];
-    currentPermutation = getRandomPermutation(blackAndWhite);
+    currentPermutation = getRandomPermutation();
 
     if (autoGenerateInitialTemperature) {
         initialTemperature = generateInitialTemperature();
@@ -29,7 +25,7 @@ int SimulatedAnnealing::algorithm() {
 
     while (temperature > finalTemperature) {
         for (int i = 0; i < period; i++) {
-            setTwoRandomCities(cityA, cityB, blackAndWhite);
+            setTwoRandomCities(cityA, cityB);
             swap(currentPermutation[cityA], currentPermutation[cityB]);
 
             nextPermutationCost = computeCostOf(currentPermutation);
@@ -62,12 +58,12 @@ bool SimulatedAnnealing::acceptWorseSolution(int delta, double Temperature) {
 
 double SimulatedAnnealing::generateInitialTemperature() {
     double delta = 0, delta2;
-    int *currentPermutation = getRandomPermutation(blackAndWhite);							//losowa permutacja
+    int *currentPermutation = getRandomPermutation();							//losowa permutacja
     int currentPermutationCost = computeCostOf(currentPermutation);
     int *nextPermutation;
 
     for (int i = 0; i < size*size; i++) {
-        nextPermutation = getRandomPermutation(blackAndWhite);
+        nextPermutation = getRandomPermutation();
         delta2 = computeCostOf(nextPermutation) - currentPermutationCost;
         delete[]nextPermutation;
         if (delta2>delta)
@@ -77,7 +73,7 @@ double SimulatedAnnealing::generateInitialTemperature() {
     return delta * 10;
 }
 
-int*  SimulatedAnnealing::getRandomPermutation(bool blackAndWhite) {
+int*  SimulatedAnnealing::getRandomPermutation() {
     int * permutation = new int[size];
     if (blackAndWhite) {
         int numOfOdds = 0;
@@ -133,26 +129,36 @@ string SimulatedAnnealing::bestPathToString() {
     ostringstream resultStream;
     int j = 0;
     int i = 0;
-    for (j = 0; j < size; j++) {
-        if (bestPath[j] == 0) {
-            break;
+    // because then it begins and ends with even value, so it must be display as it is, not from 0 city
+    if (blackAndWhite && size % 2 == 1) {
+        for (i = 0; i < size; i++) {
+            if (i < size - 1) {
+                resultStream << bestPath[i];
+                resultStream << " -> ";
+            } else
+                resultStream << bestPath[i];
         }
-    }
-    for (j; i < size; i++, j++) {
-        if (j == size) {
-            j = 0;
+    } else {
+        for (j = 0; j < size; j++) {
+            if (bestPath[j] == 0) {
+                break;
+            }
         }
-        if (i < size - 1) {
-            resultStream << bestPath[j];
-            resultStream << " -> ";
-        } else
-            resultStream << bestPath[j];
+        for (j; i < size; i++, j++) {
+            if (j == size) {
+                j = 0;
+            }
+            if (i < size - 1) {
+                resultStream << bestPath[j];
+                resultStream << " -> ";
+            } else
+                resultStream << bestPath[j];
+        }
     }
     return resultStream.str();
-
 };
 
-void SimulatedAnnealing::setTwoRandomCities(int & cityA, int & cityB, bool blackAndWhite) {
+void SimulatedAnnealing::setTwoRandomCities(int & cityA, int & cityB) {
     if (blackAndWhite) {
         do {
             cityA = rand() % size;

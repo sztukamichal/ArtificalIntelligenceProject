@@ -322,10 +322,13 @@ void geneticAlgorithmMenu(string filename) {
     LARGE_INTEGER performanceCountStart, performanceCountEnd;
     int solution = 0;
     int newValue;
+    double newDoubleValue;
     bool setAll = false;
+    string variantStr;
 
     while (!goBack) {
         setAll = false;
+        variantStr = geneticAlgorithm->blackAndWhite ? "Black and White" : "Classic";
         menuStream.str("");
         menuStream.clear();
         menuStream <<
@@ -368,9 +371,11 @@ void geneticAlgorithmMenu(string filename) {
                    "|..|                                                             |........|\n"
                    "|..|   3. NUMBER OF GENES                          " << myfillandwr(' ', 3) << geneticAlgorithm->numberOfGenes << "           |........|\n"
                    "|..|                                                             |........|\n"
-                   "|..|   4. PROBABILITY OF MUTATION                  " << myfillandwr(' ', 3) << geneticAlgorithm->probability << "           |........|\n"
+                   "|..|   4. PROBABILITY OF MUTATION                  " << myfillandwr(' ', 3) << 100/geneticAlgorithm->probability << "           |........|\n"
                    "|..|                                                             |........|\n"
                    "|..|   5. CHILDREN QUANTITY                        " << myfillandwr(' ', 3) << geneticAlgorithm->numberOfChildren << "           |........|\n"
+                   "|..|                                                             |........|\n"
+                   "|..|   6. TSP VARIANT       " << myfillandwr(' ', 26) << variantStr << "           |........|\n"
                    "|..|                                                             |........|\n"
                    "|..|_____________________________________________________________|........|\n"
                    "|.........................................................................|\n"
@@ -401,8 +406,10 @@ void geneticAlgorithmMenu(string filename) {
                 break;
         case '3':
             cout << "Input new value for probability of mutation (0 < x <100): ";
-            cin >> newValue;
-            if (newValue>0) geneticAlgorithm->probability = newValue;
+            cin >> newDoubleValue;
+            if (newDoubleValue > 0 && newDoubleValue < 100) {
+                geneticAlgorithm->probability = (int)(100/newValue);
+            }
             if (!setAll)
                 break;
         case '4':
@@ -415,21 +422,31 @@ void geneticAlgorithmMenu(string filename) {
             cout << "Input new value for number of children (>0): ";
             cin >> newValue;
             if (newValue>0) geneticAlgorithm->numberOfChildren = newValue;
+            if (!setAll)
+                break;
+        case '6':
+            cout << "Which variant of TSP problem do you want to solve ?";
+            cout << "\n\t 1 - Classic";
+            cout << "\n\t 2 - Black and White";
+            cout << "\nYour choice: ";
+            cin >> newValue;
+            if (newValue == 1)
+                geneticAlgorithm->blackAndWhite = false;
+            else
+                geneticAlgorithm->blackAndWhite = true;
             break;
         case 's':
         case 'S':
             time = 0;
-            cout << "\nPlease wait... Computing...\n\n";
+            cout << "\nPlease wait... Computing..." << endl;
             performanceCountStart = startTimer();
             solution = geneticAlgorithm->algorithm();
             performanceCountEnd = endTimer();
             time = (double)(performanceCountEnd.QuadPart - performanceCountStart.QuadPart);
             duration(time, 1);
-            cout << "Solution: " << solution;
-            cout << "\nComputation time: " << time << " [ms]\n\n";
-            cout << "Press any key to continue...";
-            cin.ignore();
-            cin.get();
+            cout << "\n\t Solution: " << solution << endl;
+            cout << "\n\t Computation time: " << time << " [s]" << endl;
+            cout << "\n\t " << geneticAlgorithm->bestPathToString() << endl;
             break;
         case 't':
         case 'T':
@@ -743,7 +760,7 @@ void simulatedAnnealingMenu(string filename) {
                 cout << "\n\t Initial temperature: " << simulatedAnnealing->initialTemperature << endl;
             }
             cout << "\n\t Solution: " << solution << endl;
-            cout << "\n\t Computation time: " << time << " [ms]" << endl;
+            cout << "\n\t Computation time: " << time << " [s]" << endl;
             cout << "\n\t " << simulatedAnnealing->bestPathToString() << endl;
             break;
         case 't':

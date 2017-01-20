@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -28,11 +29,13 @@ private:
     void showPopulation(vector<int*>* population);
     void showPermutation(const int*);
     bool isInPermutation(const int* permutation, int city);
-    int* generatePermutation(int size);
+    int* copyPermutation(const int* permutation);
+    int* getRandomPermutation();
     vector<int*>*chooseParents();
-    void createNewPopulation(int, int, int);
-    void mutation(int probability, int numberOfGenes, int * permutation);
+    void createNewPopulation();
+    void mutation(int * child);
     bool hasDuplicate(int*, vector<int *>* population);
+    void setTwoRandomCities(int & cityA, int & cityB);
 
 public:
     //PARAMETRYY ALGORYTMU
@@ -41,6 +44,8 @@ public:
     int numberOfGenes;						// liczba genów ulegajaca mutacji
     int probability;						// prawdopodobienstwo mutacji
     int numberOfChildren; 						// Ilosc potomkow
+    // second variant - cities are divided into two sets (odd and even), path can only exist if cities are alternately even and odd i.e. 0-1-2-3-4 is correct and 2-4-1-3-0 is incorrect
+    bool blackAndWhite;
 
     int algorithm();
     int getSize() {

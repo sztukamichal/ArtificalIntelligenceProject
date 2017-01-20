@@ -1,6 +1,10 @@
 #pragma once
 #include "Matrix.h"
 #include <string>
+#include <algorithm>
+#include <iostream>
+#include <Windows.h>
+#include <sstream>
 
 using namespace std;
 
@@ -12,11 +16,11 @@ private:
 
     double generateInitialTemperature();
     bool acceptWorseSolution(int delta, double temperature);
-    int* getRandomPermutation(bool blackAndWhite);
+    int* getRandomPermutation();
     int* copyPermutation(const int* permutation);
     int computeCostOf(int* permutation);
     void showPermutation(const int*);
-    void setTwoRandomCities(int & cityA, int & cityB, bool blackAndWhite);
+    void setTwoRandomCities(int & cityA, int & cityB);
 
 public:
     int period;
