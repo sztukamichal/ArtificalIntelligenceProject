@@ -465,34 +465,37 @@ void geneticAlgorithmMenu(string filename) {
 };
 
 void tabuSearchMenu(string filename) {
-    int size = tabuSearch->getSize();
 
-    int iterations = 50000;					// liczba iteracji petli glownej algorytmu
-    int not_change = size * 4;					// maksymalna liczba iteracji bez poprawy rozwiazania
-    int div_not_change = size * 2;
-    double alg_time = 1;				// czas dzialania algorytmu
-    int num_of_candidates = size;			// liczba kandydatów
-    int tabu_length = 10;				// dlugosc listy tabu
-    bool diversificationOn = true;			// 0 - wylaczona 1 - wlaczona
-    int stop_condition = 0;				// 0 - interacje, 1 - time, 2 - not_change
     int solution = 0;
-
     ostringstream tabuMenuStream;
     string tabuMenu;
     LARGE_INTEGER performanceCountStart, performanceCountEnd;
-    char option;
+
+    char choice;
+    char choice2;
     bool goBack = false;
     bool showMenu = true;
-    bool loop = true;
-    bool loop2 = true;
-    bool loop3 = true;
-    int ktory;
-    string variantStr;
     int newValue;
+    double newDoubleValue;
+    string variantStr;
+    string diversificationStr;
+    string stopConditionStr;
+    string stopConditionValueStr;
+
+    string possibleStopCondition[3] = { "Iterations", "Time", "Iter. without improvement"};
 
     while (!goBack) {
         bool setAll = false;
         variantStr = tabuSearch->blackAndWhite ? "Black and White" : "Classic";
+        stopConditionStr = possibleStopCondition[tabuSearch->stop_condition];
+        if (tabuSearch->stop_condition == 0) {
+            stopConditionValueStr = doubleToString((double)tabuSearch->iterations);
+        } else if (tabuSearch->stop_condition == 1) {
+            stopConditionValueStr = doubleToString((double)tabuSearch->alg_time);
+        } else if (tabuSearch->stop_condition == 2) {
+            stopConditionValueStr = doubleToString((double)tabuSearch->not_change);
+        }
+        diversificationStr = tabuSearch->diverisfication_is_On ? doubleToString((double)tabuSearch->div_not_change) : "Off";
         tabuMenuStream.str("");
         tabuMenuStream.clear();
         tabuMenuStream <<
@@ -503,42 +506,43 @@ void tabuSearchMenu(string filename) {
                        "|..........|    /     | |_ | \\| |_|         |.............................|\n"
                        "|..._______|________________________________|____________________.........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|                   TABU SEARCH                               |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|   OPTION:                                      KEY:         |........|\n"
+                       "|..|                       TABU SEARCH                           |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|                                                             |........|\n"
-                       "|..|   START SINGLE SOLUTION                         S           |........|\n"
-                       "|..|                                                             |........|\n"
-                       "|..|   MAKE TESTS                                    T           |........|\n"
-                       "|..|                                                             |........|\n"
-                       "|..|   CHANGE VALUE OF PARAMETER NR. X               X           |........|\n"
-                       "|..|                                                             |........|\n"
-                       "|..|   SET ALL                                       A           |........|\n"
+                       "|..|      OPTION                                    KEY          |........|\n"
                        "|..|                                                             |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|   GO BACK                                       B           |........|\n"
+                       "|..|      START SINGLE SOLUTION                      S           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      MAKE TESTS                                 T           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      CHANGE VALUE OF PARAMETER NR. X            X           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      SET ALL                                    A           |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|                                                             |........|\n"
+                       "|..|      GO BACK                                    B           |........|\n"
                        "|..|                                                             |........|\n"
                        "|..|________________   INSTANCE   _______________________________|........|\n"
                        "|..|                                                             |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|   FILENAME :                           " << myfillandwr(' ', 10) << filename << "           |........|\n"
+                       "|..|      FILENAME :                        " << myfillandwr(' ', 10) << filename << "           |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|   NUMBER OF CITIES :                          " << myfillandwr(' ', 3) << size << "           |........|\n"
+                       "|..|      NUMBER OF CITIES :                       " << myfillandwr(' ', 3) << tabuSearch->getSize() << "           |........|\n"
                        "|..|                                                             |........|\n"
                        "|..|                                                             |........|\n"
                        "|..|_____________   PARAMETERS OF ALGORITHM   ___________________|........|\n"
                        "|..|                                                             |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|  1. STOPPING CONDITION                        " << myfillandwr(' ', 3) << stop_condition << "           |........|\n"
+                       "|..|   1. STOPPING CONDITION                " << myfillandwr(' ', 3) << stopConditionStr << "           |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|  2. DIVERSIFICATION (1-yes,0-no)              " << myfillandwr(' ', 3) << diversificationOn << "           |........|\n"
+                       "|..|   2. STOPPING CONDITION VALUE               " << myfillandwr(' ', 3) << stopConditionValueStr << "           |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|  3. PARAMETER not_change FOR DIVERSIFICATION  " << myfillandwr(' ', 3) << div_not_change << "           |........|\n"
+                       "|..|   3. DIVERSIFICATION - ITERATIONS             " << myfillandwr(' ', 3) << diversificationStr << "           |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|  4. LENGHT OF TABU LIST                       " << myfillandwr(' ', 3) << tabu_length << "           |........|\n"
+                       "|..|   4. LENGHT OF TABU LIST                      " << myfillandwr(' ', 3) << tabuSearch->tabu_length << "           |........|\n"
                        "|..|                                                             |........|\n"
-                       "|..|  5. NUMBER OF CANDIDATES                      " << myfillandwr(' ', 3) << num_of_candidates << "           |........|\n"
+                       "|..|   5. NUMBER OF CANDIDATES                     " << myfillandwr(' ', 3) << tabuSearch->num_of_candidates << "           |........|\n"
                        "|..|                                                             |........|\n"
                        "|..|   6. TSP VARIANT       " << myfillandwr(' ', 26) << variantStr << "           |........|\n"
                        "|..|                                                             |........|\n"
@@ -555,42 +559,62 @@ void tabuSearchMenu(string filename) {
             cout << tabuMenu;
         }
         printConsole();
-        cin >> option;
-        switch (option) {
+        cin >> choice;
+        switch (choice) {
         case 'a':
         case 'A':
             setAll = true;
         case '1':
-            cout << "\nChoose stopping condition: \n0 - iterations, 1 - time, 2 - no change of solution\n";
-            cin >> ktory;
-            if (ktory >= 0 && ktory <3) stop_condition = ktory;
+            cout << "Which stop condition you want to use?";
+            for (int i = 0; i < (sizeof(possibleStopCondition) / sizeof(*possibleStopCondition)); i++) {
+                cout << "\n\t" << i << " - " + possibleStopCondition[i];
+            }
+            cout << "\nYour choice: ";
+            cin >> newValue;
+            if (newValue >= 0 && newValue <3) tabuSearch->stop_condition = newValue;
             if (!setAll)
                 break;
         case '2':
-            cout << "\nDiversification?\n1 - yes, 0 - no\n";
-            cin >> ktory;
-            if (ktory == 1)  diversificationOn = true;
-            else if (ktory == 0) diversificationOn = false;
+            cout << "Provide value for stop condition (time in sec): ";
+            cin >> newValue;
+            if (newValue > 0) {
+                if (tabuSearch->stop_condition == 0) {
+                    tabuSearch->iterations = newValue;
+                } else if (tabuSearch->stop_condition == 1) {
+                    tabuSearch->alg_time = (double)newValue;
+                } else if (tabuSearch->stop_condition == 2) {
+                    tabuSearch->not_change = newValue;
+                }
+            }
             if (!setAll)
                 break;
         case '3':
-            cout << "\nInsert value of the parameter not_change for diversification (e.g.not_change=2*size) : ";
-            cin >> ktory;
-            if (ktory>0) div_not_change = ktory;
+            cout << "Do you want to turn off diversification? (y/n) : ";
+            cin >> choice2;
+            if (choice2 == 'y') {
+                tabuSearch->diverisfication_is_On = false;
+            } else {
+                tabuSearch->diverisfication_is_On = true;
+                cout << "How many iterations without improvements to start ? : ";
+                cin >> newValue;
+                if (newValue > 0)
+                    tabuSearch->div_not_change = newValue;
+            }
             if (!setAll)
                 break;
         case '4':
             do {
                 cout << "\nInsert the lengh of tabu list : ";
-                cin >> ktory;
-            } while (ktory <= 0);
-            tabu_length = ktory;
+                cin >> newValue;
+            } while (newValue <= 0);
+            tabuSearch->tabu_length = newValue;
             if (!setAll)
                 break;
         case '5':
             cout << "\nInsert the number of candidates (e.g.num_of_candidates=2*size) : ";
-            cin >> ktory;
-            if (ktory>1) num_of_candidates = ktory;
+            cin >> newValue;
+            if (newValue>1)
+                tabuSearch->num_of_candidates = newValue;
             if (!setAll)
                 break;
         case '6':
@@ -608,7 +632,6 @@ void tabuSearchMenu(string filename) {
         case 'S':
             time = 0;
             cout << "\nPlease wait... Computing..." << endl;
-            tabuSearch->setParameters(iterations, not_change, div_not_change, alg_time, num_of_candidates, tabu_length, diversificationOn, stop_condition);
             performanceCountStart = startTimer();
             solution = tabuSearch->algorithm();
             performanceCountEnd = endTimer();
@@ -629,17 +652,11 @@ void tabuSearchMenu(string filename) {
         default:
             break;
         }
-        showMenu = option != 'S' && option != 's';
+        showMenu = choice != 'S' && choice != 's';
     }
 };
 
 void simulatedAnnealingMenu(string filename) {
-    double alphas[5] = { 0.9, 0.95, 0.99, 0.995, 0.999 };
-    double ile = 10.0;
-
-    int solution = 0;
-    double time = 0;
-
     ostringstream simulatedMenuStream;
     LARGE_INTEGER performanceCountStart, performanceCountEnd;
 
@@ -648,7 +665,9 @@ void simulatedAnnealingMenu(string filename) {
     bool goBack = false;
     bool showMenu = true;
     bool setAll = false;
+    int solution = 0;
     int newValue;
+    double time = 0;
     double newDoubleValue;
     string initialTemperatureStr;
     string variantStr;
@@ -1464,9 +1483,8 @@ void tabuSearchTestMenu() {
     stopCriteria[8] = 15000;
     stopCriteria[9] = 20000;
 
-    // warunek stopu
-    int stop_condition = 0;		// 0 - interacje, 1 - time, 2 - not_change
-    string stop_condition_string = "Number of iterations";
+    string possibleStopCondition[3] = { "Iterations", "Time", "Iter. without improvement" };
+
     // ile powtorzen
     int repetitionsOfTestCase = 3;
     // zmienna na rozwiazanie
@@ -1488,6 +1506,7 @@ void tabuSearchTestMenu() {
     //double alg_time = 1;						// czas dzialania algorytmu
     int num_of_candidates = 2;					// mnozone razy size - liczba kandydatów
     int tabu_length = 10;						// dlugosc listy tabu
+    string stopConditionStr;
 
     while (!goBack) {
         stopTest = false;
@@ -1495,6 +1514,8 @@ void tabuSearchTestMenu() {
         dataFilesStr = arrayToString(dataFiles, numOfInstances);
         bestKnownSolutionsStr = arrayToString(bestKnownSolutions, numOfInstances);
         valuesOfStopCriteriaStr = arrayToString(stopCriteria, how_many_stops);
+
+        stopConditionStr = possibleStopCondition[tabuSearch->stop_condition];
 
         tabuTestMenuStream.str("");
         tabuTestMenuStream.clear();
@@ -1532,7 +1553,7 @@ void tabuSearchTestMenu() {
                            "|..|                                                             |........|\n"
                            "|..|   3. STOPPING CRITERIA                                      |........|\n"
                            "|..|                                                             |........|\n"
-                           "|..|      " << myfillandwl(' ', 26) << stop_condition_string << "                             |........|\n"
+                           "|..|      " << myfillandwl(' ', 26) << stopConditionStr << "                             |........|\n"
                            "|..|                                                             |........|\n"
                            "|..|   4. VALUES OF STOPPING CRITERIA                            |........|\n"
                            "|..|                                                             |........|\n"
@@ -1596,12 +1617,13 @@ void tabuSearchTestMenu() {
             if (!setAll)
                 break;
         case '3':
-            cout << "Choose stopping criteria:\n0 - number of iterations, 1 - time, 2 - not_change\n\nYour choice : ";
+            cout << "Which stop condition you want to use?";
+            for (int i = 0; i < (sizeof(possibleStopCondition) / sizeof(*possibleStopCondition)); i++) {
+                cout << "\n\t" << i << " - " + possibleStopCondition[i];
+            }
+            cout << "\nYour choice: ";
             cin >> newValue;
-            if (newValue >= 0 && newValue <= 2) stop_condition = newValue;
-            if (stop_condition == 0) stop_condition_string = "Number of iterations";
-            else if (stop_condition == 1) stop_condition_string = "Time";
-            else if (stop_condition == 2) stop_condition_string = "No change";
+            if (newValue >= 0 && newValue <3) tabuSearch->stop_condition = newValue;
             if (!setAll)
                 break;
         case '4':
@@ -1664,12 +1686,12 @@ void tabuSearchTestMenu() {
                     size = tabuSearch->getSize();
                     cout << "Stopping criteria : ";
                     resultFile << "Stopping criteria : ";
-                    if (stop_condition == 0) cout << " - number of itarations.\n";
-                    else if (stop_condition == 1) cout << " - time.\n";
-                    else if (stop_condition == 2) cout << " - no change.\n";
-                    if (stop_condition == 0) resultFile << " - - number of itarations.\n";
-                    else if (stop_condition == 1) resultFile << " - time.\n";
-                    else if (stop_condition == 2) resultFile << " - no change.\n";
+                    if (tabuSearch->stop_condition == 0) cout << " - number of itarations.\n";
+                    else if (tabuSearch->stop_condition == 1) cout << " - time.\n";
+                    else if (tabuSearch->stop_condition == 2) cout << " - no change.\n";
+                    if (tabuSearch->stop_condition == 0) resultFile << " - - number of itarations.\n";
+                    else if (tabuSearch->stop_condition == 1) resultFile << " - time.\n";
+                    else if (tabuSearch->stop_condition == 2) resultFile << " - no change.\n";
                     resultFile << "WITH DIVERSIFICATION" << endl;
                     for (int k = 0; k<how_many_stops; k++) {
                         cout << "STOP AT: " << stopCriteria[k] << endl;
@@ -1677,11 +1699,11 @@ void tabuSearchTestMenu() {
                         resultFile << stopCriteria[k];
                         time = 0;
                         solution = 0;
-                        if (stop_condition == 0)
+                        if (tabuSearch->stop_condition == 0)
                             tabuSearch->setParameters((int)(stopCriteria[k]), -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 0);
-                        else if (stop_condition == 1)
+                        else if (tabuSearch->stop_condition == 1)
                             tabuSearch->setParameters(-1, -1, div_not_change*size, (int)(stopCriteria[k]), num_of_candidates*size, tabu_length, true, 1);
-                        else if (stop_condition == 2)
+                        else if (tabuSearch->stop_condition == 2)
                             tabuSearch->setParameters(-1, (int)(stopCriteria[k]), div_not_change*size, -1, num_of_candidates*size, tabu_length, true, 2);
                         for (int j = 1; j <= repetitionsOfTestCase; j++) {
                             cout << "REPEAT with diversification : " << j << endl;
@@ -1693,7 +1715,7 @@ void tabuSearchTestMenu() {
                         time /= repetitionsOfTestCase;
                         solution /= repetitionsOfTestCase;
                         time = time / freq.QuadPart * 1000;
-                        if (stop_condition != 1) {
+                        if (tabuSearch->stop_condition != 1) {
                             resultFile.width(13);
                             resultFile << time;
                         }
@@ -1713,11 +1735,11 @@ void tabuSearchTestMenu() {
                         resultFile << stopCriteria[k];
                         time = 0;
                         solution = 0;
-                        if (stop_condition == 0)
+                        if (tabuSearch->stop_condition == 0)
                             tabuSearch->setParameters((int)stopCriteria[k], -1, div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 0);
-                        else if (stop_condition == 1)
+                        else if (tabuSearch->stop_condition == 1)
                             tabuSearch->setParameters(-1, -1, div_not_change*size, (int)stopCriteria[k], num_of_candidates*size, tabu_length, false, 1);
-                        else if (stop_condition == 2)
+                        else if (tabuSearch->stop_condition == 2)
                             tabuSearch->setParameters(-1, (int)stopCriteria[k], div_not_change*size, -1, num_of_candidates*size, tabu_length, false, 2);
                         for (int j = 1; j <= repetitionsOfTestCase; j++) {
                             cout << "REPEAT without diversification : " << j << endl;
@@ -1729,7 +1751,7 @@ void tabuSearchTestMenu() {
                         time /= repetitionsOfTestCase;
                         solution /= repetitionsOfTestCase;
                         time = time / freq.QuadPart * 1000;
-                        if (stop_condition != 1) {
+                        if (tabuSearch->stop_condition != 1) {
                             resultFile.width(13);
                             resultFile << time;
                         }
